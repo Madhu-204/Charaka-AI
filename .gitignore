@@ -1,0 +1,13 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Generated outputs (regenerable via scripts/transform.py)
+processed/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

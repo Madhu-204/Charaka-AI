@@ -1,0 +1,137 @@
+[
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch01_deerghanjiviteeya",
+    "file": "01_sutra_sthana/ch01_deerghanjiviteeya.json",
+    "verse_count": 118
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch04_shadvirechanashatashritiya",
+    "file": "01_sutra_sthana/ch04_shadvirechanashatashritiya.json",
+    "verse_count": 41
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch05_matrashiteeya",
+    "file": "01_sutra_sthana/ch05_matrashiteeya.json",
+    "verse_count": 86
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch06_tasyashiteeya",
+    "file": "01_sutra_sthana/ch06_tasyashiteeya.json",
+    "verse_count": 47
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch07_naveganadharaniya",
+    "file": "01_sutra_sthana/ch07_naveganadharaniya.json",
+    "verse_count": 64
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch12_vatakalakaliya",
+    "file": "01_sutra_sthana/ch12_vatakalakaliya.json",
+    "verse_count": 34
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch20_maharoga",
+    "file": "01_sutra_sthana/ch20_maharoga.json",
+    "verse_count": 52
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch25_yajjah_purushiya",
+    "file": "01_sutra_sthana/ch25_yajjah_purushiya.json",
+    "verse_count": 73
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch26_atreyabhadrakapyiya",
+    "file": "01_sutra_sthana/ch26_atreyabhadrakapyiya.json",
+    "verse_count": 157
+  },
+  {
+    "sthana": "01_sutra_sthana",
+    "chapter": "ch27_annapanavidhi",
+    "file": "01_sutra_sthana/ch27_annapanavidhi_merged.json",
+    "parts": [
+      "chapter27.json",
+      "chapter27a.json",
+      "chapter27b.json",
+      "chapter27c.json",
+      "chapter27d.json",
+      "chapter27e.json",
+      "chapter27f.json",
+      "chapter27g.json",
+      "chapter27h.json",
+      "chapter27i.json",
+      "chapter27j.json",
+      "chapter27k.json",
+      "chapter27l.json"
+    ],
+    "verse_count": 312
+  },
+  {
+    "sthana": "02_vimana_sthana",
+    "chapter": "ch01_rasa_vimana",
+    "file": "02_vimana_sthana/ch01_rasa_vimana.json",
+    "verse_count": 55
+  },
+  {
+    "sthana": "02_vimana_sthana",
+    "chapter": "ch08_rogabhishagjitiya",
+    "file": "02_vimana_sthana/ch08_rogabhishagjitiya.json",
+    "verse_count": 293
+  },
+  {
+    "sthana": "03_sharira_sthana",
+    "chapter": "ch08_jatisutriya",
+    "file": "03_sharira_sthana/ch08_jatisutriya.json",
+    "verse_count": 115
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch03_jwara",
+    "file": "04_chikitsa_sthana/ch03_jwara.json",
+    "verse_count": 284
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch06_prameha",
+    "file": "04_chikitsa_sthana/ch06_prameha.json",
+    "verse_count": 51
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch07_kushtha",
+    "file": "04_chikitsa_sthana/ch07_kushtha.json",
+    "verse_count": 126
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch15_grahani",
+    "file": "04_chikitsa_sthana/ch15_grahani.json",
+    "verse_count": 161
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch17_hikka_shwasa",
+    "file": "04_chikitsa_sthana/ch17_hikka_shwasa.json",
+    "verse_count": 101
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch18_kasa",
+    "file": "04_chikitsa_sthana/ch18_kasa.json",
+    "verse_count": 126
+  },
+  {
+    "sthana": "04_chikitsa_sthana",
+    "chapter": "ch28_vatavyadhi",
+    "file": "04_chikitsa_sthana/ch28_vatavyadhi.json",
+    "verse_count": 194
+  }
+]
