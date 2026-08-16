@@ -1,0 +1,30 @@
+{
+  "sthana_names": {
+    "01_sutra_sthana": "sutrasthana",
+    "02_vimana_sthana": "vimanasthana",
+    "03_sharira_sthana": "sharirasthana",
+    "04_chikitsa_sthana": "chikitsasthana"
+  },
+  "chapter_meta": {
+    "chikitsasthana/3":  { "condition": "Jwara",         "category": "fever_acute" },
+    "chikitsasthana/6":  { "condition": "Prameha",       "category": "metabolic" },
+    "chikitsasthana/7":  { "condition": "Kushtha",       "category": "skin" },
+    "chikitsasthana/15": { "condition": "Grahani",       "category": "digestive" },
+    "chikitsasthana/17": { "condition": "Hikka-Shwasa",  "category": "respiratory" },
+    "chikitsasthana/18": { "condition": "Kasa",          "category": "respiratory" },
+    "chikitsasthana/28": { "condition": "Vatavyadhi",    "category": "joint_vata_sleep" },
+    "sutrasthana/1":  { "condition": null, "category": "foundational_dosha" },
+    "sutrasthana/4":  { "condition": null, "category": "herb_groups" },
+    "sutrasthana/5":  { "condition": null, "category": "routine_dinacharya" },
+    "sutrasthana/6":  { "condition": null, "category": "routine_seasonal" },
+    "sutrasthana/7":  { "condition": null, "category": "preventive" },
+    "sutrasthana/12": { "condition": null, "category": "vata_theory" },
+    "sutrasthana/20": { "condition": null, "category": "disease_classification" },
+    "sutrasthana/25": { "condition": null, "category": "disease_origin" },
+    "sutrasthana/26": { "condition": null, "category": "taste_potency" },
+    "sutrasthana/27": { "condition": null, "category": "food_properties" },
+    "vimanasthana/1": { "condition": null, "category": "taste_theory" },
+    "vimanasthana/8": { "condition": null, "category": "diagnosis_method" },
+    "sharirasthana/8": { "condition": null, "category": "constitution_prakriti" }
+  }
+}

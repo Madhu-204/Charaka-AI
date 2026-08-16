@@ -1,0 +1,12 @@
+{
+  "typos": {
+    "broked up": "broken up",
+    "c:gar": "cigar",
+    "promegranate": "pomegranate"
+  },
+  "label_prefixes": [
+    "^56-56\\u00bd\\s+",
+    "^26 26\\u00bd,\\s+"
+  ],
+  "notes": "Inherited OCR/typo errors from the Kaviratna source text; auditable and reversible."
+}

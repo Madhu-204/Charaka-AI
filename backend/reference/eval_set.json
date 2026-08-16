@@ -1,0 +1,182 @@
+[
+  {
+    "eval_id": "eval_01",
+    "question": "What helps with digestive weakness / Grahani?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "expected_condition": "Grahani",
+    "expected_category": "digestive",
+    "notes": "Colloquial phrasing for assimilation disorder."
+  },
+  {
+    "eval_id": "eval_02",
+    "question": "What does Charaka say about cough remedies?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "expected_condition": "Kasa",
+    "expected_category": "respiratory",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_03",
+    "question": "What are the six tastes and their effects?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "expected_condition": null,
+    "expected_category": "taste_potency",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_04",
+    "question": "I have joint stiffness, what's the Ayurvedic view?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "expected_condition": "Vatavyadhi",
+    "expected_category": "joint_vata_sleep",
+    "notes": "Lay phrasing for vata disorder."
+  },
+  {
+    "eval_id": "eval_05",
+    "question": "What are the seasonal routine guidelines?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "expected_condition": null,
+    "expected_category": "routine_seasonal",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_06",
+    "question": "What is the Ayurvedic treatment for fever (jwara)?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "expected_condition": "Jwara",
+    "expected_category": "fever_acute",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_07",
+    "question": "How does Charaka manage diabetes / prameha?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "expected_condition": "Prameha",
+    "expected_category": "metabolic",
+    "notes": "Modern term mapped to prameha."
+  },
+  {
+    "eval_id": "eval_08",
+    "question": "What are the remedies for skin diseases / kushtha?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "expected_condition": "Kushtha",
+    "expected_category": "skin",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_09",
+    "question": "What does Charaka say about hiccup and difficulty breathing?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "expected_condition": "Hikka-Shwasa",
+    "expected_category": "respiratory",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_10",
+    "question": "How can one live a long, healthy life according to Charaka?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "expected_condition": null,
+    "expected_category": "foundational_dosha",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_11",
+    "question": "Which herbs are used for purgation and emesis?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "expected_condition": null,
+    "expected_category": "herb_groups",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_12",
+    "question": "What is the right quantity of food to eat daily?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "expected_condition": null,
+    "expected_category": "routine_dinacharya",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_13",
+    "question": "Why shouldn't one suppress natural urges?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "expected_condition": null,
+    "expected_category": "preventive",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_14",
+    "question": "What are the daily time-periods governed by vata?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "expected_condition": null,
+    "expected_category": "vata_theory",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_15",
+    "question": "Which diseases does Charaka classify as the great ones (maharoga)?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "expected_condition": null,
+    "expected_category": "disease_classification",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_16",
+    "question": "How does the physician examine a patient?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "expected_condition": null,
+    "expected_category": "disease_origin",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_17",
+    "question": "What are the properties of different foods and drinks?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "expected_condition": null,
+    "expected_category": "food_properties",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_18",
+    "question": "What does rasa (taste) tell us about digestion?",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "expected_condition": null,
+    "expected_category": "taste_theory",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_19",
+    "question": "How does one determine the best measure of treatment?",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "expected_condition": null,
+    "expected_category": "diagnosis_method",
+    "notes": null
+  },
+  {
+    "eval_id": "eval_20",
+    "question": "What determines a person's constitution / prakriti?",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "expected_condition": null,
+    "expected_category": "constitution_prakriti",
+    "notes": null
+  }
+]
