@@ -137,11 +137,11 @@
   {
     "eval_id": "eval_16",
     "question": "How does the physician examine a patient?",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 25,
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
     "expected_condition": null,
-    "expected_category": "disease_origin",
-    "notes": null
+    "expected_category": "diagnosis_method",
+    "notes": "Corrected 2026-08-18: sutra ch.25 has zero examination content; vimana ch.8 (Rogabhishagjitiya) is the canonical examination chapter (cs_vimana_8_18-b, 8_83)."
   },
   {
     "eval_id": "eval_17",
