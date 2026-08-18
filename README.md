@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/status-Phase%203%20%E2%80%94%20Retrieval%20Ready-22c55e)
+![Status](https://img.shields.io/badge/status-Phase%204%20%E2%80%94%20Agentic%20Ready-22c55e)
 ![Corpus](https://img.shields.io/badge/Corpus-20%20Chapters%20%E2%80%A2%202%2C490%20Verses-3b82f6)
 ![License](https://img.shields.io/badge/license-Custom-gray)
 ![AI](https://img.shields.io/badge/AI-Agentic%20RAG-f59e0b)
@@ -82,8 +82,8 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **1** | Data collection — raw text curation | ✅ **Done** |
 | **2** | Data processing & structuring | ✅ **Done** |
 | **3** | Retrieval & RAG pipeline | ✅ **Done** |
-| **4** | Agentic reasoning & safety guardrails | 🔄 **Next** |
-| **5** | Frontend interface | ⏳ Planned |
+| **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
+| **5** | Frontend interface | 🔄 **Next** |
 
 </div>
 
@@ -100,7 +100,13 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | ✅ **Audit** | `scripts/audit_ids.py` — verifies 1:1 verse↔record mapping | ✅ |
 | 🎯 **Reference sets** | `eval_set.json`, `herbs.json`, `mappings.json`, `typo_fixes.json` | ✅ |
 | 🔎 **Vector store** | 2,490 verse embeddings (`all-MiniLM-L6-v2`) → `chroma_db` | ✅ |
-| 📊 **Eval baseline** | Top-1 **16/20 (80%)** · Top-3 **17/20 (85%)** · naive keyword hybrid rejected (13/20) | ✅ |
+| 📊 **Eval baseline** | Phase 3: Top-1 **16/20 (80%)** · Top-3 **17/20 (85%)** · naive keyword hybrid rejected (13/20) | ✅ |
+| 🤖 **Agent pipeline** | LangGraph: emergency gate → query expansion → top-3 retrieval + `mappings.json` disambiguation → safety check → cited synthesis | ✅ |
+| 🧠 **LLM synthesis** | Groq `openai/gpt-oss-120b`, citation-forcing prompt, verse-level citations, honesty on low confidence | ✅ |
+| 🛡️ **Safety** | `herb_mentions.json` direct lookup + contraindication flags before remedies | ✅ |
+| 🚨 **Emergency gate** | Hardcoded, non-LLM RED_FLAGS w/ informational-query downgrade (cannot be talked into answering) | ✅ |
+| 🔌 **API** | `POST /ask` FastAPI endpoint w/ CORS | ✅ |
+| 📊 **Phase 4 eval** | Resolved **17/20 (85%)** · Top-3 **17/20 (85%)** · **0** false emergency positives | ✅ |
 
 ### 📊 Corpus breakdown
 
@@ -149,6 +155,11 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 
 ```
 backend/
+├── app/                  # Phase 4 agent — LangGraph + FastAPI
+│   ├── state.py          #   AgentState TypedDict
+│   ├── nodes/            #   emergency · query_expansion · retriever · safety · synthesis
+│   ├── graph.py          #   StateGraph wiring
+│   └── main.py           #   POST /ask FastAPI endpoint
 ├── charaka_data/          # curated source corpus (JSON per chapter)
 │   ├── 01_sutra_sthana/
 │   ├── 02_vimana_sthana/
@@ -156,15 +167,17 @@ backend/
 │   ├── 04_chikitsa_sthana/
 │   └── manifest.json
 ├── reference/             # herbs, mappings, typo fixes, eval set
-├── scripts/               # transform.py · audit_ids.py
-└── processed/             # regenerable structured output (git-ignored)
+├── scripts/               # transform.py · audit_ids.py · eval_run.py
+├── processed/             # regenerable structured output (git-ignored)
+├── chroma_db/             # regenerable vector store (git-ignored)
+└── .env                   # GROQ_API_KEY (git-ignored)
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-`Python` · `JSON` · RAG (planned) · Agentic framework (planned) · Web frontend (planned)
+`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI`
 
 ---
 
@@ -181,6 +194,38 @@ python scripts/transform.py      # raw corpus → processed/ structured JSON
 python scripts/audit_ids.py      # verify 1:1 verse↔record integrity
 ```
 
+### Run the Phase 4 agent
+
+```bash
+cd backend
+python -m venv .venv                     # once
+# Windows: .venv\Scripts\activate · macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt          # once
+copy .env.example .env                   # then set GROQ_API_KEY (never commit)
+uvicorn app.main:app --reload
+```
+
+Try it:
+
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"query": "I have bloating and poor appetite"}'
+```
+
+### Regression eval (Phase 4 gate)
+
+```bash
+python scripts/eval_run.py --mode retrieval   # free — retrieval/disambiguation only
+python scripts/eval_run.py --mode full        # 20 Groq calls — end-to-end answers
+```
+
+- Emergency phrases short-circuit before any retrieval or LLM call.
+- Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.
+- Citations are verse-traceable (`cs_<sthana>_<chapter>_<verse>`).
+
+---
+
 ### Outputs (`backend/processed/` — regenerable, git-ignored)
 - `charaka_structured.json` — full corpus, one record per verse
 - `<sthana>.json` — per-Sthana slices
@@ -193,7 +238,7 @@ python scripts/audit_ids.py      # verify 1:1 verse↔record integrity
 - [x] **Phase 1** — Data collection & curation
 - [x] **Phase 2** — Processing, structuring & integrity audit
 - [x] **Phase 3** — Retrieval pipeline & verse embeddings
-- [ ] **Phase 4** — Agentic reasoning, tool use & safety guardrails
+- [x] **Phase 4** — Agentic reasoning, tool use & safety guardrails
 - [ ] **Phase 5** — Interactive frontend & live evaluation
 
 ---

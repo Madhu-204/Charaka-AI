@@ -6,6 +6,12 @@ __pycache__/
 # Generated outputs (regenerable via scripts/transform.py)
 processed/
 
+# Vector store (regenerable via scripts/build_vector_store.py)
+chroma_db/
+
+# Secrets
+.env
+
 # Editor / OS
 .vscode/
 .idea/
