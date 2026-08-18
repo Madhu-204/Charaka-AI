@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/status-Phase%202%20%E2%80%94%20Data%20Ready-22c55e)
+![Status](https://img.shields.io/badge/status-Phase%203%20%E2%80%94%20Retrieval%20Ready-22c55e)
 ![Corpus](https://img.shields.io/badge/Corpus-20%20Chapters%20%E2%80%A2%202%2C490%20Verses-3b82f6)
 ![License](https://img.shields.io/badge/license-Custom-gray)
 ![AI](https://img.shields.io/badge/AI-Agentic%20RAG-f59e0b)
@@ -81,8 +81,8 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 |-------|--------------|--------|
 | **1** | Data collection — raw text curation | ✅ **Done** |
 | **2** | Data processing & structuring | ✅ **Done** |
-| **3** | Retrieval & RAG pipeline | 🔄 **Next** |
-| **4** | Agentic reasoning & safety guardrails | ⏳ Planned |
+| **3** | Retrieval & RAG pipeline | ✅ **Done** |
+| **4** | Agentic reasoning & safety guardrails | 🔄 **Next** |
 | **5** | Frontend interface | ⏳ Planned |
 
 </div>
@@ -99,6 +99,8 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 🔎 **ID normalization** | Stable `cs_<sthana>_<chapter>_<verse>` IDs w/ dedup | ✅ |
 | ✅ **Audit** | `scripts/audit_ids.py` — verifies 1:1 verse↔record mapping | ✅ |
 | 🎯 **Reference sets** | `eval_set.json`, `herbs.json`, `mappings.json`, `typo_fixes.json` | ✅ |
+| 🔎 **Vector store** | 2,490 verse embeddings (`all-MiniLM-L6-v2`) → `chroma_db` | ✅ |
+| 📊 **Eval baseline** | Top-1 **16/20 (80%)** · Top-3 **17/20 (85%)** · naive keyword hybrid rejected (13/20) | ✅ |
 
 ### 📊 Corpus breakdown
 
@@ -190,7 +192,7 @@ python scripts/audit_ids.py      # verify 1:1 verse↔record integrity
 
 - [x] **Phase 1** — Data collection & curation
 - [x] **Phase 2** — Processing, structuring & integrity audit
-- [ ] **Phase 3** — Retrieval pipeline & verse embeddings
+- [x] **Phase 3** — Retrieval pipeline & verse embeddings
 - [ ] **Phase 4** — Agentic reasoning, tool use & safety guardrails
 - [ ] **Phase 5** — Interactive frontend & live evaluation
 
