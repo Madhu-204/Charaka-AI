@@ -1,9 +1,9 @@
 # Phase 5 — MCP Tool Integration: Final Report
 
-> **Status:** ✅ **COMPLETE & COMMITTED**
-> **Commit:** `ab813b4` (main) + `a6c07db` (close-out addendum) — authored by `madhumita <mahighosh149@gmail.com>` — both pushed to `origin/main`
+> **Status:** ✅ **COMPLETE & COMMITTED** — reviewer-response close-out: **CLOSED** (§8.3, 2026-08-29)
+> **Commit:** `ab813b4` (main) + `a6c07db` (close-out addendum) + `920d508` (report) + `aac78d6` (Phase 6 close-out items: metric fix, toxic fills, merges, MCP hygiene) — authored by `madhumita <mahighosh149@gmail.com>` — all pushed to `origin/main`
 > **Date:** Aug 2026
-> **Next:** Phase 6 — Safety & Trust Layer (entry criteria met and, in part, already executed; see §6.4)
+> **Next:** Phase 6 — Safety & Trust Layer (entry criteria met and, in part, already executed; see §6.4, §8.3)
 
 ---
 
@@ -71,7 +71,7 @@ Example, `ashwagandha` (live-tool output verified):
   - Pull the verse IDs directly from the `herb_mentions.json` verse index (up to 10 candidates).
   - Rank by **numpy dot-product similarity** against the query embedding (`retriever.py:86-94`).
   - Return `top-3` with **confidence from calibrated bands** (close-out change, re-derived in Phase 6): `_confidence_band` maps the raw similarity to `high ≥ 0.60`, `medium 0.45–0.60`, `low < 0.45`, replacing the original hardcoded `"high"` — see §6.4-4.
-- Non-herb path unchanged (embeddings + `mappings.json` metadata disambiguation; `high/low` from the `> 0.5` threshold at `retriever.py:143`).
+- Non-herb path: generic vector search + `mappings.json` metadata disambiguation; confidence from the **same** `_confidence_band` (shared 0.60/0.45 bands across both paths — close-out §6.4-4, metric-consistency fix §6.4-9, Phase 6).
 
 ### 3.5 MODIFIED — `backend/app/nodes/query_expansion.py` (herb-first expansion)
 
@@ -264,12 +264,44 @@ Run: `python scripts/eval_run.py --mode retrieval` — **28 questions**.
 - [x] Reasoning-trace output exposed from `/ask` (done — §6.4-5)
 - [x] Metric-consistency fix — generic vs herb path now share one cosine scale (§6.4-9)
 
+### 8.3 Reviewer response — final close-out verdict (2026-08-29)
+
+Reviewer asked for straight answers on four points before Phase 5 could be called closed. Each is resolved with evidence committed to `aac78d6` (plus `920d508`), not narrative.
+
+**1. Was NCCIH actually fetched or generated? — Honest answer: mixed at write time, fully fetch-confirmed since.**
+Of batch #1's three `modern_source_verified: true` flags: **liquorice** was written against the NCCIH page actually fetched in-session; **ashwagandha** and **turmeric** caution-additions were applied from model recall of NCCIH content and were **not** yet fetch-confirmed at commit `a6c07db`. The reviewer's fabricated-verification risk was real for two of three flags. Resolution: both NCCIH pages were re-fetched 2026-08-29 and every added caution confirmed verbatim against the fetched text (ashwagandha: rare liver injury, hormone-sensitive prostate, GI upset, diabetes + anticonvulsant interactions, breastfeeding avoid; turmeric: high-bioavailability curcumin liver reports, GI upset, pregnancy wording). The three flags stand on fetched content. Provenance + the method change (fetch-before-flip for batch #2+) recorded in §6.4-10.
+
+**2. §3.4 vs §6.4-4 contradiction / same-metric guarantee — Answer: both were stale, and the underlying inconsistency was real; fixed in code.**
+§3.4's ">0.5 threshold" wording predated the close-out and is corrected above. The deeper question — are both paths' score fields the same metric? — was tested with a live probe: ChromaDB returns **squared-L2 distances** (`dist=0.8005` vs `cosine=0.5997` for the same pair, stored norms = 1.0 → `dist == 2 − 2·cos`). So the generic path's `1 − dist` was really `2·cos − 1` — a different scale than the herb path's raw cosine — and the one shared band set was applied to both, exactly the L2-vs-cosine hazard flagged. Fix (`aac78d6`): generic path recomputes true cosine via `collection.get(ids, include=["embeddings"])` through the shared `_cosine()` helper; herb path refactored onto the same helper; bands re-derived on the unified scale; eval re-run shows no regression (24/28, top-3 25/28, 0 false positives, 10/10 mcp). See §6.4-9.
+
+**3. Tulsi/moringa tier self-contradiction — Answer: corrected explicitly, not annotated.**
+Both are now in **Tier 1** in `docs/phase6_safety_coverage.md` (moved 2026-08-29 with rationale; Tier counts 25/18). The earlier draft's "move to Tier 1-ish" note is exactly what the reviewer diagnosed — a flagged-but-unfixed assignment — and it is now fixed.
+
+**4. Sample-size caveat — Answer: accepted; bands are provisional, re-derivation scheduled.**
+`retriever.py` marks high ≥ 0.60 / medium 0.45–0.60 / low < 0.45 as **provisional at n=28** with the explicit caveat that similarity alone cannot separate hits from misses (eval_18 missed at 0.782, eval_25 hit at 0.540). All `0.30/0.45` absolute references removed from code and report; re-derivation at Phase 9 (RAGAS) or first real-usage dataset.
+
+**Phase 5 verdict: CLOSED.** Every question the reviewer needed answered is answered with fetch-confirmed content and a probe-based code fix, both committed. What remains for Phase 6 is data completeness + verification integrity, not new engineering.
+
+**Reviewer's pulled-forward Phase-6 items — status:**
+
+| # | Item | State |
+|---|---|---|
+| 1 | Verify the verification (were NCCIH pages actually fetched?) | ✅ Done — fetch-confirmed; §6.4-10 provenance; method now fetch-before-flip |
+| 2 | Resolve §3.4 vs §6.4-4; one metric on both paths | ✅ Done — probe + fix `aac78d6`; unified cosine scale; §6.4-9 |
+| 3 | Move tulsi/moringa to Tier 1; fill Tier 1 | ✅ Tiers moved; arka + kataka (top-critical, toxic) filled with fetched sources → uncovered 41 |
+| 4 | Close Tier-3 dedup merges | ✅ Done — 96 → 93 herbs; haridra→turmeric a real coverage close; bilva/khasa list hygiene |
+| 5 | Cross-verification batch #2 (API of India: brahmi, guggulu, shatavari, …) | ⬜ Queued next — fetch-before-flip, add-only method |
+| 6 | MCP child-process hygiene | ✅ Done — `_kill_mcp_children()` (parent-owned only), atexit + pre-init + pre-respawn |
+| 7 | `--mode full` (28 Groq calls), commit results | ⬜ Deferred by decision 2026-08-29 — graded-answer scoring when ready |
+
 ---
 
 ## 9. Commit / Attribution
 
 - **Commit (main):** `ab813b4 — Phase 5: MCP tool integration with herb-safety server, herb-aware retrieval, and 28-question eval`
 - **Commit (close-out addendum):** `a6c07db — Phase 5 close-out: honest eval-21 root-cause, respawn verification, calibrated confidence bands, reasoning trace, and first verified herb batch`
+- **Commit (report update + merged close-out numbers):** `920d508`
+- **Commit (Phase 6: metric-consistency fix, Tier-1 toxic fills, merges, audit):** `aac78d6 — Phase 6: metric-consistency fix, Tier-1 toxic fills (arka, kataka), alias merges, coverage audit, MCP child hygiene`
 - **Author:** `madhumita <mahighosh149@gmail.com>`
 - **Files — `ab813b4`:** 11 (2 new: `mcp_server.py`, `herb_safety.json`; 9 modified: `safety.py`, `retriever.py`, `query_expansion.py`, `synthesis.py`, `state.py`, `eval_set.json`, `eval_run.py`, `requirements.txt`, `README.md`)
 - **Files — `a6c07db`:** 10 (modified: `safety.py`, `retriever.py`, `query_expansion.py`, `synthesis.py`, `state.py`, `main.py`, `emergency.py`, `herb_safety.json`; new: `docs/phase5_report.md`, `docs/phase6_safety_coverage.md`)
