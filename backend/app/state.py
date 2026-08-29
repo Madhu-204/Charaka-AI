@@ -12,5 +12,6 @@ class AgentState(TypedDict, total=False):
     resolved_chapter: Optional[dict]
     herbs_found: List[str]
     safety_flags: List[str]
+    safety_sources: Optional[dict]
     confidence: str
     final_answer: str

@@ -1,0 +1,879 @@
+[
+  {
+    "herb": "ashwagandha",
+    "contraindications": [
+      "Autoimmune diseases (may stimulate immune system)",
+      "Hyperthyroidism (may increase thyroid hormone levels)",
+      "Surgery (discontinue at least 2 weeks before scheduled surgery)"
+    ],
+    "interactions": [
+      "Immunosuppressants (counteracts their effect)",
+      "Thyroid hormone medications (may alter thyroid levels)",
+      "Sedatives/CNS depressants (may enhance sedation)",
+      "Antihypertensives (may additive blood pressure lowering)"
+    ],
+    "pregnancy_flag": "Avoid â€” may cause uterine contractions",
+    "dosha_caution": "May increase Pitta in excess; avoid in active Pitta disorders",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.18 (respiratory); Chikitsasthana ch.28 (joint vata sleep)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "guggulu",
+    "contraindications": [
+      "Pregnancy (may stimulate uterine contractions)",
+      "Active liver disease",
+      "Heavy menstrual bleeding (may exacerbate)"
+    ],
+    "interactions": [
+      "Anticoagulants/additive blood thinning)",
+      "Thyroid medications (may increase thyroid hormone levels)",
+      "Antihypertensives (additive blood pressure lowering)",
+      "Statins (increased risk of myopathy)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue properties",
+    "dosha_caution": "Heating â€” aggravates Pitta in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.7 (skin)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "trikatu",
+    "contraindications": [
+      "Active acid reflux / GERD / hyperacidity",
+      "Peptic ulcer disease",
+      "Pregnancy (black pepper component may irritate gastric lining)"
+    ],
+    "interactions": [
+      "Antacids (reduces their effectiveness)",
+      "Antihypertensives (piperine may alter drug metabolism)",
+      "Blood thinners (piperine may potentiate effects)",
+      "CYP3A4/CYP1A2 substrates (piperine inhibits these enzymes)"
+    ],
+    "pregnancy_flag": "Use with caution â€” high doses inadvisable",
+    "dosha_caution": "Very heating â€” aggravates Pitta, caution in Pitta disorders",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "turmeric",
+    "contraindications": [
+      "Gallstones or bile duct obstruction (stimulates bile production)",
+      "Active bleeding disorders (mild antiplatelet effect)",
+      "Pregnancy in medicinal doses (uterine stimulant in high amounts)"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Antacids/H2 blockers (increases stomach acid)",
+      "Diabetes medications (may lower blood sugar additively)",
+      "CYP3A4 substrates (curcumin inhibits CYP3A4)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid medicinal doses",
+    "dosha_caution": "Heating â€” can aggravate Pitta in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "guduchi",
+    "contraindications": [
+      "Autoimmune diseases (immunostimulant â€” may worsen autoimmune conditions)",
+      "Pregnancy (limited safety data)"
+    ],
+    "interactions": [
+      "Immunosuppressants (may counteract their effect)",
+      "Antidiabetic medications (may additive blood sugar lowering)",
+      "Antihypertensives (may additive blood pressure lowering)"
+    ],
+    "pregnancy_flag": "Avoid â€” insufficient safety data",
+    "dosha_caution": "Generally tridoshic; safe for all constitutions",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "shatavari",
+    "contraindications": [
+      "Estrogen-sensitive conditions (has mild estrogenic activity)",
+      "Katiragha allergy or asparagus family allergy",
+      "Active congestion or excess Ama (heavy and moist quality)"
+    ],
+    "interactions": [
+      "Estrogen therapy / oral contraceptives (may have additive estrogenic effects)",
+      "Lithium (may alter excretion)",
+      "Diuretics (additive effects)"
+    ],
+    "pregnancy_flag": "Generally considered safe; traditional use as a rejuvenative",
+    "dosha_caution": "Cool and moist â€” may aggravate Kapha in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "brahmi",
+    "contraindications": [
+      "Bradycardia (may slow heart rate)",
+      "Gastric ulcers (may increase gastric acid secretion)",
+      "Pregnancy (limited safety data in medicinal doses)"
+    ],
+    "interactions": [
+      "Anticholinergic drugs (may counteract them)",
+      "Sedatives/CNS depressants (may enhance sedation)",
+      "Thyroid medications (may alter thyroid hormone levels)",
+      "Antihypertensives (may additive blood pressure lowering)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” avoid medicinal doses",
+    "dosha_caution": "Light and drying â€” may aggravate Vata in excess",
+    "classical_source": "Charaka Samhita: Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.7 (skin); Chikitsasthana ch.18 (respiratory)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "amalaki",
+    "contraindications": [
+      "Active diarrhea or loose stools (high vitamin C and laxative)",
+      "Kidney stones (high oxalate content)"
+    ],
+    "interactions": [
+      "Antacids (vitamin C may reduce absorption)",
+      "Iron supplements (vitamin C enhances iron absorption â€” may cause excess)",
+      "Anticoagulants (high vitamin C may potentiate effects)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid concentrated supplements",
+    "dosha_caution": "Cooling â€” safe for Pitta; may aggravate Vata/Kapha in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "haritaki",
+    "contraindications": [
+      "Pregnancy (strong purgative action)",
+      "Severe dehydration or diarrhea (worsens fluid loss)",
+      "Exhaustion or extreme weakness (depleting nature)"
+    ],
+    "interactions": [
+      "Diuretics (additive fluid loss)",
+      "Antihypertensives (may lower blood pressure further)",
+      "Laxatives (additive purgative effect)"
+    ],
+    "pregnancy_flag": "Avoid â€” strong purgative, may cause uterine contractions",
+    "dosha_caution": "Primarily Vata-balancing but drying in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sharirasthana ch.8 (constitution prakriti)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "bibhitaki",
+    "contraindications": [
+      "Dry conditions or Vata aggravation (very drying quality)",
+      "Pregnancy (limited safety data)"
+    ],
+    "interactions": [
+      "Antidiabetic medications (may alter blood sugar)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” best avoided",
+    "dosha_caution": "Drying â€” aggravates Vata; excellent for Kapha",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "ginger",
+    "contraindications": [
+      "Gallstones (stimulates bile production)",
+      "Active peptic ulcer or severe GERD",
+      "Bleeding disorders (mild antiplatelet effect)"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Antidiabetic medications (may lower blood sugar)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid large medicinal doses",
+    "dosha_caution": "Heating â€” can aggravate Pitta in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties)",
+    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "long pepper",
+    "contraindications": [
+      "Active acid reflux or hyperacidity",
+      "Peptic ulcer disease",
+      "Pregnancy (uterine stimulant properties)"
+    ],
+    "interactions": [
+      "Antacids (reduces their effectiveness)",
+      "CYP3A4 substrates (piperine is a potent CYP3A4 inhibitor â€” alters drug metabolism)",
+      "Blood thinners (piperine may potentiate effects)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue and uterine stimulant",
+    "dosha_caution": "Very heating â€” aggravates Pitta strongly",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.1 (taste theory)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "black pepper",
+    "contraindications": [
+      "Active acid reflux, GERD, or gastric irritation",
+      "Peptic ulcer disease",
+      "Pregnancy in medicinal doses"
+    ],
+    "interactions": [
+      "Antacids (reduces their effectiveness)",
+      "CYP3A4/CYP1A2/CYP2D6 substrates (piperine broadly inhibits drug-metabolizing enzymes)",
+      "Blood thinners (may potentiate effects)",
+      "Antihypertensives (may alter drug levels)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid concentrated doses",
+    "dosha_caution": "Very heating â€” aggravates Pitta strongly",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "musta",
+    "contraindications": [
+      "Pregnancy (emmenagogue properties)",
+      "Severe Vata disorders (cooling and drying nature)"
+    ],
+    "interactions": [
+      "Antidiabetic medications (may lower blood sugar)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue",
+    "dosha_caution": "Cooling â€” good for Pitta/Kapha; may aggravate Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "pomegranate",
+    "contraindications": [
+      "Severe constipation (astringent quality may worsen)",
+      "Nasal congestion or Kapha congestion"
+    ],
+    "interactions": [
+      "ACE inhibitors (additive blood pressure lowering)",
+      "Statins (may alter metabolism via CYP3A4)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid bark/root extracts",
+    "dosha_caution": "Sour and sweet â€” can aggravate Pitta in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.15 (digestive)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "asafoetida",
+    "contraindications": [
+      "Pregnancy (strong emmenagogue â€” can cause miscarriage)",
+      "Severe acid reflux or gastric irritation",
+      "Bipolar disorder or severe anxiety (may overstimulate Vata)"
+    ],
+    "interactions": [
+      "Antihypertensives (may lower blood pressure)",
+      "Anticoagulants (mild antiplatelet effect)",
+      "Antiepileptics (may alter seizure threshold)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” strong emmenagogue",
+    "dosha_caution": "Hot and penetrating â€” aggravates Pitta in excess",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "cinnamon",
+    "contraindications": [
+      "Liver disease (coumarin content â€” Cinnamomum verum is safer, cassia has more coumarin)",
+      "Active bleeding disorders (mild antiplatelet effect)",
+      "Pregnancy in large medicinal doses"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Antidiabetic medications (may lower blood sugar additively)",
+      "Hepatotoxic drugs (coumarin may stress liver)"
+    ],
+    "pregnancy_flag": "Culinary amounts safe; avoid high-dose cassia bark",
+    "dosha_caution": "Heating â€” can aggravate Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "turpeth",
+    "contraindications": [
+      "Pregnancy (strong purgative â€” can cause miscarriage)",
+      "Severe dehydration or diarrhea",
+      "Intestinal obstruction",
+      "Young children and elderly (harsh purgative)"
+    ],
+    "interactions": [
+      "Diuretics (additive fluid loss)",
+      "Cardiac glycosides (electrolyte imbalance may enhance toxicity)",
+      "Antihypertensives (additive blood pressure lowering)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” powerful purgative",
+    "dosha_caution": "Heating â€” best for Kapha; aggravates Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "castor",
+    "contraindications": [
+      "Pregnancy (strong purgative and emmenagogue)",
+      "Severe dehydration or electrolyte imbalance",
+      "Intestinal obstruction or ileus",
+      "Appendicitis"
+    ],
+    "interactions": [
+      "Diuretics (additive fluid and electrolyte loss)",
+      "Cardiac glycosides (electrolyte imbalance may increase toxicity)",
+      "Anticoagulants (may potentiate effects)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” powerful purgative and emmenagogue",
+    "dosha_caution": "Heating â€” good for Kapha/Vata; aggravates Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "nimba",
+    "contraindications": [
+      "Pregnancy (may have anti-implantation effects)",
+      "Trying to conceive (anti-fertility properties reported)",
+      "Severe Vata disorders (very bitter and drying)"
+    ],
+    "interactions": [
+      "Immunosuppressants (may counteract their effect)",
+      "Antidiabetic medications (may lower blood sugar additively)",
+      "Anticoagulants (mild antiplatelet effect)"
+    ],
+    "pregnancy_flag": "Avoid â€” reported anti-implantation and anti-fertility effects",
+    "dosha_caution": "Very bitter and cooling â€” aggravates Vata; excellent for Pitta/Kapha",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "marking nut",
+    "contraindications": [
+      "Pregnancy (toxic â€” strictly prohibited)",
+      "Internal use of raw nut (highly caustic and toxic)",
+      "Skin wounds or broken skin (caustic sap causes blistering)",
+      "Liver or kidney disease"
+    ],
+    "interactions": [
+      "Hepatotoxic drugs (additive liver stress)",
+      "Nephrotoxic drugs (additive kidney stress)",
+      "Immunosuppressants (immunostimulant â€” counteracts effect)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” toxic herb, abortifacient",
+    "dosha_caution": "Used only in purified (Shodhana) form under expert guidance",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "gokshura",
+    "contraindications": [
+      "Pregnancy (limited safety data)",
+      "Severe Kapha congestion (heavy and moist quality)"
+    ],
+    "interactions": [
+      "Antihypertensives (may lower blood pressure additively)",
+      "Antidiabetic medications (may lower blood sugar)",
+      "Diuretics (may have additive diuretic effect)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” best avoided",
+    "dosha_caution": "Sweet and heavy â€” may increase Kapha",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "punarnava",
+    "contraindications": [
+      "Pregnancy (may have anti-implantation effects)",
+      "Severe dehydration (diuretic nature may worsen)",
+      "Kidney stones of certain types (may increase renal activity)"
+    ],
+    "interactions": [
+      "Antihypertensives (additive blood pressure lowering)",
+      "Diuretics (additive fluid loss)",
+      "Anticoagulants (mild antiplatelet effect)",
+      "Lithium (diuretic may alter lithium excretion)"
+    ],
+    "pregnancy_flag": "Avoid â€” anti-implantation properties reported",
+    "dosha_caution": "Light and drying â€” good for Kapha; may aggravate Vata",
+    "classical_source": "Charaka Samhita: Chikitsasthana ch.18 (respiratory)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "vasaka",
+    "contraindications": [
+      "Pregnancy (uterine stimulant properties)",
+      "Severe Vata disorders (very drying and cooling)",
+      "Hypotension (may lower blood pressure)"
+    ],
+    "interactions": [
+      "Antihypertensives (additive blood pressure lowering)",
+      "Anticoagulants (mild antiplatelet effect)",
+      "Sedatives/CNS depressants (may enhance sedation)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant",
+    "dosha_caution": "Bitter and cooling â€” good for Pitta/Kapha; aggravates Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.7 (skin); Chikitsasthana ch.15 (digestive)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "kutaja",
+    "contraindications": [
+      "Pregnancy (strong purgative and uterine stimulant)",
+      "Severe constipation (astringent bark worsens constipation)",
+      "Dry Vata conditions"
+    ],
+    "interactions": [
+      "Antidiarrheal drugs (opposes their action)",
+      "Antihypertensives (may lower blood pressure)",
+      "Anticoagulants (mild effect)"
+    ],
+    "pregnancy_flag": "Avoid â€” strong purgative action",
+    "dosha_caution": "Astringent and bitter â€” good for Pitta/Kapha; aggravates Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "leadwort",
+    "contraindications": [
+      "Pregnancy (uterine stimulant â€” can cause miscarriage)",
+      "Active peptic ulcer or hyperacidity",
+      "Hemorrhoids (irritating and heating)"
+    ],
+    "interactions": [
+      "Antacids (reduces their effectiveness)",
+      "Antihypertensives (may alter blood pressure)",
+      "Hepatotoxic drugs (large doses stress liver)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” uterine stimulant",
+    "dosha_caution": "Very heating â€” strongly aggravates Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "jatamansi",
+    "contraindications": [
+      "Pregnancy (may stimulate uterine contractions)",
+      "Severe Kapha congestion (heavy sedating quality)",
+      "Hypotension (may lower blood pressure further)"
+    ],
+    "interactions": [
+      "Sedatives/CNS depressants (enhances sedation â€” potent synergy)",
+      "Antihypertensives (additive blood pressure lowering)",
+      "Antidepressants (MAO inhibitor activity reported)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant reported",
+    "dosha_caution": "Heavy and cooling â€” may increase Kapha; good for Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "tagara",
+    "contraindications": [
+      "Pregnancy (uterine stimulant)",
+      "Daytime drowsiness required (strong sedative)",
+      "Severe Kapha congestion"
+    ],
+    "interactions": [
+      "Sedatives/CNS depressants (potent sedative synergy â€” avoid combining)",
+      "Alcohol (enhanced CNS depression)",
+      "Antihypertensives (additive blood pressure lowering)"
+    ],
+    "pregnancy_flag": "Avoid â€” strong sedative and uterine stimulant",
+    "dosha_caution": "Heavy â€” increases Kapha; good for Vata/Pitta",
+    "classical_source": "Charaka Samhita: Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin); Chikitsasthana ch.15 (digestive)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "vidanga",
+    "contraindications": [
+      "Pregnancy (emmenagogue properties)",
+      "Severe Vata disorders (drying nature)",
+      "Peptic ulcer (may irritate gastric lining)"
+    ],
+    "interactions": [
+      "Anticoagulants (mild blood-thinning effect)",
+      "Antihypertensives (may alter blood pressure)",
+      "Antidiabetic medications (may lower blood sugar)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue",
+    "dosha_caution": "Pungent and drying â€” good for Kapha; aggravates Vata/Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "bala",
+    "contraindications": [
+      "Pregnancy (limited safety data in medicinal doses)",
+      "Kapha congestion (very heavy and moist quality)"
+    ],
+    "interactions": [
+      "Antihypertensives (may have additive effect)",
+      "Diuretics (may alter fluid balance)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” avoid concentrated doses",
+    "dosha_caution": "Heavy and moist â€” good for Vata; may increase Kapha",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "manjistha",
+    "contraindications": [
+      "Pregnancy (emmenagogue and may stimulate menstruation)",
+      "Heavy menstrual bleeding (may increase flow)",
+      "Anticoagulant therapy (blood-thinning properties)"
+    ],
+    "interactions": [
+      "Anticoagulants (potentiates blood thinning)",
+      "Antihypertensives (may lower blood pressure)",
+      "Immunosuppressants (may counteract due to immune-modulating action)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue, may stimulate uterine activity",
+    "dosha_caution": "Light and drying â€” good for Kapha/Pitta; may aggravate Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "sandalwood",
+    "contraindications": [
+      "Severe Vata disorders (very cooling and drying)",
+      "Kidney disease (high oil concentration may stress kidneys)"
+    ],
+    "interactions": [
+      "Sedatives/CNS depressants (may enhance sedation)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "External use safe; internal use requires professional guidance",
+    "dosha_caution": "Cooling â€” excellent for Pitta; may aggravate Vata/Kapha",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.6 (routine seasonal); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "liquorice",
+    "contraindications": [
+      "Hypertension (causes sodium and water retention)",
+      "Hypokalemia or potassium-depleting conditions",
+      "Heart failure or edema",
+      "Pregnancy in large amounts (may cause edema and hypertension)",
+      "Kidney disease"
+    ],
+    "interactions": [
+      "Antihypertensives (counteracts their effect â€” raises blood pressure)",
+      "Diuretics (may worsen potassium loss)",
+      "Digoxin/cardiac glycosides (hypokalemia increases digoxin toxicity)",
+      "Corticosteroids (additive sodium retention)",
+      "Anticoagulants (may potentiate effects)"
+    ],
+    "pregnancy_flag": "Avoid large or prolonged doses â€” causes fluid retention",
+    "dosha_caution": "Sweet and heavy â€” increases Kapha; good for Vata/Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "kakamachi",
+    "contraindications": [
+      "Pregnancy (may have abortifacient properties)",
+      "Liver disease (solanine content may stress liver)",
+      "Unripe fruit strictly avoided (contains toxic solanine)"
+    ],
+    "interactions": [
+      "Anticholinergic drugs (solanine has anticholinergic effects)",
+      "Sedatives/CNS depressants (may enhance sedation)",
+      "Hepatotoxic drugs (additive liver stress)"
+    ],
+    "pregnancy_flag": "Avoid â€” potential abortifacient",
+    "dosha_caution": "Bitter and warm â€” good for Kapha; use cautiously in Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "vacha",
+    "contraindications": [
+      "Pregnancy (strong uterine stimulant â€” can cause miscarriage)",
+      "Peptic ulcer or gastric irritation (very sharp and penetrating)",
+      "Vata aggravation or anxiety (strong penetrating quality)"
+    ],
+    "interactions": [
+      "Anticoagulants (mild blood-thinning effect)",
+      "Antihypertensives (may alter blood pressure)",
+      "Sedatives (may overstimulate before sedation)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” potent uterine stimulant",
+    "dosha_caution": "Very sharp and hot â€” aggravates Pitta strongly",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "shirisha",
+    "contraindications": [
+      "Pregnancy (limited safety data)",
+      "Pitta disorders (very heating nature)"
+    ],
+    "interactions": [
+      "Immunosuppressants (immunostimulant â€” may counteract)",
+      "Antihistamines (may have additive effect)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” best avoided",
+    "dosha_caution": "Heating â€” can aggravate Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Chikitsasthana ch.7 (skin)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "karpura",
+    "contraindications": [
+      "Pregnancy (toxic in internal medicinal doses â€” strictly for external use)",
+      "Children (camphor is toxic if ingested)",
+      "Liver disease (hepatotoxic in large doses)",
+      "G6PD deficiency"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Stimulants (camphor has CNS stimulant properties)",
+      "Hepatotoxic drugs (additive liver stress)"
+    ],
+    "pregnancy_flag": "Strictly avoid internal use â€” toxic. External use only under guidance",
+    "dosha_caution": "Heating â€” good for Vata/Kapha; aggravates Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Chikitsasthana ch.28 (joint vata sleep)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "devadaru",
+    "contraindications": [
+      "Pregnancy (uterine stimulant properties reported)",
+      "Severe Pitta disorders (very heating)",
+      "Kidney disease (may affect renal function)"
+    ],
+    "interactions": [
+      "Anticoagulants (mild antiplatelet effect)",
+      "Antihypertensives (may lower blood pressure)",
+      "Antidiabetic medications (may lower blood sugar)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant reported",
+    "dosha_caution": "Heating â€” aggravates Pitta; good for Kapha/Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "rasna",
+    "contraindications": [
+      "Pregnancy (uterine stimulant)",
+      "Severe Pitta disorders (heating nature)"
+    ],
+    "interactions": [
+      "Anticoagulants (mild blood-thinning effect)",
+      "Antihypertensives (may alter blood pressure)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant",
+    "dosha_caution": "Heating â€” good for Vata/Kapha; aggravates Pitta",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "khadira",
+    "contraindications": [
+      "Pregnancy (astringent and may cause constipation)",
+      "Severe Vata disorders (very drying and astringent)",
+      "Chronic constipation"
+    ],
+    "interactions": [
+      "Antidiabetic medications (may lower blood sugar)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” avoid large doses",
+    "dosha_caution": "Astringent and cooling â€” good for Pitta/Kapha; aggravates Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "lodhra",
+    "contraindications": [
+      "Pregnancy (astringent â€” may affect uterine motility)",
+      "Severe constipation (astringent quality worsens it)",
+      "Vata aggravation (very drying)"
+    ],
+    "interactions": [
+      "Antidiabetic medications (may alter blood sugar)",
+      "Antidiarrheal drugs (additive astringent effect)"
+    ],
+    "pregnancy_flag": "Avoid â€” astringent nature may affect uterine function",
+    "dosha_caution": "Astringent and cooling â€” good for Pitta/Kapha; aggravates Vata",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.6 (metabolic)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "daruharidra",
+    "contraindications": [
+      "Pregnancy (berberine content â€” may stimulate uterine contractions)",
+      "Severe Vata disorders (bitter and cooling)",
+      "Hypotension (may lower blood pressure)"
+    ],
+    "interactions": [
+      "Anticoagulants (berberine may potentiate blood thinning)",
+      "Antihypertensives (additive blood pressure lowering)",
+      "CYP3A4 substrates (berberine inhibits CYP3A4 â€” alters drug metabolism)",
+      "Antidiabetic medications (may lower blood sugar additively)"
+    ],
+    "pregnancy_flag": "Avoid â€” berberine is a uterine stimulant",
+    "dosha_caution": "Bitter and cooling â€” good for Pitta/Kapha; aggravates Vata",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "jambul",
+    "contraindications": [
+      "Pregnancy (may affect uterine contractions)",
+      "Pitta disorders (heating and astringent)",
+      "Vata aggravation (very drying)"
+    ],
+    "interactions": [
+      "Antidiabetic medications (may lower blood sugar â€” seeds have hypoglycemic effect)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” avoid medicinal doses",
+    "dosha_caution": "Astringent and warming â€” good for Kapha; aggravates Vata/Pitta",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Chikitsasthana ch.3 (fever acute)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "kushtha",
+    "contraindications": [
+      "Pregnancy (strong â€” may cause uterine stimulation)",
+      "Pitta disorders (very heating)",
+      "Sensitive skin (topical use may cause irritation)"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Antihypertensives (may alter blood pressure)",
+      "Hepatotoxic drugs (may stress liver)"
+    ],
+    "pregnancy_flag": "Avoid â€” strong heating and stimulating",
+    "dosha_caution": "Very heating â€” aggravates Pitta strongly",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "eranda",
+    "contraindications": [
+      "Pregnancy (powerful purgative and emmenagogue)",
+      "Severe dehydration or electrolyte imbalance",
+      "Intestinal obstruction",
+      "Appendicitis"
+    ],
+    "interactions": [
+      "Diuretics (additive fluid loss)",
+      "Cardiac glycosides (electrolyte imbalance may increase toxicity)",
+      "Anticoagulants (may potentiate effects)"
+    ],
+    "pregnancy_flag": "Strictly avoid â€” powerful purgative and emmenagogue",
+    "dosha_caution": "Heating â€” good for Kapha/Vata; aggravates Pitta",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "atibala",
+    "contraindications": [
+      "Pregnancy (limited safety data)",
+      "Kapha congestion (very heavy and moist quality)"
+    ],
+    "interactions": [
+      "Antihypertensives (may have additive effect)",
+      "Diuretics (may alter fluid balance)"
+    ],
+    "pregnancy_flag": "Insufficient data â€” best avoided in medicinal doses",
+    "dosha_caution": "Heavy and moist â€” good for Vata; increases Kapha",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "nagakesara",
+    "contraindications": [
+      "Pregnancy (uterine stimulant â€” may cause contractions)",
+      "Active bleeding disorders (may increase bleeding)"
+    ],
+    "interactions": [
+      "Anticoagulants (may potentiate blood thinning)",
+      "Antihypertensives (may lower blood pressure)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant",
+    "dosha_caution": "Heating â€” aggravates Pitta; good for Kapha",
+    "classical_source": "Charaka Samhita (no specific verse located)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "sankhapushpi",
+    "contraindications": [
+      "Pregnancy (may stimulate uterine contractions)",
+      "Severe Kapha congestion (heavy sedating quality)",
+      "Hypotension (may lower blood pressure)"
+    ],
+    "interactions": [
+      "Sedatives/CNS depressants (enhances sedation)",
+      "Antihypertensives (additive blood pressure lowering)",
+      "Thyroid medications (may alter thyroid function)"
+    ],
+    "pregnancy_flag": "Avoid â€” uterine stimulant reported",
+    "dosha_caution": "Cooling â€” good for Pitta; may increase Kapha",
+    "classical_source": "Charaka Samhita: Chikitsasthana ch.18 (respiratory)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "bhringaraj",
+    "contraindications": [
+      "Pregnancy (emmenagogue properties)",
+      "Severe Vata disorders (very drying)",
+      "Allergic conditions (may cause contact dermatitis in some)"
+    ],
+    "interactions": [
+      "Antihypertensives (may lower blood pressure)",
+      "Antidiabetic medications (may lower blood sugar)",
+      "Anticoagulants (mild blood-thinning effect)"
+    ],
+    "pregnancy_flag": "Avoid â€” emmenagogue properties",
+    "dosha_caution": "Bitter and cooling â€” good for Pitta; aggravates Vata",
+    "classical_source": "Charaka Samhita: Chikitsasthana ch.18 (respiratory)",
+    "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  }
+]

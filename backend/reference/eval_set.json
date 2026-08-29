@@ -178,5 +178,77 @@
     "expected_condition": null,
     "expected_category": "constitution_prakriti",
     "notes": null
+  },
+  {
+    "eval_id": "eval_21",
+    "question": "How is ashwagandha used in fever treatment?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "expected_condition": "Jwara",
+    "expected_category": "fever_acute",
+    "notes": "Verified: cs_chikitsa_3_267-a lists ashwagandha among fever formulation ingredients."
+  },
+  {
+    "eval_id": "eval_22",
+    "question": "What does Charaka say about ashwagandha for cough?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "expected_condition": "Kasa",
+    "expected_category": "respiratory",
+    "notes": "Verified: cs_chikitsa_18_75 describes smoke of winter cherry (ashwagandha) curing cough."
+  },
+  {
+    "eval_id": "eval_23",
+    "question": "How is guggulu used for skin diseases?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "expected_condition": "Kushtha",
+    "expected_category": "skin",
+    "notes": "Verified: cs_chikitsa_7_72 mentions mercury prepared with gum-guggul as panacea."
+  },
+  {
+    "eval_id": "eval_24",
+    "question": "How is guggulu used in fever treatment?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "expected_condition": "Jwara",
+    "expected_category": "fever_acute",
+    "notes": "Verified: cs_chikitsa_3_307 describes fumigation with guggul powder for irregular fever."
+  },
+  {
+    "eval_id": "eval_25",
+    "question": "How does Charaka classify turmeric as an antidote?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "expected_condition": null,
+    "expected_category": "herb_groups",
+    "notes": "Verified: cs_sutra_4_11 lists turmeric as first of ten antidotes to poison."
+  },
+  {
+    "eval_id": "eval_26",
+    "question": "What does Charaka say about brahmi for skin disease?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "expected_condition": "Kushtha",
+    "expected_category": "skin",
+    "notes": "Verified: cs_chikitsa_7_68-69 includes brahmi in skin disease formulation."
+  },
+  {
+    "eval_id": "eval_27",
+    "question": "How is brahmi used to preserve conception?",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "expected_condition": null,
+    "expected_category": "constitution_prakriti",
+    "notes": "Verified: cs_sharira_8_20 lists brahmi among herbs worn to preserve conception."
+  },
+  {
+    "eval_id": "eval_28",
+    "question": "What does Charaka say about shatavari as a rejuvenator?",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "expected_condition": null,
+    "expected_category": "herb_groups",
+    "notes": "Verified: cs_sutra_4_18 lists climbing asparagus (shatavari) among ten rejuvenators."
   }
 ]

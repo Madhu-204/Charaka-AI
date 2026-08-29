@@ -1,10 +1,19 @@
+import json
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 
 load_dotenv()
+
+BACKEND = Path(__file__).resolve().parents[2]
+
+with open(BACKEND / "reference" / "herbs.json", encoding="utf-8") as f:
+    _herbs_list = json.load(f)["herbs"]
+
+HERB_ALIASES = {h["name"]: h["aliases"] for h in _herbs_list}
 
 STHANA_NAMES = {
     "sutrasthana": "Sutra Sthana",
@@ -25,7 +34,8 @@ Rules you must always follow:
 - Always cite the source chapter provided in the context.
 - If confidence is marked "low", say explicitly that the match is uncertain.
 - Always end with a line encouraging the user to consult a doctor if symptoms persist or worsen.
-- If any safety flags are provided, state them clearly before any remedy suggestion."""
+- If any safety flags are provided, state them clearly before any remedy suggestion.
+- When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user."""
 
 FALLBACK_ANSWER = (
     "I couldn't retrieve a grounded answer right now. Classical texts describe "
@@ -45,10 +55,24 @@ def _format_block(rc):
     )
 
 
+def _herb_alias_block(herbs_found):
+    lines = []
+    for h in herbs_found:
+        aliases = HERB_ALIASES.get(h, [])
+        if aliases:
+            lines.append(f"- {h} (also called: {', '.join(aliases)})")
+        else:
+            lines.append(f"- {h}")
+    return "\n".join(lines)
+
+
 def synthesize(state):
     primary = state["resolved_chapter"]
     resolved_id = primary["verse_id"]
     additional = [c for c in state.get("retrieved", []) if c["verse_id"] != resolved_id]
+
+    herbs_found = state.get("herbs_found", [])
+    alias_block = _herb_alias_block(herbs_found) if herbs_found else "none"
 
     context = (
         f"PRIMARY CONTEXT:\n{_format_block(primary)}\n\n"
@@ -56,7 +80,8 @@ def synthesize(state):
         + "\n---\n".join(_format_block(c) for c in additional)
         + "\n\n"
         f"Confidence: {state['confidence']}\n"
-        f"Herbs found: {', '.join(state['herbs_found']) or 'none'}\n"
+        f"Herbs found: {', '.join(herbs_found) or 'none'}\n"
+        f"HERB ALIASES (these are alternate names for the same herb):\n{alias_block}\n"
         f"Safety flags: {', '.join(state['safety_flags']) or 'none'}\n"
     )
 

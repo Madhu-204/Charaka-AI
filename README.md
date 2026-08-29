@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/status-Phase%204%20%E2%80%94%20Agentic%20Ready-22c55e)
+![Status](https://img.shields.io/badge/status-Phase%205%20%E2%80%94%20MCP%20Tool%20Integration-22c55e)
 ![Corpus](https://img.shields.io/badge/Corpus-20%20Chapters%20%E2%80%A2%202%2C490%20Verses-3b82f6)
 ![License](https://img.shields.io/badge/license-Custom-gray)
 ![AI](https://img.shields.io/badge/AI-Agentic%20RAG-f59e0b)
@@ -83,7 +83,9 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **2** | Data processing & structuring | ✅ **Done** |
 | **3** | Retrieval & RAG pipeline | ✅ **Done** |
 | **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
-| **5** | Frontend interface | 🔄 **Next** |
+| **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
+| **6** | Safety & trust layer (source verification) | 🔄 **Next** |
+| **7** | Interactive frontend | ⏳ **Planned** |
 
 </div>
 
@@ -107,6 +109,13 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 🚨 **Emergency gate** | Hardcoded, non-LLM RED_FLAGS w/ informational-query downgrade (cannot be talked into answering) | ✅ |
 | 🔌 **API** | `POST /ask` FastAPI endpoint w/ CORS | ✅ |
 | 📊 **Phase 4 eval** | Resolved **17/20 (85%)** · Top-3 **17/20 (85%)** · **0** false emergency positives | ✅ |
+| 🧩 **MCP server** | FastMCP `charaka-herb-safety` over stdio — `check_herb_safety(herb_name)` tool | ✅ |
+| 🔗 **MCP wiring** | LangGraph safety check spawns MCP subprocess via `langchain-mcp-adapters` w/ crash-respawn & 3-tier fallback (`mcp` → `json_fallback` → `legacy`) | ✅ |
+| 🌿 **Herb-aware retrieval** | Herb/alias detection skips generic vector search → direct herb-mention index lookup, ranked by similarity, `confidence: high` | ✅ |
+| 🧬 **Herb-first expansion** | `canonical_term` resolves to the herb name so downstream is herb-aware | ✅ |
+| 🗣️ **Alias-aware synthesis** | Prompt includes herb Sanskrit/Latin/English aliases so answers explain alternate names | ✅ |
+| 🔍 **Safety DB** | `herb_safety.json` — 49 herbs w/ contraindications, interactions, pregnancy flag, dosha caution | ✅ |
+| 📊 **Phase 5 eval** | 28 Qs (8 new herb-focused) · Resolved **24/28 (85%)** · Top-3 **25/28 (89%)** · **0** false positives · **10/10** herb queries safety-covered | ✅ |
 
 ### 📊 Corpus breakdown
 
@@ -155,10 +164,11 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 
 ```
 backend/
-├── app/                  # Phase 4 agent — LangGraph + FastAPI
-│   ├── state.py          #   AgentState TypedDict
+├── app/                  # Agent — LangGraph + FastAPI
+│   ├── state.py          #   AgentState TypedDict (+ safety_sources trace)
 │   ├── nodes/            #   emergency · query_expansion · retriever · safety · synthesis
 │   ├── graph.py          #   StateGraph wiring
+│   ├── mcp_server.py     #   FastMCP charaka-herb-safety server (stdio)
 │   └── main.py           #   POST /ask FastAPI endpoint
 ├── charaka_data/          # curated source corpus (JSON per chapter)
 │   ├── 01_sutra_sthana/
@@ -166,7 +176,7 @@ backend/
 │   ├── 03_sharira_sthana/
 │   ├── 04_chikitsa_sthana/
 │   └── manifest.json
-├── reference/             # herbs, mappings, typo fixes, eval set
+├── reference/             # herbs, mappings, typo fixes, eval set, herb_safety.json
 ├── scripts/               # transform.py · audit_ids.py · eval_run.py
 ├── processed/             # regenerable structured output (git-ignored)
 ├── chroma_db/             # regenerable vector store (git-ignored)
@@ -177,7 +187,7 @@ backend/
 
 ## 🛠️ Tech Stack
 
-`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI`
+`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI` · `MCP` · `langchain-mcp-adapters`
 
 ---
 
@@ -194,13 +204,13 @@ python scripts/transform.py      # raw corpus → processed/ structured JSON
 python scripts/audit_ids.py      # verify 1:1 verse↔record integrity
 ```
 
-### Run the Phase 4 agent
+### Run the agent
 
 ```bash
 cd backend
 python -m venv .venv                     # once
 # Windows: .venv\Scripts\activate · macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt          # once
+pip install -r requirements.txt          # once  (includes mcp + langchain-mcp-adapters)
 copy .env.example .env                   # then set GROQ_API_KEY (never commit)
 uvicorn app.main:app --reload
 ```
@@ -213,15 +223,16 @@ curl -X POST http://localhost:8000/ask \
   -d '{"query": "I have bloating and poor appetite"}'
 ```
 
-### Regression eval (Phase 4 gate)
+### Regression eval
 
 ```bash
-python scripts/eval_run.py --mode retrieval   # free — retrieval/disambiguation only
-python scripts/eval_run.py --mode full        # 20 Groq calls — end-to-end answers
+python scripts/eval_run.py --mode retrieval   # free — retrieval/disambiguation only (28 Qs)
+python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end answers
 ```
 
 - Emergency phrases short-circuit before any retrieval or LLM call.
 - Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.
+- Herb queries invoke the MCP `check_herb_safety` tool, falling back gracefully to a local JSON lookup if the MCP subprocess cannot start.
 - Citations are verse-traceable (`cs_<sthana>_<chapter>_<verse>`).
 
 ---
@@ -239,7 +250,9 @@ python scripts/eval_run.py --mode full        # 20 Groq calls — end-to-end ans
 - [x] **Phase 2** — Processing, structuring & integrity audit
 - [x] **Phase 3** — Retrieval pipeline & verse embeddings
 - [x] **Phase 4** — Agentic reasoning, tool use & safety guardrails
-- [ ] **Phase 5** — Interactive frontend & live evaluation
+- [x] **Phase 5** — MCP tool integration & herb-safety layer
+- [ ] **Phase 6** — Safety & trust layer (2nd-source verification, numeric confidence, reasoning trace)
+- [ ] **Phase 7** — Interactive frontend ("show reasoning" toggle)
 
 ---
 
