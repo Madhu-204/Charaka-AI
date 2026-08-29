@@ -19,26 +19,26 @@
   },
   {
     "herb": "ashwagandha",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.18 (respiratory); Chikitsasthana ch.28 (joint vata sleep)",
     "contraindications": [
-      "Autoimmune diseases (may stimulate immune system)",
-      "Hyperthyroidism (may increase thyroid hormone levels)",
-      "Surgery (discontinue at least 2 weeks before scheduled surgery)",
-      "Liver problems (rare reported cases of liver injury; stop if dark urine, persistent fatigue, or jaundice)",
-      "Hormone-sensitive prostate cancer (may raise testosterone)",
-      "Stomach upset, diarrhea, or vomiting in some individuals"
+      "Autoimmune disorders - NCCIH: not recommended.",
+      "Thyroid disorders - NCCIH: not recommended.",
+      "Surgery - NCCIH: not recommended for people who are about to have surgery.",
+      "Liver problems - NCCIH: rare reported cases of liver injury linked to ashwagandha supplements.",
+      "Hormone-sensitive prostate cancer - NCCIH: ashwagandha may increase testosterone levels; people with hormone-sensitive prostate cancer should avoid its use.",
+      "Drowsiness, stomach upset, diarrhea, or vomiting in some individuals (NCCIH)."
     ],
     "interactions": [
-      "Immunosuppressants (counteracts their effect)",
-      "Thyroid hormone medications (may alter thyroid levels)",
-      "Sedatives/CNS depressants (may enhance sedation)",
-      "Antihypertensives (may additive blood pressure lowering)",
-      "Medicines for diabetes (may lower blood sugar additively)",
-      "Anti-seizure (anticonvulsant) medicines (may interact)"
+      "Medicines for diabetes (NCCIH lists as a potential interaction).",
+      "Medicines for high blood pressure (NCCIH lists as a potential interaction).",
+      "Immunosuppressants - medicines that decrease the immune system response (NCCIH lists as a potential interaction).",
+      "Sedatives (NCCIH lists as a potential interaction).",
+      "Anti-seizure / anticonvulsant medications (NCCIH lists as a potential interaction).",
+      "Thyroid hormone medications (NCCIH lists as a potential interaction)."
     ],
-    "pregnancy_flag": "Avoid — NCCIH advises against use in pregnancy and while breastfeeding",
+    "pregnancy_flag": "Avoid - NCCIH advises against use during pregnancy and should not be used while breastfeeding.",
     "dosha_caution": "May increase Pitta in excess; avoid in active Pitta disorders",
-    "classical_source": "Charaka Samhita: Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.18 (respiratory); Chikitsasthana ch.28 (joint vata sleep)",
-    "modern_source": "NCCIH ashwagandha fact sheet (nccih.nih.gov/health/ashwagandha, updated Mar 2023) — cross-verified 2026-08-29; Ayurvedic Pharmacopoeia of India",
+    "modern_source": "NCCIH ashwagandha fact sheet (nccih.nih.gov/health/ashwagandha, Last Updated: March 2023), fetched 2026-08-29 - all contraindication/interaction/pregnancy claims reflect only the fact-sheet text.",
     "modern_source_verified": true
   },
   {
@@ -81,23 +81,17 @@
   },
   {
     "herb": "turmeric",
-    "contraindications": [
-      "Gallstones or bile duct obstruction (stimulates bile production)",
-      "Active bleeding disorders (mild antiplatelet effect)",
-      "Pregnancy in medicinal doses (uterine stimulant in high amounts)",
-      "Liver problems with high-bioavailability curcumin formulations (reported liver injury)",
-      "Stomach upset, acid reflux, nausea, diarrhea, or constipation in sensitive individuals"
-    ],
-    "interactions": [
-      "Anticoagulants (may potentiate blood thinning)",
-      "Antacids/H2 blockers (increases stomach acid)",
-      "Diabetes medications (may lower blood sugar additively)",
-      "CYP3A4 substrates (curcumin inhibits CYP3A4)"
-    ],
-    "pregnancy_flag": "Culinary amounts (food) safe; supplement/medicinal doses may be unsafe in pregnancy",
-    "dosha_caution": "Heating — can aggravate Pitta in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.6 (metabolic)",
-    "modern_source": "NCCIH turmeric fact sheet (nccih.nih.gov/health/turmeric, updated Apr 2025) — cross-verified 2026-08-29; Ayurvedic Pharmacopoeia of India",
+    "contraindications": [
+      "Liver damage - reported in some people using high-bioavailability curcumin products; if you notice fatigue, nausea, poor appetite, dark urine, or jaundice, stop consuming turmeric/curcumin products immediately and talk with a health care provider (NCCIH).",
+      "Stomach upset, acid reflux, nausea, vomiting, diarrhea, or constipation in sensitive individuals (NCCIH).",
+      "Topical curcumin can cause hives or itching (NCCIH).",
+      "Pregnancy - the use of turmeric supplements during pregnancy may be unsafe (NCCIH)."
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Turmeric supplements during pregnancy may be unsafe (NCCIH); breastfeeding - little is known about amounts greater than those commonly found in food.",
+    "dosha_caution": "Heating - can aggravate Pitta in excess",
+    "modern_source": "NCCIH turmeric fact sheet (nccih.nih.gov/health/turmeric, Last Updated: April 2025), fetched 2026-08-29 - contraindication/interaction/pregnancy claims reflect only the fact-sheet text; NCCIH lists no specific drug interactions for turmeric.",
     "modern_source_verified": true
   },
   {
@@ -600,25 +594,18 @@
   },
   {
     "herb": "liquorice",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
     "contraindications": [
-      "Hypertension (causes sodium and water retention)",
-      "Hypokalemia or potassium-depleting conditions",
-      "Heart failure or edema",
-      "Pregnancy in large amounts (may cause edema and hypertension)",
-      "Kidney disease",
-      "Irregular heartbeat / cardiac arrest risk from glycyrrhizin, especially with high salt intake, hypertension, or heart/kidney disease; deglycyrrhizinated licorice (DGL) is the safer form"
+      "Heart or kidney conditions, hypertension, or high salt intake - glycyrrhizin can cause serious adverse effects (irregular heartbeat, cardiac arrest), with even small amounts linked to severe effects in these people (NCCIH).",
+      "Pregnancy - large amounts of oral licorice (about 250 g of licorice per week) are unsafe and can increase the risk of delivery before gestational age of 38 weeks (NCCIH).",
+      "Topical licorice root may cause skin irritation in some people (NCCIH)."
     ],
     "interactions": [
-      "Antihypertensives (counteracts their effect — raises blood pressure)",
-      "Diuretics (may worsen potassium loss)",
-      "Digoxin/cardiac glycosides (hypokalemia increases digoxin toxicity)",
-      "Corticosteroids (additive sodium retention)",
-      "Anticoagulants (may potentiate effects)"
+      "Corticosteroids - interactions have been reported (NCCIH)."
     ],
-    "pregnancy_flag": "Avoid large or prolonged doses — causes fluid retention; NCCIH: large intake during pregnancy is unsafe",
-    "dosha_caution": "Sweet and heavy — increases Kapha; good for Vata/Pitta",
-    "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
-    "modern_source": "NCCIH licorice root fact sheet (nccih.nih.gov/health/licorice-root, updated Apr 2025) — cross-verified 2026-08-29; Ayurvedic Pharmacopoeia of India",
+    "pregnancy_flag": "Avoid large amounts during pregnancy - oral licorice extract (~250 g licorice/week) is unsafe and can increase the risk of delivery before gestational age of 38 weeks (NCCIH); breastfeeding - little is known about safety.",
+    "dosha_caution": "Sweet and heavy - increases Kapha; good for Vata/Pitta",
+    "modern_source": "NCCIH licorice root fact sheet (nccih.nih.gov/health/licorice-root, Last Updated: April 2025), fetched 2026-08-29 - contraindication/interaction/pregnancy claims reflect only the fact-sheet text.",
     "modern_source_verified": true
   },
   {
