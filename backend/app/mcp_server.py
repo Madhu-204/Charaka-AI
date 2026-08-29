@@ -1,7 +1,10 @@
 import json
+import logging
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
+
+logging.getLogger("mcp").setLevel(logging.WARNING)
 
 BACKEND = Path(__file__).resolve().parent.parent
 

@@ -32,11 +32,11 @@ def _kill_mcp_children() -> int:
     try:
         script = Path(MCP_SERVER_SCRIPT).name
         ps = (
-            "Get-CimInstance Win32_Process | "
-            "Where-Object {{ $_.Name -like 'python*' -and "
-            "($_.CommandLine -match 'mcp_server.py') -and "
-            "($_.ParentProcessId -eq {os.getpid()}) }} | "
-            "Select-Object -ExpandProperty ProcessId"
+            f"Get-CimInstance Win32_Process | "
+            f"Where-Object {{ $_.Name -like 'python*' -and "
+            f"($_.CommandLine -match 'mcp_server.py') -and "
+            f"($_.ParentProcessId -eq {os.getpid()}) }} | "
+            f"Select-Object -ExpandProperty ProcessId"
         )
         out = subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
@@ -127,7 +127,7 @@ async def _init_mcp():
         while True:
             await asyncio.sleep(3600)
     except Exception as e:
-        log.warning("MCP server failed to start: %s — falling back to local lookup", e)
+        log.warning("MCP server failed to start: %s - falling back to local lookup", e)
         MCP_ALIVE = False
         MCP_READY.set()
 
@@ -168,7 +168,7 @@ def _on_mcp_crash():
     global MCP_ALIVE, LAST_CRASH_TIME
     MCP_ALIVE = False
     LAST_CRASH_TIME = time.monotonic()
-    log.warning("MCP subprocess crashed — falling back to JSON layer")
+    log.warning("MCP subprocess crashed - falling back to JSON layer")
     asyncio.run_coroutine_threadsafe(_respawn_mcp(), _bg_loop)
 
 
