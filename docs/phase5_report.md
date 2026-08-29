@@ -40,8 +40,8 @@ Contrast with prior phases: Phases 1–4 built corpus → embeddings → agent p
 
 ### 3.2 NEW — `backend/reference/herb_safety.json` (the safety database)
 
-**Verified contents:** **49 herb entries**, each with 8 fields:
-`herb`, `contraindications`, `interactions`, `pregnancy_flag`, `dosha_caution`, `classical_source` (Charaka chapter/verse), `modern_source` (NCCIH / Ayurvedic Pharmacopoeia of India), `modern_source_verified` (**3 now `true`** — ashwagandha, turmeric, liquorice, cross-verified against NCCIH in the close-out — the rest pending in Phase 6).
+**Verified contents:** **51 herb entries**, each with 8 fields:
+`herb`, `contraindications`, `interactions`, `pregnancy_flag`, `dosha_caution`, `classical_source` (Charaka chapter/verse), `modern_source` (NCCIH / Ayurvedic Pharmacopoeia of India), `modern_source_verified` (**5 now `true`** — ashwagandha, turmeric, liquorice, cross-verified against NCCIH in the close-out; **arka, kataka** added in Phase 6 from fetched primary sources; the rest pending).
 
 Example, `ashwagandha` (live-tool output verified):
 - Contraindications: autoimmune diseases, hyperthyroidism, surgery (≥2 weeks), liver-injury caution, hormone-sensitive prostate cancer (added in close-out from NCCIH)
@@ -70,7 +70,7 @@ Example, `ashwagandha` (live-tool output verified):
 - `_detect_herb(query)` (`retriever.py:64`): if a herb name/alias appears, **skip generic ChromaDB vector search** and use `_herb_retrieve()` (`retriever.py:71`):
   - Pull the verse IDs directly from the `herb_mentions.json` verse index (up to 10 candidates).
   - Rank by **numpy dot-product similarity** against the query embedding (`retriever.py:86-94`).
-  - Return `top-3` with **confidence from calibrated bands** (close-out change): `_confidence_band` maps the raw similarity to `high > 0.45`, `medium 0.30–0.45`, `low < 0.30`, replacing the original hardcoded `"high"` — see §6.4-4.
+  - Return `top-3` with **confidence from calibrated bands** (close-out change, re-derived in Phase 6): `_confidence_band` maps the raw similarity to `high ≥ 0.60`, `medium 0.45–0.60`, `low < 0.45`, replacing the original hardcoded `"high"` — see §6.4-4.
 - Non-herb path unchanged (embeddings + `mappings.json` metadata disambiguation; `high/low` from the `> 0.5` threshold at `retriever.py:143`).
 
 ### 3.5 MODIFIED — `backend/app/nodes/query_expansion.py` (herb-first expansion)
@@ -199,9 +199,9 @@ Items that emerged after §6.1–6.3 — the "honest verification" pass that clo
 
 2. **Crash/respawn re-run (honest reconciliation).** The earlier kill-9 claim came from a prior session and could **not** be reproduced in-review — so it was re-executed against the current `sys.executable` spawn: killed all live `mcp_server.py` subprocesses → the *next* call returned `json_fallback` with `MCP_ALIVE=False`; **after ~35 s** (30 s respawn cooldown) the same call returned `src=mcp`, `MCP_ALIVE=True`. **RESPAWN VERIFIED.** Caveat recorded: a few child MCP PIDs can linger after a parent's crash (process hygiene — see §7-7).
 
-3. **eval_21 root cause (no truncation bug).** Only **7** ashwagandha verses exist in the corpus (expected `cs_chikitsa_3_267-a` is present but ranks **#3** at cosine 0.2524); the #1 hit is `cs_vimana_8_136` (a purgatives list) at 0.3537. For unit-normalized embeddings `dot ≈ cosine`, so there was no metric bug. **Root cause: `_herb_retrieve` hardcoded `confidence: "high"`** (retriever.py:103) — the model was right about *which* verse but the answer was overclaimed.
+3. **eval_21 root cause.** Only **7** ashwagandha verses exist in the corpus (expected `cs_chikitsa_3_267-a` is present but ranks **#3** at cosine 0.2524); the #1 hit is `cs_vimana_8_136` (a purgatives list) at 0.3537. **Root cause: `_herb_retrieve` hardcoded `confidence: "high"`** (retriever.py:103) — the model was right about *which* verse but the answer was overclaimed. *(The close-out note here claimed "dot ≈ cosine, so there was no metric bug" — that aside was **superseded** by the metric probe in §6.4-9, which found a real cross-path scale inconsistency and fixed it.)*
 
-4. **Calibrated confidence bands (fixes the root cause).** From 28 scores: metadata-overridden hits sit near 0.0, the viable cluster starts ≥ 0.45. Implemented `_confidence_band`: **high > 0.45, medium 0.30–0.45, low < 0.30** (routine check: high precision 7/8, medium 6/7). Replaced `HIGH_SIM_THRESHOLD`, added `confidence_score` (raw similarity) to `AgentState`, both retrieval paths, and the synthesis disclosure. Result: eval_21 → `conf=medium`; eval_22/23 honestly high; eval_18 remains a `high` mislabel blocked by metadata, not score.
+4. **Calibrated confidence bands (fixes the root cause), re-derived in Phase 6.** Original derivation used scores from two different metrics at once (see §6.4-9) and was provisional at n=28. **After the metric-consistency fix** the bands sit at **high ≥ 0.60 (10/11 = 91% correct), medium 0.45–0.60 (12/15 = 80%), low < 0.45** — marked provisional until live use / Phase 9. Replaced `HIGH_SIM_THRESHOLD`, added `confidence_score` (raw similarity) to `AgentState`, both retrieval paths, and the synthesis disclosure. Result: eval_21 → `conf=medium`; eval_22/23 honestly high; eval_18 remains a `high` mislabel blocked by metadata, not score.
 
 5. **Reasoning trace exposed.** Added `trace: List[str]` to `AgentState`; every node appends a step (emergency gate → expansion → retrieval with verse+score+band → safety with source-by-herb). `/ask` now returns `reasoning_trace` = `{steps, canonical_term, retrieved_verses[{verse_id, chapter, score}], confidence_score, herbs_found, safety_sources, verification_notes, source_disagreements}`.
 
@@ -211,22 +211,26 @@ Items that emerged after §6.1–6.3 — the "honest verification" pass that clo
 
 8. **Cross-verified batch #1 + source-disagreement flagging.** 3 herbs genuinely second-source-verified against NCCIH fact sheets and stamped `modern_source_verified: true` with dated sources: **ashwagandha, turmeric, liquorice** (NCCIH-confirmed cautions added to each — see `docs/phase6_safety_coverage.md` §5). Added `source_disagreements`: for *verified* entries carrying a strong modern caution (hard pregnancy avoid or toxicity), a practitioner-review note is emitted by rule — smoke-tested to flag ashwagandha + liquorice and correctly **not** turmeric (food-safe pregnancy wording).
 
+9. **Metric-consistency fix (Phase 6; supersedes the "no metric bug" aside in #3).** A metric probe on the live collection showed the distance returned by ChromaDB is **squared-L2, not L2**: for a unit-normalized pair, `dist=0.8005`, `cosine=0.5997`, `norm(e)=1.0000` → `dist == 2 − 2·cos`. So `dot ≈ cosine` only if you treat L2 distance correctly — but the **generic** retrieval path scored `1 − dist = 2·cos − 1` while the **herb** path used raw cosine. The same shared bands were therefore being applied to two different scales (this is the contradiction the audit flagged between §3.4 and §6.4). Fix: the generic path now recomputes true cosine via `collection.get(ids, include=["embeddings"])` and a shared `_cosine()` helper; the herb path was refactored onto the same `_cosine()` helper (`retriever.py`). Eval re-run after the fix: **no regression** — 24/28, top-3 25/28, 0 false emergencies, 10/10 mcp.
+
+10. **Verification transparency (batch #1 provenance, recorded honestly).** Of the three batch-#1 flips, only **liquorice** was written against an NCCIH page actually fetched in-thread at the time; the ashwagandha/turmeric caution additions were initially applied from model recall of NCCIH content. Both NCCIH pages were then **re-fetched in the review** and the specific cautions (liver injury, prostate, GI for ashwagandha; curcumin liver + pregnancy wording for turmeric) confirmed against the fetched text, and the fetch-confirmed dates stamped. All three entries stand; the roll-out order is recorded so the provenance is fully traceable. Going forward (batch #2+), the fetch happens **before** any flip.
+
 ### 6.5 Final close-out eval (after all close-out changes)
 
 Run: `python scripts/eval_run.py --mode retrieval` — **28 questions**.
 
 - **Resolved: 24/28 (85%)** · **Top-3: 25/28 (89%)** · **False emergency positives: 0/28**
 - **Safety coverage: 10/10 herb queries got flags, 0 uncovered** (eval_21/25/26/28 show `src:mcp` + a few `uncovered` herbs — those herbs now carry the advisory instead of silence)
-- Confidence distribution after banding: **low 12, medium 7, high 9** — no query is overclaimed anymore; the 4 misses sit at `low`/`medium` except eval_18 (metadata, §6.3).
+- Confidence distribution after banding (re-derived, §6.4-4/9): **high 10, medium 15, low 2** — no query is overclaimed anymore; the 4 misses sit at `medium`/`low` except eval_18 (metadata, §6.3).
 
 ---
 
 ## 7. Known Gaps & Risks Carried Into Phase 6
 
-1. **Data completeness** — 46 of 96 herbs have **no** safety entry (`ajwain`, `bilva`, `cardamom`, `celery`, …). The MCP server and the `json_fallback` read the *same* file, so a fallback is **not** an independent source. *(partial close-out: uncovered herbs now surface a visible advisory; fills still to do)*
+1. **Data completeness** — 41 of 93 herbs have **no** safety entry (fill path: Tier 1 swell; `arka` + `kataka` closed with fetched sources in Phase 6). The MCP server and the `json_fallback` read the *same* file, so a fallback is **not** an independent source. *(partial close-out + Phase 6: uncovered herbs now surface a visible advisory; fills still to do)*
 2. **Name mismatches** — `kustha`/`kushtha` reconciled in close-out (**0 orphans**). `vasa` vs `vasaka` remain separate herb rows that share one safety entry (resolved via alias — reviewed and OK). Audit is now an executable check.
-3. **Second-source verification** — started, not finished: **3/49** entries cross-verified (`modern_source_verified: true`); remaining 46 queued in batches (see Phase 6). Every unverified entry is disclosed via `verification_notes` in the reasoning trace.
-4. ~~**Binary confidence**~~ → ✅ **Closed in close-out.** Numeric `confidence_score` + calibrated bands (`high>0.45`, `medium 0.30–0.45`, `low<0.30`) across both retrieval paths; synthesis discloses medium/low.
+3. **Second-source verification** — started, not finished: **5/51** entries cross-verified (`modern_source_verified: true`); remaining 46 queued in batches (see Phase 6). Every unverified entry is disclosed via `verification_notes` in the reasoning trace.
+4. ~~**Binary confidence**~~ → ✅ **Closed in close-out, bands re-derived in Phase 6.** Numeric `confidence_score` + calibrated bands (`high≥0.60`, `medium 0.45–0.60`, `low<0.45`, provisional n=28) across both retrieval paths; synthesis discloses medium/low.
 5. ~~**No reasoning trace in `/ask`**~~ → ✅ **Closed in close-out.** `reasoning_trace` with steps, retrieved verses+score, confidence_score, safety, verification & disagreement notes.
 6. **Source-disagreement — partial.** `source_disagreements` works for verified entries with strong modern cautions; classical-vs-modern comparison for the remaining 46 entries unlocks as verification proceeds.
 7. **Subprocess lifetime** — respawn verified in close-out (§6.4-2), but a few child MCP PIDs can linger after a parent crash; long-running soak test still outstanding.
@@ -239,7 +243,7 @@ Run: `python scripts/eval_run.py --mode retrieval` — **28 questions**.
 
 | Phase 6 requirement (plan) | State after close-out (`a6c07db`) |
 |---|---|
-| Finalize **rule-based contraindication** table wired into the safety-checker tool | Fully wired. Phase 6 = fill the **46 remaining entries** + finish verifications; uncovered herbs already show a visible advisory |
+| Finalize **rule-based contraindication** table wired into the safety-checker tool | Fully wired. Phase 6 = fill the **41 remaining entries** + finish verifications; uncovered herbs already show a visible advisory |
 | **Retrieval-confidence thresholding** (low → explicit disclosure, never a guess) | ✅ **Done in close-out** — numeric `confidence_score` + calibrated bands + synthesis disclosure |
 | **Source-disagreement flagging** | ✅ **Started in close-out** — `source_disagreements` rule for verified entries with strong cautions; grows with verification |
 | **Reasoning-trace output** (for the "show reasoning" UI toggle) | ✅ **Done in close-out** — `reasoning_trace` exposed from `/ask` |
@@ -248,15 +252,17 @@ Run: `python scripts/eval_run.py --mode retrieval` — **28 questions**.
 
 **Close out (quick, do on day 1):** *(all four already done in close-out `a6c07db`)*
 - [x] Run `python scripts/eval_run.py --mode retrieval` and commit results (done — final numbers in §6.5); optional `--mode full` still pending for Groq end-to-end scoring
-- [x] Cross-check safety DB coverage: rename `kushtha`→`kustha` (0 orphans); `vasa`/`vasaka` reviewed; fill path defined (46 remaining)
+- [x] Cross-check safety DB coverage: rename `kushtha`→`kustha` (0 orphans); `vasa`/`vasaka` reviewed; fill path defined (41 remaining after arka/kataka)
 - [x] Soak-test the MCP subprocess (kill → 30 s cooldown → respawn verified; lingering-PID hygiene noted)
 
 **Core Phase 6 work (in progress):**
 - [x] Cross-verify entries against NCCIH — **batch #1 done (3/49)**: ashwagandha, turmeric, liquorice
-- [ ] Continue cross-verification batches (queued: brahmi, guggulu, shatavari, guduchi, amalaki, haritaki, bibhitaki, vacha) + fill 46 uncovered herbs (Tier 1 first: arka, kataka — toxic, critical)
-- [x] Numeric retrieval-confidence bands (done — §6.4-4)
+- [x] Fill Tier-1 toxic gaps first — **`arka` + `kataka` done** (arka: toxic-hard-avoid monograph; kataka: species correction — not the strychnine tree); uncovered 46 → 41. See `docs/phase6_safety_coverage.md` §6
+- [ ] Continue cross-verification batches (queued: brahmi, guggulu, shatavari, guduchi, amalaki, haritaki, bibhitaki, vacha) + fill remaining 41 uncovered herbs (Tier 1 first: patola, sariva, raktachandana, jivanti, vacha, tulsi, moringa, …)
+- [x] Numeric retrieval-confidence bands (done — §6.4-4/9, re-derived on the unified cosine scale)
 - [x] Source-disagreement detection + user-facing flag (done — §6.4-8, `source_disagreements`)
 - [x] Reasoning-trace output exposed from `/ask` (done — §6.4-5)
+- [x] Metric-consistency fix — generic vs herb path now share one cosine scale (§6.4-9)
 
 ---
 

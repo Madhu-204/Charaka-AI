@@ -1,5 +1,23 @@
 [
   {
+    "herb": "arka",
+    "classical_source": "Charaka Samhita - Sutrasthana ch.1, 4, 5, 25, 26, 27; Vimanasthana ch.8; Chikitsasthana ch.3, 7, 15, 17 (22 verse mentions)",
+    "contraindications": [
+      "TOXIC: Calotropis gigantea/procera contains cardiac glycosides (calotropin, calatoxin, uscharin) with digitalis-like action; unsupervised ingestion can cause vomiting, burning GI pain, arrhythmia and heart block.",
+      "Do NOT swallow the latex or self-prepared plant parts - only classically processed (shodhit) formulations under qualified supervision are ever used.",
+      "Skin/eye contact with latex causes irritant dermatitis and can cause corneal/conjunctival injury (kerato-conjunctivitis, permanent corneal endothelial damage).",
+      "Pregnancy: strictly avoid - traditional use as an abortifacient; latex/toxicity risk."
+    ],
+    "interactions": [
+      "Digoxin and other cardiac glycosides / antiarrhythmics - additive digitalis-like activity increases toxicity risk.",
+      "Potassium-depleting diuretics - increase cardiac-glycoside sensitivity."
+    ],
+    "pregnancy_flag": "Strictly avoid - used traditionally as an abortifacient; latex/toxicity risk.",
+    "dosha_caution": "Tikshna and penetrating - classical kshara/vamana (emetic) use only under qualified supervision; never a household remedy.",
+    "modern_source": "Hong Kong Hospital Authority Atlas of Poisonous Plants, Calotropis gigantea (3ha.org.hk/toxicplant/en/calotropis_gigantea.html); IVIS Guide to Poisonous House & Garden Plants; PMC7586564 (Calotropis cardiac toxicity case report) - cross-verified 2026-08-29",
+    "modern_source_verified": true
+  },
+  {
     "herb": "ashwagandha",
     "contraindications": [
       "Autoimmune diseases (may stimulate immune system)",
@@ -708,6 +726,22 @@
     "classical_source": "Charaka Samhita (no specific verse located)",
     "modern_source": "Ayurvedic Pharmacopoeia of India",
     "modern_source_verified": false
+  },
+  {
+    "herb": "kataka",
+    "classical_source": "Charaka Samhita - Sutrasthana ch.4; Vimanasthana ch.8; Sharirasthana ch.8 (3 verse mentions)",
+    "contraindications": [
+      "Species note: Charaka's kataka is Strychnos potatorum (clearing nut, nirmali) - NOT the poisonous strychnine tree (Strychnos nux-vomica, kupeelu); do not substitute.",
+      "The seed alkaloid fraction is neuroactive in animals when injected (restlessness, tremors, convulsions, hypotension) - keep to traditional small oral doses; never use alkaloid/injectable preparations.",
+      "Pregnancy: no pregnancy-specific safety data - use only in traditional small food/dose amounts."
+    ],
+    "interactions": [
+      "No clinically documented drug interactions; contains strychnine-family alkaloids in trace amounts (diaboline major) - keep doses traditional."
+    ],
+    "pregnancy_flag": "No pregnancy-specific safety data - use only in traditional small amounts.",
+    "dosha_caution": "Bitter, light - Tiktaka (bitter) group; traditionally regarded as cooling and diuretic.",
+    "modern_source": "PMC3931202 'Strychnos potatorum: phytochemical and pharmacological review' (2014; OECD-423 toxicity data to 2000 mg/kg in mice - no signs of toxicity/mortality; 90-day oral chronic safe), LWW NJPT 2023 systemic review - cross-verified 2026-08-29",
+    "modern_source_verified": true
   },
   {
     "herb": "khadira",

@@ -68,8 +68,16 @@ def _detect_herb(query):
     return None
 
 
-HIGH_SCORE = 0.45
-MEDIUM_SCORE = 0.30
+# Provisional cosine anchors derived from the 28-question eval on the unified
+# (pure cosine) scale, 2026-08-29. Deliberately conservative:
+#   high   >= 0.60 : strong overlap (10/11 = 91% correct in eval)
+#   medium 0.45-0.60: moderate overlap (12/15 = 80% correct in eval)
+#   low    < 0.45  : weak overlap — always disclosed as uncertain
+# Caveats: n=28, provisional until Phase 9 / real usage adds data. Similarity
+# alone cannot separate hits from misses (eval_18 missed at 0.782, eval_25 hit
+# at 0.540), so these bands bound OVERCLAIMING, they do not promise correctness.
+HIGH_SCORE = 0.60
+MEDIUM_SCORE = 0.45
 
 
 def _confidence_band(score) -> str:
@@ -78,6 +86,12 @@ def _confidence_band(score) -> str:
     if score > MEDIUM_SCORE:
         return "medium"
     return "low"
+
+
+def _cosine(emb_a, emb_b) -> float:
+    a = np.asarray(emb_a, dtype=float).flatten()
+    b = np.asarray(emb_b, dtype=float).flatten()
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
 
 def _herb_retrieve(herb_name, expanded_query, query_embedding):
@@ -96,9 +110,7 @@ def _herb_retrieve(herb_name, expanded_query, query_embedding):
 
     embeddings = np.array(results["embeddings"])
     q_emb = np.array(query_embedding).flatten()
-    norms = np.linalg.norm(embeddings, axis=1)
-    q_norm = np.linalg.norm(q_emb)
-    similarities = (embeddings @ q_emb) / (norms * q_norm)
+    similarities = [_cosine(e, q_emb) for e in embeddings]
 
     ranked = sorted(
         zip(results["ids"], results["documents"], results["metadatas"], similarities),
@@ -143,14 +155,21 @@ def retrieve(state):
 
     results = collection.query(query_embeddings=[q_emb], n_results=6)
 
+    ids = results["ids"][0]
+    docs = results["documents"][0]
+    metas = results["metadatas"][0]
+    dists = results["distances"][0]
+
+    emb_get = collection.get(ids=ids, include=["embeddings"])
+    emb_map = dict(zip(emb_get["ids"], emb_get["embeddings"]))
+
+    cosines = []
+    for vid in ids:
+        cosines.append(_cosine(emb_map[vid], q_emb))
+
     pool = [
-        {"text": doc, "meta": meta, "score": 1 - dist, "verse_id": vid}
-        for doc, meta, dist, vid in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-            results["ids"][0],
-        )
+        {"text": doc, "meta": meta, "score": cos, "verse_id": vid}
+        for doc, meta, cos, vid in zip(docs, metas, cosines, ids)
     ]
 
     resolved = pool[0]

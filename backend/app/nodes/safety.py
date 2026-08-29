@@ -1,6 +1,9 @@
 import asyncio
+import atexit
 import json
 import logging
+import os
+import subprocess
 import sys
 import threading
 import time
@@ -12,6 +15,44 @@ from langchain_mcp_adapters.tools import load_mcp_tools
 
 BACKEND = Path(__file__).resolve().parents[2]
 log = logging.getLogger(__name__)
+
+
+def _kill_mcp_children() -> int:
+    """Kill lingering mcp_server.py subprocesses owned by this process.
+
+    stdio_client terminates its process tree on a *clean* context exit, but a
+    crash or an abnormal interpreter exit can leave orphaned children behind
+    (observed as leftover mcp_server.py PIDs). Windows-only (CIM); guards the
+    current process's own children so concurrent servers are untouched.
+    Returns the number of PIDs killed.
+    """
+    if sys.platform != "win32":
+        return 0
+    killed = 0
+    try:
+        script = Path(MCP_SERVER_SCRIPT).name
+        ps = (
+            "Get-CimInstance Win32_Process | "
+            "Where-Object {{ $_.Name -like 'python*' -and "
+            "($_.CommandLine -match 'mcp_server.py') -and "
+            "($_.ParentProcessId -eq {os.getpid()}) }} | "
+            "Select-Object -ExpandProperty ProcessId"
+        )
+        out = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        ).stdout
+        for line in out.splitlines():
+            pid = line.strip()
+            if not pid.isdigit():
+                continue
+            subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True, timeout=10)
+            killed += 1
+    except Exception as e:  # pragma: no cover
+        log.warning("mcp child cleanup failed: %s", e)
+    return killed
 
 with open(BACKEND / "processed" / "herb_mentions.json", encoding="utf-8") as f:
     herb_rows = json.load(f)
@@ -35,6 +76,8 @@ MCP_ALIVE = False
 LAST_CRASH_TIME = 0.0
 RESPAWN_COOLDOWN = 30
 RESPAWNING = threading.Lock()
+
+atexit.register(_kill_mcp_children)
 
 
 def _mcp_event_loop_thread(loop):
@@ -69,6 +112,7 @@ async def _cleanup_old_context():
 async def _init_mcp():
     global _mcp_tool, MCP_ALIVE, _mcp_session_ref, _mcp_cm
     try:
+        _kill_mcp_children()
         params = StdioServerParameters(command=sys.executable, args=[MCP_SERVER_SCRIPT])
         _mcp_cm = stdio_client(params)
         read_stream, write_stream = await _mcp_cm.__aenter__()
@@ -98,6 +142,9 @@ async def _respawn_mcp():
             return
         LAST_CRASH_TIME = now
         log.info("Attempting MCP respawn...")
+        stale = _kill_mcp_children()
+        if stale:
+            log.info("Killed %d stale mcp_server.py child PID(s)", stale)
         await _cleanup_old_context()
         params = StdioServerParameters(command=sys.executable, args=[MCP_SERVER_SCRIPT])
         _mcp_cm = stdio_client(params)
