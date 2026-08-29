@@ -43,4 +43,10 @@ def expand_query(state):
                 break
 
     expanded = f"{state['query']} {canonical}" if canonical else state["query"]
-    return {"expanded_query": expanded, "canonical_term": canonical}
+    trace = state.get("trace", [])
+    step = (
+        f"query expansion: detected canonical term '{canonical}' → expanded query"
+        if canonical
+        else "query expansion: no herb/condition term detected"
+    )
+    return {"expanded_query": expanded, "canonical_term": canonical, "trace": trace + [step]}

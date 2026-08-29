@@ -63,6 +63,7 @@ def _is_informational(q):
 def check_emergency(state):
     q = state["query"].lower()
     informational = _is_informational(q)
+    trace = state.get("trace", [])
     for flag in RED_FLAGS:
         if flag in q:
             if informational:
@@ -71,5 +72,9 @@ def check_emergency(state):
                 "is_emergency": True,
                 "emergency_reason": flag,
                 "final_answer": EMERGENCY_MESSAGE,
+                "trace": trace + [f"emergency gate: RED_FLAG '{flag}' hit — redirected to doctor"],
             }
-    return {"is_emergency": False}
+    return {
+        "is_emergency": False,
+        "trace": trace + ["emergency gate: no red flag detected (informational or wellness query)"],
+    }

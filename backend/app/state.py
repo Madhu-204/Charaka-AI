@@ -13,5 +13,9 @@ class AgentState(TypedDict, total=False):
     herbs_found: List[str]
     safety_flags: List[str]
     safety_sources: Optional[dict]
+    verification_notes: List[str]
+    source_disagreements: List[str]
+    confidence_score: Optional[float]
     confidence: str
+    trace: List[str]
     final_answer: str

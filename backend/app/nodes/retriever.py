@@ -68,16 +68,27 @@ def _detect_herb(query):
     return None
 
 
+HIGH_SCORE = 0.45
+MEDIUM_SCORE = 0.30
+
+
+def _confidence_band(score) -> str:
+    if score > HIGH_SCORE:
+        return "high"
+    if score > MEDIUM_SCORE:
+        return "medium"
+    return "low"
+
+
 def _herb_retrieve(herb_name, expanded_query, query_embedding):
     verse_ids = VERSES_BY_HERB.get(herb_name, [])
     if not verse_ids:
         return None
 
     unique_ids = list(dict.fromkeys(verse_ids))
-    fetch_ids = unique_ids[:10]
 
     results = collection.get(
-        ids=fetch_ids, include=["documents", "metadatas", "embeddings"]
+        ids=unique_ids, include=["documents", "metadatas", "embeddings"]
     )
 
     if not results["ids"]:
@@ -85,7 +96,9 @@ def _herb_retrieve(herb_name, expanded_query, query_embedding):
 
     embeddings = np.array(results["embeddings"])
     q_emb = np.array(query_embedding).flatten()
-    similarities = embeddings @ q_emb
+    norms = np.linalg.norm(embeddings, axis=1)
+    q_norm = np.linalg.norm(q_emb)
+    similarities = (embeddings @ q_emb) / (norms * q_norm)
 
     ranked = sorted(
         zip(results["ids"], results["documents"], results["metadatas"], similarities),
@@ -100,11 +113,19 @@ def _herb_retrieve(herb_name, expanded_query, query_embedding):
 
     resolved = pool[0]
 
-    return {"retrieved": pool[:3], "resolved_chapter": resolved, "confidence": "high"}
+    confidence = _confidence_band(resolved["score"])
+
+    return {
+        "retrieved": pool[:3],
+        "resolved_chapter": resolved,
+        "confidence": confidence,
+        "confidence_score": float(resolved["score"]),
+    }
 
 
 def retrieve(state):
     query = state.get("expanded_query", state.get("query", ""))
+    trace = state.get("trace", [])
 
     q_emb = model.encode([query]).tolist()[0]
 
@@ -112,7 +133,13 @@ def retrieve(state):
     if herb:
         herb_result = _herb_retrieve(herb, query, q_emb)
         if herb_result:
-            return herb_result
+            resolved = herb_result["resolved_chapter"]
+            step = (
+                f"retrieval: herb path via '{herb}' verse index → "
+                f"resolved {resolved['verse_id']} "
+                f"(score {herb_result['confidence_score']:.3f}, {herb_result['confidence']})"
+            )
+            return {**herb_result, "trace": trace + [step]}
 
     results = collection.query(query_embeddings=[q_emb], n_results=6)
 
@@ -140,10 +167,16 @@ def retrieve(state):
             if hit:
                 resolved = hit
 
-    confidence = "high" if resolved["score"] > 0.5 else "low"
+    confidence = _confidence_band(resolved["score"])
+    step = (
+        f"retrieval: generic vector search + metadata disambiguation → "
+        f"resolved {resolved['verse_id']} (score {float(resolved['score']):.3f}, {confidence})"
+    )
 
     return {
         "retrieved": pool[:3],
         "resolved_chapter": resolved,
         "confidence": confidence,
+        "confidence_score": float(resolved["score"]),
+        "trace": trace + [step],
     }

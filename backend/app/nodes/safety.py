@@ -210,5 +210,53 @@ def check_safety(state):
         elif h in LEGACY_CONTRAINDICATIONS:
             flags.append(f"{h}: {LEGACY_CONTRAINDICATIONS[h]}")
             sources[h] = "legacy"
+        else:
+            flags.append(
+                f"{h}: no safety monograph on file — use only in food quantities, "
+                f"or confirm with a practitioner before medicinal use"
+            )
+            sources[h] = "uncovered"
 
-    return {"herbs_found": found, "safety_flags": flags, "safety_sources": sources}
+    trace = state.get("trace", [])
+    source_summary = ", ".join(f"{k}={v}" for k, v in sources.items()) or "none"
+    step = (
+        f"safety: herbs found [{', '.join(found) or 'none'}] via "
+        f"{source_summary}; {len(flags)} flag(s) built"
+    )
+
+    verification_notes = []
+    for h in found:
+        entry = SAFETY_DB.get(h)
+        if entry and not entry.get("modern_source_verified"):
+            verification_notes.append(
+                f"{h}: safety data from {entry.get('modern_source', 'modern source')} "
+                f"- not yet independently cross-verified"
+            )
+
+    source_disagreements = []
+    for h in found:
+        entry = SAFETY_DB.get(h)
+        if not entry or not entry.get("modern_source_verified"):
+            continue
+        pregnancy = (entry.get("pregnancy_flag") or "").lower()
+        contraindications = " ".join(entry.get("contraindications", [])).lower()
+        strong_caution = (
+            "avoid" in pregnancy
+            or "strictly avoid" in pregnancy
+            or "toxic" in contraindications
+        )
+        if strong_caution:
+            source_disagreements.append(
+                f"{h}: classical texts describe its use, but modern sources flag strong "
+                f"cautions (e.g., {entry.get('pregnancy_flag', 'toxicity')}) — "
+                f"consult a practitioner before medicinal use"
+            )
+
+    return {
+        "herbs_found": found,
+        "safety_flags": flags,
+        "safety_sources": sources,
+        "verification_notes": verification_notes,
+        "source_disagreements": source_disagreements,
+        "trace": trace + [step],
+    }
