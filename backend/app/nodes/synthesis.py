@@ -35,7 +35,9 @@ Rules you must always follow:
 - If confidence is marked "low", say explicitly that the match is uncertain. If it is marked "medium", note that the match is related but not exact, and frame the answer accordingly.
 - Always end with a line encouraging the user to consult a doctor if symptoms persist or worsen.
 - If any safety flags are provided, state them clearly before any remedy suggestion.
-- When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user."""
+- When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user.
+- If a SPECIES/IDENTITY DISCLOSURE is provided for an herb, state it explicitly and prominently BEFORE giving any remedy or safety detail for that herb — never bury it. If a disclosure says an herb's profile is based on a different (closest-match) species, or that one species must not be confused with another, repeat that clearly so the user cannot mistake one plant for another.
+- If SOURCE DISAGREEMENTS are provided, state each one verbatim and frame it as a practitioner-review caution (classical texts describe use, but modern sources flag a strong caution)."""
 
 FALLBACK_ANSWER = (
     "I couldn't retrieve a grounded answer right now. Classical texts describe "
@@ -74,6 +76,9 @@ def synthesize(state):
     herbs_found = state.get("herbs_found", [])
     alias_block = _herb_alias_block(herbs_found) if herbs_found else "none"
 
+    verification_notes = state.get("verification_notes", [])
+    source_disagreements = state.get("source_disagreements", [])
+
     context = (
         f"PRIMARY CONTEXT:\n{_format_block(primary)}\n\n"
         f"ADDITIONAL CONTEXT:\n"
@@ -84,6 +89,18 @@ def synthesize(state):
         f"HERB ALIASES (these are alternate names for the same herb):\n{alias_block}\n"
         f"Safety flags: {', '.join(state['safety_flags']) or 'none'}\n"
     )
+
+    if verification_notes:
+        context += (
+            "\nSPECIES/IDENTITY DISCLOSURES & VERIFICATION NOTES "
+            "(state these explicitly when they concern identity or a closest-match species):\n"
+            + "\n".join(f"- {n}" for n in verification_notes)
+        )
+    if source_disagreements:
+        context += (
+            "\nSOURCE DISAGREEMENTS (practitioner-review cautions — state verbatim):\n"
+            + "\n".join(f"- {d}" for d in source_disagreements)
+        )
 
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),
