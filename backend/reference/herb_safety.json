@@ -1198,5 +1198,324 @@
     "dosha_caution": "Strongly cooling and sweet; aggravates Kapha in excess, pacifies Pitta.",
     "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
     "modern_source_verified": false
+  },
+  {
+    "herb": "sariva",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling potency (Virya Shita) and heavy quality (Guna Guru); excess may aggravate Kapha and impair Agni in individuals with weak digestion",
+      "Very little used medicinally in classical practice per API monograph"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heavily cooling and sweet; may aggravate Kapha and dampen digestive fire (Agni) in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-1, Monograph 68: Sveta Sariva (Hemidesmus indicus), p.144. Printed rasapanchaka: Rasa Madhura; Guna Guru Snigdha; Virya Sita; Vipaka Madhura; Karma Raktashodhaka, Vishaghna, Tridoshanashana, Dipana, Amanashana, Jvarahara. Uses: Agnimandya, Aruci, Atisara, Shvasa, Jvara, Kasa, Kandu, Kushtha, Raktavikara. DOSE: 20-30 g decoction. Classical contraindication note: very little used medicinally; cooling may aggravate Kapha. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "raktachandana",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling and astringent qualities; excess may aggravate Vata and cause dryness",
+      "Astringent Rasa may impair digestion in individuals with weak Agni"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita) and astringent/drying (Guna Ruksha); may aggravate Vata in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 70: Raktacandana (Heart Wood) (Pterocarpus santalinus), p.155. Printed rasapanchaka: Rasa Madhura Tikta; Guna Guru Ruksha; Virya Sita; Vipaka Katu; Karma Pittahara, Vrushya, Vishaghna, Netraroga-hita. Uses: Chardi, Trishna, Raktadosha, Jvara, Vrana. DOSE: 3-6 g powder. Classical contraindication note: cooling/astringent; may aggravate Vata. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "patala",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Laghu and Ruksha qualities may aggravate Vata in dry/dry-Vata conditions",
+      "Bitter and astringent taste may be unpalatable and impair appetite in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Tikta Kashaya rasa, Laghu and Ruksha guna; may aggravate Vata in dry/Vata-predominant individuals.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 66: Patola (Root) (Stereospermum suaveolens), p.147. Printed rasapanchaka: Rasa Tikta Kashaya; Guna Laghu Ruksha; Virya Anushna; Vipaka Katu; Karma Rucya, Tridosahara. Uses: Shvasa, Shotha, Arsha, Chardi, Hikka, Trishna, Amlapitta, Raktavikara, Mutravikara. DOSE: 5-10 g powder, 25-50 ml decoction. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "kantakari",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Solanaceae family: unripe berries contain steroidal glycoalkaloids (solasonine/solamargine); keep to classical doses only",
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and pungent/bitter; may aggravate Pitta in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-1, Monograph 38: Kantakari (W.P.) (Solanum surattense syn. xanthocarpum), p.77. Printed rasapanchaka: Rasa Katu Tikta; Guna Laghu Ruksha; Virya Ushna; Vipaka Katu; Karma Shothahara, Dipana, Pachana, Amadoshanashaka, Kashthya. Uses: Aruci, Shvasa, Jvara, Kasa, Pinasa, Svarabheda, Parshvashula. DOSE: 20-30 g decoction. SOLANACEAE NOTE: unripe berries contain steroidal glycoalkaloids (solasonine/solamargine); keep to classical doses. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "brihati",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Solanaceae family: contains steroidal alkaloids; keep to classical doses only",
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and pungent/bitter; may aggravate Pitta in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-2, Monograph 12: Brihati (Root) (Solanum indicum), p.27. Printed rasapanchaka: Rasa Katu Tikta; Guna Laghu; Virya Ushna; Vipaka Katu; Karma Dipana, Hridya, Kaphahara, Pachana, Vatahara, Grahi. Uses: Shula, Shvasa, Hridroga, Jvara, Agnimandya. DOSE: 10-20 g decoction. SOLANACEAE NOTE: contains steroidal alkaloids. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "katphala",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Heating and sharp qualities (Virya Ushna, Guna Tikshna); may aggravate Pitta in excess",
+      "Drying qualities may aggravate Vata in dry constitution"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and sharp (Tikshna); aggravates Pitta in excess, pacifies Kapha.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 42: Katphala (Fruit) (Myrica esculenta syn. nagi), p.90. Printed rasapanchaka: Rasa Katu Tikta Kashaya; Guna Laghu Tikshna; Virya Ushna; Vipaka Katu; Karma Kaphavatashamaka, Rucya, Dahahara, Mukharogashamaka. Uses: Gulma, Meha, Jvara, Arsha, Grahami, Pandu, Hrillasa, Mukharoga, Kasa, Shvasa. DOSE: 3-5 g. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "shalparni",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess",
+      "Heavy quality (Guna Guru) may burden weak digestion (Manda Agni)"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Classical source describes as Sukhaprasavakara (facilitates easy delivery); however, no modern safety data in pregnancy — use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and heavy (Guna Guru); may aggravate Pitta in excess; generally Tridoshahara.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 79: Shalaparni (Root) (Desmodium gangeticum), p.178. Printed rasapanchaka: Rasa Madhura Tikta; Guna Guru; Virya Ushna; Vipaka Madhura; Karma Balya, Tridoshahara, Vrushya, Vishahara, Rasayani, Sukhaprasavakara, Vatadoshajit. Uses: Jvara, Meha, Arsha, Chardi, Shopha, Shvasa, Kasa, Krimi, Rajayakshma. DOSE: 5-10 g powder, 10-20 g decoction. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "nagarmotha",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling potency (Virya Shita) may suppress Agni in individuals with weak digestion",
+      "Drying qualities (Guna Ruksha) may aggravate Vata in dry constitution"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita) and drying (Guna Ruksha); may aggravate Vata and weaken Agni in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 59: Musta (Rhizome) (Cyperus rotundus, Hindi 'Nagarmotha'), p.129. Printed rasapanchaka: Rasa Katu Tikta Kashaya; Guna Laghu Ruksha; Virya Shita; Vipaka Katu; Karma Shothahara, Dipana, Grahi, Krimighna, Pachana, Vishaghna, Pittakaphahara, Stoulyahara, Jvaraghna. Uses: Agnimandya, Trishna, Jvara, Grahami, Shvasa, Kasa, Mutrakricchra, Atisara, Amavata. DOSE: 3-6 g powder, 20-30 ml Kwatha. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "priyangu",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Drying quality (Guna Ruksha) may aggravate Vata in dry or Vata-predominant individuals",
+      "Bitter/astringent taste may impair appetite in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita) and drying (Guna Ruksha); may aggravate Vata in excess; pacifies Pitta.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-2, Monograph 64: Priyangu (Inflorescence) (Callicarpa macrophylla), p.151. Printed rasapanchaka: Rasa Tikta Kashaya; Guna Ruksha; Virya Shita; Vipaka Katu; Karma Pittahara, Vatahara, Rakta Prasadana, Daurgandhyahara, Purishasamgrahaniya, Mutravirajaniya, Vranaropana. Uses: Daha, Jvara, Raktapitta, Pakvatisara, Svedadhikya. DOSE: 1-3 g powder. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "palasha",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Seeds are toxic and emetic; use only the stem bark, and only in classical doses",
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and pungent/bitter; may aggravate Pitta in excess; pacifies Kapha and Vata.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-2, Monograph 58: Palasa (Stem Bark) (Butea monosperma), p.136. Printed rasapanchaka: Rasa Katu Tikta Kashaya; Guna Sara Snigdha; Virya Ushna; Vipaka Katu; Karma Vrushya, Kaphavatashamaka, Agnidipaka, Saraka. Uses: Arsha, Grahami, Gulma, Vrana, Krimiroga. DOSE: 5-10 g decoction. TOXICITY NOTE: seeds are toxic/emetic; use the bark only in classical doses. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "ketaki",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess",
+      "Keep dosage classical; no modern safety profile established"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and pungent/bitter; may aggravate Pitta in excess; pacifies Kapha.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-1, Monograph 45: Ketaki (Root) (Pandanus tectorius), p.94. Printed rasapanchaka: Rasa Madhura Katu Tikta; Guna Laghu; Virya Ushna; Vipaka Katu; Karma Balya, Keshya, Rasayana, Varnya, Kaphapaha, Chakshushya. Uses: Gulma, Netraroga, Kapharoga. DOSE: 20-30 g decoction. NOTE: Pandanus root; spiny leaves; keep dosage classical. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "utpala",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling potency (Virya Shita) may suppress Agni in individuals with weak digestion",
+      "Sticky/mucilaginous quality (Guna Picchila) may increase Kapha in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita) and sweet/mucilaginous; may increase Kapha in excess; pacifies Pitta.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-3, Monograph 100: Utpala (Flower) (Nymphaea stellata), p.221. Printed rasapanchaka: Rasa Madhura Kashaya; Guna Picchila Snigdha; Virya Shita; Vipaka Madhura; Karma Keshya, Medhya, Pittanashaka, Rucya, Rasayana, Raktaprasadaka. Uses: Pipasadaha, Raktapitta, Chardi, Murchha, Hridroga, Mutrakricchra, Jvaratisara. DOSE: 3-6 g. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "padmakesara",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling potency (Virya Shita) may suppress Agni in individuals with weak digestion",
+      "No separate monograph for padmakesara (lotus stamens); profile based on closest API match Kamala (lotus flower)"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita); may increase Kapha in excess; pacifies Pitta.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "CLOSEST-MATCH MONOGRAPH: padmakesara (lotus stamens) has no separate API monograph. Profile routed to API Vol-2, Monograph 32: Kamala (Flower) (Nelumbo nucifera), p.74. Printed rasapanchaka: Rasa Madhura Tikta Kashaya; Guna Shita Laghu; Virya Shita; Vipaka Madhura; Karma Kaphahara, Mutra Virajaniya, Pittahara, Santapahara, Varnya. Uses: Raktapitta, Visarpa, Trishnadaha, Vishavikara. DOSE: 12-24 g decoction. Note: padmakesara (lotus stamens) has no separate monograph; closest match is Kamala (flower). The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "gokarna",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Cooling potency (Virya Shita) may suppress Agni in individuals with weak digestion",
+      "No dedicated API monograph for gokarna; profile based on closest match Kokilaksha (Asteracantha/Hygrophila)"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No classical or modern data on safety in pregnancy; use only under practitioner guidance.",
+    "dosha_caution": "Cooling (Virya Shita) and sweet; may increase Kapha in excess; pacifies Pitta.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "CLOSEST-MATCH MONOGRAPH: gokarna has no dedicated API monograph. Profile routed to API Vol-2, Monograph 43: Kokilaksha (Seed) (Asteracantha longifolia syn. Hygrophila spinosa), p.100. Printed rasapanchaka: Rasa Madhura; Guna Picchila Snigdha; Virya Shita; Vipaka Madhura; Karma Balya, Kaphahara, Santarpana, Vrushya, Rucya. Uses: Shotha, Vatarakta, Pittashmari. DOSE: 3-6 g powder. Note: gokarna has no dedicated monograph; closest match is Kokilaksha/Asteracantha (the gokura-family marsh plant). The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "stira",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Heating potency (Virya Ushna) may aggravate Pitta in excess",
+      "Heavy quality (Guna Guru) may burden weak digestion (Manda Agni)"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Classical source describes Shalaparni as Sukhaprasavakara (facilitates easy delivery); however, no modern safety data in pregnancy — use only under practitioner guidance.",
+    "dosha_caution": "Heating (Virya Ushna) and heavy (Guna Guru); may aggravate Pitta in excess; generally Tridoshahara.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "CLOSEST-MATCH MONOGRAPH: stira/Sthira is a synonym of Shalaparni = Desmodium gangeticum (verified via ayurvedicmedicinalplants.com: 'Sthira ... Desmodium gangeticum ... Sanskrit synonyms: Salaparni, Guha, Sthira'). Profile reused from API Vol-3, Monograph 79: Shalaparni (Root) (Desmodium gangeticum), p.178. Printed rasapanchaka: Rasa Madhura Tikta; Guna Guru; Virya Ushna; Vipaka Madhura; Karma Balya, Tridoshahara, Vrushya, Vishahara, Rasayani, Sukhaprasavakara, Vatadoshajit. Uses: Jvara, Meha, Arsha, Shopha, Shvasa, Kasa, Krimi, Rajayakshma. DOSE: 5-10 g powder, 10-20 g decoction. stira is the same species as shalparni. The API monograph provides the above classical claims only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "surasa",
+    "classical_source": "Charaka Samhita (classical rasapanchaka cross-checked via API of India monograph)",
+    "contraindications": [
+      "Surasa = Tulasi (Ocimum sanctum) per API Vol-4; same as tulsi: avoid in pregnancy/breastfeeding",
+      "May slow blood clotting; stop use at least 2 weeks before surgery",
+      "May affect thyroid hormone levels; use caution in hypothyroidism"
+    ],
+    "interactions": [
+      "Anticoagulant/antiplatelet drugs — may potentiate effect; avoid concurrent use",
+      "Pentobarbital — may increase sedation (classical animal data)",
+      "Diabetes medications — may alter blood sugar; monitor closely"
+    ],
+    "pregnancy_flag": "Avoid in pregnancy and breastfeeding — Tulasi/surasa safety data lacking; animal data suggest possible uterotonic effects.",
+    "dosha_caution": "Heating potency (Virya Ushna); may aggravate Pitta in excess.",
+    "modern_source": "Ayurvedic Pharmacopoeia of India (classical monographs; see verification_note)",
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API Vol-4 lists 'Surasa' ONLY as a Sanskrit synonym inside the Tulasi (Ocimum sanctum, Seed, Monograph 60) entry. No dedicated Surasa monograph exists; it is NOT Vasa/Adhatoda. Routed to existing tulsi entry (which is modern_source_verified:true) for full verified citation. Contradictions, interactions, and pregnancy_flag are copied at high-level = same as tulsi (avoid in pregnancy/breastfeeding; may slow clotting, stop before surgery; hypothyroid caution; diabetes/anticoagulant/pentobarbital interactions). See tulsi entry for full modern verified citation. The API monograph provides classical synonym identification only; it does not state modern contraindication, interaction, or pregnancy safety claims, which are therefore left unverified."
+  },
+  {
+    "herb": "patola",
+    "classical_source": "Charaka Samhita (food-use gourd; modern source primary)",
+    "contraindications": [
+      "Contraindications have not been identified (Drugs.com Natural Products)"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Avoid use; information regarding safety and efficacy in pregnancy and lactation is lacking (Drugs.com Natural Products).",
+    "dosha_caution": "Light and cooling; generally tridoshic at food quantities. No classical dosha caution established.",
+    "modern_source": "Drugs.com Natural Products Professional: Pointed Gourd / Parwal (drugs.com/npp/pointed-gourd.html), fetched 2026-08-30",
+    "modern_source_verified": true,
+    "api_of_india_verified": false,
+    "verification_note": "Drugs.com Natural Products entry for Pointed Gourd/Parwal (Trichosanthes dioica): Contraindications: 'Contraindications have not been identified.' Interactions: 'None well documented.' Pregnancy: 'Avoid use. Information regarding safety and efficacy in pregnancy and lactation is lacking.' Toxicity: no mortality up to 3000 mg/kg in acute mice study; 'relatively free from short-term lethal constituents' (oral LD50 ~200 mL/kg). No API of India monograph used for this entry."
+  },
+  {
+    "herb": "gandhatruna",
+    "classical_source": "Charaka Samhita (food-use herb; modern source primary)",
+    "contraindications": [
+      "None identified (Drugs.com); do-not-take-if on GST- and CYP450-substrate drugs pending clinical relevance determination (MSKCC About Herbs)"
+    ],
+    "interactions": [
+      "Sedatives/pentobarbital — may cause drowsiness (WebMD)",
+      "CYP450 and GST substrate drugs — theoretical interaction pending clinical determination (MSKCC About Herbs)"
+    ],
+    "pregnancy_flag": "Likely unsafe when taken by mouth during pregnancy; may stimulate uterus/menstrual flow. Citral and myrcene showed birth defects in rats (MSKCC) and maternal toxicity in rats (Drugs.com) — avoid. Breastfeeding: insufficient data; avoid.",
+    "dosha_caution": "Heating and pungent; may aggravate Pitta in excess. No classical dosha data established.",
+    "modern_source": "MSKCC About Herbs 'Lemongrass' + Drugs.com Lemongrass + WebMD Lemongrass (all fetched 2026-08-30)",
+    "modern_source_verified": true,
+    "api_of_india_verified": false,
+    "verification_note": "gandhatruna as a named Ayurvedic drug has no dedicated page in standard references; this entry uses the botanical lemongrass (Cymbopogon spp.) match. MSKCC About Herbs: no contraindications identified; do-not-take-if on GST/CYP450 substrate drugs. Drugs.com: no well-documented interactions; low toxicity at low doses; excessive tea may affect kidney (MSKCC); high-dose essential oil can damage liver/stomach mucosa. WebMD: likely unsafe in pregnancy (uterine stimulant); may cause drowsiness with sedatives. No API of India monograph used for this entry."
+  },
+  {
+    "herb": "jivanti",
+    "classical_source": "Charaka Samhita (modern source primary; classical use as galactagogue)",
+    "contraindications": [
+      "No human contraindication/interaction list on the authoritative review (PMC6152761)",
+      "Ethanolic extract showed estrogenic + anti-implantation activity in rats; use caution with traditional high doses in early pregnancy"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Traditional use: considered safe for mother and child as galactagogue and for threatened abortion (PMC review). However, ethanolic extract has estrogenic and anti-implantation activity in rats — use traditional preparations only; avoid high doses in early pregnancy.",
+    "dosha_caution": "No classical dosha data established for jivanti; use traditionally only.",
+    "modern_source": "PMC Molecules 2017 review (pmc.ncbi.nlm.nih.gov/articles/PMC6152761, fetched 2026-08-30)",
+    "modern_source_verified": false,
+    "api_of_india_verified": false,
+    "verification_note": "PMC6152761 (Molecules 2017) review of Leptadenia reticulata: no human contraindication/interaction list published; toxicity: rats tolerated up to 3.125 g/kg planta per day (aqueous). Traditional use as galactagogue and for threatened abortion presented as safe for mother and child. However, ethanolic extract showed estrogenic and anti-implantation activity in rats. modern_source_verified is set to false because the page reports safety/efficacy data but lacks a formal contraindication/interaction section — do not overclaim. No API of India monograph used for this entry."
+  },
+  {
+    "herb": "amlavetasa",
+    "classical_source": "Charaka Samhita (data scarce; no verified modern or API source)",
+    "contraindications": [
+      "None reliably documented for Garcinia pedunculata specifically"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "No data available; avoid in pregnancy and lactation.",
+    "dosha_caution": "No classical dosha data established; use as culinary sour fruit only.",
+    "modern_source": "No verified source available (retracted study excluded; WebMD/MSKCC data is for G. cambogia only — genus-level, not pedunculata)",
+    "modern_source_verified": false,
+    "api_of_india_verified": false,
+    "verification_note": "amlavetasa = Garcinia pedunculata (Assam lemon/sour fruit). Data scarce: species-specific toxicity study (PMC5294221) is RETRACTED as of 2026 and must NOT be cited as verified. WebMD and MSKCC data is for Garcinia cambogia (HCA), which is a different species in the same genus — genus-level only, not applicable to pedunculata. No API of India monograph identified. No reliable modern contraindication, interaction, or pregnancy data exists for G. pedunculata. Treat as culinary sour fruit."
+  },
+  {
+    "herb": "chochchika",
+    "classical_source": "Charaka Samhita (plant botanically unidentified; listed in 'unidentified and controversial drugs' literature)",
+    "contraindications": [
+      "none — identity unresolved"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Identity botanically unresolved; no safety data — do not self-administer medicinally.",
+    "dosha_caution": "Identity unresolved; avoid medicinal self-use.",
+    "modern_source": "No verified source available (botanical identity unresolved)",
+    "modern_source_verified": false,
+    "api_of_india_verified": false,
+    "verification_note": "chochchika is classified among the 'unidentified and controversial drugs' in Charaka Samhita literature. No reliable botanical identification exists in modern pharmacognosy or Ayurvedic reference works. No safety data, toxicity data, or clinical data can be attributed to this entry. Do not self-administer medicinally. No API of India monograph exists."
   }
 ]

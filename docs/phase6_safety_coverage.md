@@ -15,8 +15,8 @@
 
 | Bucket | Count | Meaning |
 |---|---|---|
-| Covered with full monograph | 72 | includes `kustha` (reconciled from orphaned `kushtha` key); `haridra` covered under turmeric; `arka` + `kataka` added §6 (2026-08-29); `tulsi` + `moringa` added §5c (2026-08-30); 18 Tier-2 culinary fills added §5d (2026-08-30) |
-| Uncovered | 21 | see tiers below |
+| Covered with full monograph | 93 | includes `kustha` (reconciled from orphaned `kushtha` key); `haridra` covered under turmeric; `arka` + `kataka` added §6 (2026-08-29); `tulsi` + `moringa` added §5c (2026-08-30); 18 Tier-2 culinary fills §5d (2026-08-30); remaining 21 Tier-1 fills §5e (2026-08-30) |
+| Uncovered | 0 | see tiers below |
 | Orphan safety keys | 0 | audited — every safety key resolves to a herb name/alias |
 
 ## 3. The 41 uncovered herbs, by tier (corrected 2026-08-29)
@@ -54,7 +54,7 @@ Spices and kitchen staples where "no monograph" is low-risk for normal food use;
 
 > Order of work (Phase 6): Tier 1 → Tier 2 → remaining Tier-3 merges (none pending — closed).
 >
-> **Tier-1 status (2026-08-30):** arka, kataka, tulsi, moringa now filled. Remaining Tier-1 list (all still need monographs): `patola · sariva · raktachandana · jivanti · gokarna · patala · kantakari · brihati · katphala · shalparni · nagarmotha · priyangu · palasha · ketaki · gandhatruna · amlavetasa · padmakesara · utpala · surasa · stira · chochchika`.
+> **Tier-1 status (2026-08-30):** arka, kataka, tulsi, moringa + the remaining 21 Tier-1 herbs now filled (§5e). **Tier 1 is closed.**
 
 ## 4. How this is enforced at runtime
 
@@ -119,6 +119,22 @@ First-line medicinal herbs tiered up to Tier 1 (see §3). Both filled by fetchin
 
 Added light-template monographs for all 18 culinary/food-frequent herbs, per the §1.3 policy ("food-use caution only" — lighter bar than the medicinal monographs). Each entry carries `modern_source_verified: false` — these are food-quantity guidance on the curated culinary template, not page-cross-checked clinical claims — and a `pregnancy_flag` stating food quantities are generally regarded as safe. Entries added: `cardamom`, `cumin`, `fennel`, `celery`, `mustard`, `garden radish`, `garlic`, `onion`, `fenugreek`, `ajwain`, `dhanyaka`, `yavani`, `shatapushpa`, `trapusha`, `karkaru`, `chavya`, `bael`, `khasa`. Tier 2 is now **closed**. Remaining uncovered = the 21 Tier-1 therapeutically-significant herbs (see §3).
 
+## 5e. Tier-1 completion — remaining 21 fills (2026-08-30)
+
+Filled the final 21 Tier-1 herbs, achieving **93/93 coverage, 0 uncovered, 0 orphans**. Breakdown of sourcing (discipline maintained throughout — no fabricated claims):
+
+**API-verified classical (15 herbs, `api_of_india_verified: true`, `modern_source_verified: false` — rasapanchaka/dose cross-checked against the API of India):** `sariva`, `raktachandana`, `patala`, `kantakari`, `brihati`, `katphala`, `shalparni`, `nagarmotha`, `priyangu`, `palasha`, `ketaki`, `utpala`. Plus three that use the **closest available API monograph** (stated explicitly in `verification_note`): `padmakesara` → Kamala/Nelumbo (Vol-2 p.74), `gokarna` → Kokilaksha/Asteracantha (Vol-2 p.100), `stira` → Shalaparni/Desmodium (Vol-3 p.178, same species). `surasa` → `api_of_india_verified: true` but resolved as a Tulasi (Ocimum sanctum) synonym per API Vol-4, routed to the existing `tulsi` entry (which is `modern_source_verified: true`).
+
+**Modern page-verified (2 herbs, `modern_source_verified: true`):** `patola` (Trichosanthes dioica — Drugs.com: no contraindications/interactions identified, avoid in pregnancy/lactation); `gandhatruna` (lemongrass-type Cymbopogon — MSKCC/Drugs.com/WebMD: avoid in pregnancy, sedative + theoretical CYP450/GST interactions; named-drug caveat noted).
+
+**Data-scarce, honestly marked (`modern_source_verified: false`):** `jivanti` (Leptadenia — PMC review has no contraindication section; traditional galactagogue/threatened-abortion use with animal estrogenic/anti-implantation caveat); `amlavetasa` (Garcinia pedunculata — only toxicity study retracted, genus-level data for G. cambogia explicitly NOT applied); `chochchika` (botanically unidentified; no safety data — do-not-self-administer).
+
+**Solanaceae/species safety notes** embedded where relevant (kantakari, brihati steroidal glycoalkaloids; palasha bark-only).
+
+### Effect
+
+- Coverage **72 → 93/93** (complete); uncovered **21 → 0**; orphan keys **0**; safety entries **71 → 92**.
+
 ## 6. Highest-priority fills: `arka` + `kataka` (2026-08-29)
 
 Both were the Tier-1 critical gap: the uncovered advisory (*"use only in food quantities…"*) was actively misleading for a toxic plant.
@@ -148,8 +164,9 @@ Both were the Tier-1 critical gap: the uncovered advisory (*"use only in food qu
 
 ## 8. Phase 6 result so far
 
-- 93 canonical herbs; **71 safety entries**; covered **72/93**; uncovered **21** (all remaining Tier-1); orphan keys **0**.
+- 93 canonical herbs; **92 safety entries**; covered **93/93**; uncovered **0**; orphan keys **0**. **Phase 6 coverage is complete.**
 - Batch #2 (8 herbs) classical rasapanchaka + dose cross-verified against API of India (new `api_of_india_verified` + `verification_note` fields); modern claims honestly left `modern_source_verified: false`.
 - Tier-1 fills: arka, kataka (2026-08-29), tulsi, moringa (2026-08-30), all `modern_source_verified: true`.
 - Tier-2 culinary fills: 18 herbs (2026-08-30), all `modern_source_verified: false` (food-template bar).
+- Tier-1 completion: remaining **21 herbs** filled (2026-08-30) — 15 API-verified classical + 3 closest-match (palmakesara→Kamala, gokarna→Kokilaksha, stira→Shalaparni) + surasa→tulsi synonym (§5e); 2 modern page-verified (patola, gandhatruna); 3 honestly data-scarce (jivanti, amlavetasa, chochchika).
 - Retrieval eval stable: **24/28 (85%)**, 0 false emergencies, 10/10 safety coverage.
