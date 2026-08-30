@@ -84,7 +84,7 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **3** | Retrieval & RAG pipeline | ✅ **Done** |
 | **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
 | **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
-| **6** | Safety & trust layer (source verification) | 🔄 **Next** |
+| **6** | Safety & trust layer (source verification) | 🔄 **In progress** — data layer complete (93/93 file coverage), final reachability hardening of the remaining gaps in progress |
 | **7** | Interactive frontend | ⏳ **Planned** |
 
 </div>
@@ -114,7 +114,7 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 🌿 **Herb-aware retrieval** | Herb/alias detection skips generic vector search → direct herb-mention index lookup, ranked by similarity, `confidence: high` | ✅ |
 | 🧬 **Herb-first expansion** | `canonical_term` resolves to the herb name so downstream is herb-aware | ✅ |
 | 🗣️ **Alias-aware synthesis** | Prompt includes herb Sanskrit/Latin/English aliases so answers explain alternate names | ✅ |
-| 🔍 **Safety DB** | `herb_safety.json` — 49 herbs w/ contraindications, interactions, pregnancy flag, dosha caution | ✅ |
+| 🔍 **Safety DB** | `herb_safety.json` — **92 entries** w/ contraindications, interactions, pregnancy flag, dosha caution. File coverage **93/93** herbs, but **runtime-reachable ≈ 70/92** (a herb is reachable only if an ingested verse mentions it) — remaining 22 are alias-gap or corpus-scope gaps tracked by `audit_safety_coverage.py` | ✅ (data) · 🔄 (reachability) |
 | 📊 **Phase 5 eval** | 28 Qs (8 new herb-focused) · Resolved **24/28 (85%)** · Top-3 **25/28 (89%)** · **0** false positives · **10/10** herb queries safety-covered | ✅ |
 
 ### 📊 Corpus breakdown
