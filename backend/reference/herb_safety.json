@@ -58,7 +58,9 @@
     "dosha_caution": "Heating — aggravates Pitta in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.7 (skin)",
     "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-1, monograph 28 'Guggulu (Exudate)', printed p.57 (fetched 2026-08-30 from ayurveda.hu API-Vol-1.pdf). API states classical Rasa/Guna/Virya/Vipaka/Karma: Rasa Katu/Tikta/Kashaya; Guna Laghu/Sara/Vishada; Virya Ushna; Vipaka Katu; Karma Balya/Rasayana/Varnya/Vatabalasajit/Bhagnasandhanakrit/Medohara; THERAPEUTIC USES Amavata/Kushtha/Prameha/Vatavyadhi/Granthi/Shopha/Gandamala/Medoroga; DOSE 2-4 g. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (pregnancy emmenagogue, liver disease, menorrhagia; anticoagulant/thyroid/antihypertensive/statin interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "trikatu",
@@ -109,7 +111,9 @@
     "dosha_caution": "Generally tridoshic; safe for all constitutions",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
     "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-1, monograph 27 'Guduchi (St)', printed pp.54-55 (fetched 2026-08-30 from ayurveda.hu API-Vol-1.pdf). API states: Rasa Tikta/Kashaya; Guna Laghu; Virya Ushna; Vipaka Madhura; Karma Balya/Deepana/Rasayana/Sangrahi/Tridoshashamaka/Raktashodhaka/Jvaraghna; THERAPEUTIC USES Jvara/Kushtha/Pandu/Prameha/Vatarakta/Kamala; DOSE 3-6 g powder, 20-30 g decoction. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (autoimmune caution, immunostimulant mechanism, pregnancy data; immunosuppressant/antidiabetic/antihypertensive interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "shatavari",
@@ -127,7 +131,9 @@
     "dosha_caution": "Cool and moist — may aggravate Kapha in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
     "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-4, monograph 50 'Satavari (Rt)', printed pp.122-123 (fetched 2026-08-30 from naturalingredient.org API-Vol-4.pdf). API states: Rasa Madhura/Tikta; Guna Guru/Snigdha; Virya Shita; Vipaka Madhura; Karma Shukrala/Balya/Hridya/Medhya/Pittahara/Rasayana/Vrushya/Shukraja/Kaphavataghna/Vatahara/Stanyakara/Netrya/Agnipushtikara; THERAPEUTIC USES Amlapitta/Arsha/Atisara/Gulma/Kshaya/Raktatisara/Raktapitta/Raktavikara/Vatarakta/Visarpa/Shotha/Parinamashula/Mutrarakta/Vatajvara/Svarabhrida/Naktandhya/Sutikaroga/Stanyadosha/Stanyakshaya; DOSE 3-6 g. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (estrogen-sensitive condition caution, estrogenic activity, asparagus allergy, Ama caution; estrogen therapy/OCP, lithium, diuretic interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "brahmi",
@@ -146,7 +152,9 @@
     "dosha_caution": "Light and drying — may aggravate Vata in excess",
     "classical_source": "Charaka Samhita: Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.7 (skin); Chikitsasthana ch.18 (respiratory)",
     "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-2, monograph 11 'Brahmi (W.P.)' = BRĀHMĪ (Whole Plant), Bacopa monnieri, printed p.25 (fetched 2026-08-30 from ayurveda.hu API-Vol-2.pdf; NB this is Bacopa monnieri, NOT Mandukaparni/Centella). API states: Rasa Madhura/Tikta/Kashaya; Guna Laghu/Sara; Virya Shita; Vipaka Madhura; Karma Kaphahara/Medhya/Rasayana/Svarya/Vatahara/Vishahara/Ayushya/Matiprada/Prajasthapana/Mohahara; THERAPEUTIC USES Kushtha/Jvara/Shopha/Pandu/Prameha/Manasavikara; DOSE 1-3 g powder. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (bradycardia, gastric-ulcer caution, pregnancy data; anticholinergic/sedative/thyroid/antihypertensive interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "amalaki",
@@ -163,7 +171,9 @@
     "dosha_caution": "Cooling — safe for Pitta; may aggravate Vata/Kapha in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties)",
     "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-1, monograph 4 'Amalaki (Dried)', printed p.6 (fetched 2026-08-30 from ayurveda.hu API-Vol-1.pdf). API states: Rasa Madhura/Amla/Katu/Tikta/Kashaya; Guna Laghu/Ruksha; Virya Shita; Vipaka Madhura; Karma Chakshushya/Rasayana/Tridoshajit/Vrushya; THERAPEUTIC USES Raktapitta/Amlapitta/Prameha/Daha; DOSE 3-6 g powder. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (diarrhea, kidney-stone/oxalate caution; antacid/iron/anticoagulant interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "haritaki",
@@ -181,7 +191,9 @@
     "dosha_caution": "Primarily Vata-balancing but drying in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sharirasthana ch.8 (constitution prakriti)",
     "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-1, monograph 31 'Haritaki (Frt)', printed p.63 (fetched 2026-08-30 from ayurveda.hu API-Vol-1.pdf). API states: Rasa Madhura/Amla/Katu/Tikta/Kashaya; Guna Laghu/Ruksha; Virya Ushna; Vipaka Madhura; Karma Chakshushya/Deepana/Hridya/Medhya/Sarvadoshaprashamana/Rasayana/Anulomana; THERAPEUTIC USES Shotha/Arsha/Aruci/Hridroga/Kasa/Pandu/Prameha/Udavarta/Vibandha/Jirnajvara/Vishamajvara/Shiroroga/Tamakashvasa/Gulma/Udararoga; DOSE 3-6 g powder. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (pregnancy/purgative caution, dehydration, exhaustion; diuretic/antihypertensive/laxative interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "bibhitaki",
@@ -197,7 +209,9 @@
     "dosha_caution": "Drying — aggravates Vata; excellent for Kapha",
     "classical_source": "Charaka Samhita (no specific verse located)",
     "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-1, monograph 17 'Bibhitaka (Frt)', printed p.34 (fetched 2026-08-30 from ayurveda.hu API-Vol-1.pdf). API states: Rasa Kashaya; Guna Laghu/Ruksha; Virya Ushna; Vipaka Madhura; Karma Chakshushya/Keshya/Kaphapittajit/Bhedaka/Kriminashana/Kasahara; THERAPEUTIC USES Chardi/Kasa/Krimiroga/Vibandha/Svarabheda/Netraroga; DOSE 3-6 g powder. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (Vata/dryness caution, pregnancy data; antidiabetic/antihypertensive interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "ginger",
@@ -642,7 +656,9 @@
     "dosha_caution": "Very sharp and hot — aggravates Pitta strongly",
     "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
     "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source_verified": false,
+    "api_of_india_verified": true,
+    "verification_note": "API of India Part-I Vol-2, monograph 74 'Vacha (Rz)' = VACĀ (Rhizome), Acorus calamus, printed pp.176-178 (fetched 2026-08-30 from ayurveda.hu API-Vol-2.pdf; ToC lists p.168 but printed footers read 176). API states: Rasa Katu/Tikta; Guna Laghu/Tikshna; Virya Ushna; Vipaka Katu; Karma Dipani/Krimihara/Kashthya/Kaphahara/Medhya/Vatahara/Malamutravishodhani/Vamak; THERAPEUTIC USES Shula/Apasmara/Shvasa/Kasa/Vibandha/Unmada/Adhmana/Karnasrava/Smritidaurbalya; DOSE 60-120 mg powder (1-2 g as emetic); Shodhana required before internal use. The API monograph does NOT state the contraindications/interactions/pregnancy flag listed above (pregnancy/uterine-stimulant caution, peptic ulcer, Vata/anxiety; anticoagulant/antihypertensive/sedative interactions); those modern claims are unverified and `modern_source_verified` stays false."
   },
   {
     "herb": "shirisha",
@@ -903,6 +919,284 @@
     "dosha_caution": "Bitter and cooling — good for Pitta; aggravates Vata",
     "classical_source": "Charaka Samhita: Chikitsasthana ch.18 (respiratory)",
     "modern_source": "Ayurvedic Pharmacopoeia of India",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "tulsi",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.18 (respiratory)",
+    "contraindications": [
+      "Hypothyroidism: holy basil might lower thyroxine levels; in theory this could worsen hypothyroidism (WebMD).",
+      "Surgery: holy basil might slow blood clotting, increasing bleeding risk during and after surgery; stop using at least 2 weeks before a scheduled surgery (WebMD).",
+      "Avoid prolonged chewing of the raw leaves in large quantities for extended periods - the astringent leaves can damage tooth enamel over time (MedicineNet)."
+    ],
+    "interactions": [
+      "Medications for diabetes - holy basil might lower blood sugar; taking it with diabetes medications might cause blood sugar to drop too low (WebMD).",
+      "Medications that slow blood clotting (anticoagulant/antiplatelet drugs) - holy basil might slow clotting and increase bruising/bleeding risk (WebMD).",
+      "Pentobarbital (Nembutal) - taking holy basil seed oil with pentobarbital might cause too much drowsiness (WebMD)."
+    ],
+    "pregnancy_flag": "Avoid - possibly unsafe during pregnancy or when trying to become pregnant; in animals large doses seem to reduce the chance of pregnancy or a full-length pregnancy (WebMD). Breast-feeding: insufficient data, avoid use.",
+    "dosha_caution": "Light, pungent and heating - generally tridoshic as a food spice; used for kapha/vata respiratory conditions in classical practice",
+    "modern_source": "WebMD Holy Basil (webmd.com/vitamins/ai/ingredientmono-1101/holy-basil, fetched 2026-08-30); MedicineNet Holy Basil (medicinenet.com, fetched 2026-08-30); NCBI systematic review PMC5376420 (tulsi clinical safety) - contraindication/interaction/pregnancy claims reflect only the fetched page text; note: no fetched page states the phrase 'thins blood' - the verified claim is 'may slow blood clotting'",
+    "modern_source_verified": true
+  },
+  {
+    "herb": "moringa",
+    "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
+    "contraindications": [
+      "Pregnant and breastfeeding women should avoid moringa (MSK; corroborated by Drugs.com 'Avoid use' - pregnancy/lactation safety data lacking).",
+      "Moringa root and root extracts are possibly unsafe when taken by mouth - the roots contain spirochin, a toxic substance (RxList).",
+      "Reported rare serious adverse events after consuming moringa leaf/powder: Stevens-Johnson syndrome, cutaneous toxicity with respiratory distress and tongue edema, and anaphylaxis - case reports (MSK, Drugs.com)."
+    ],
+    "interactions": [
+      "Cytochrome P450 substrates including CYP3A4 - moringa increased rifampin bioavailability and inhibited CYP3A4 in preclinical models; clinical relevance not yet determined (MSK). Also notes impaired clearance of CYP3A4/CYP1A2 and P-gp substrates and increased nevirapine concentrations (Drugs.com, WebMD).",
+      "Sitagliptin - chronic co-administration decreased the antihyperglycemic effect in an animal model; clinical relevance not yet determined (MSK).",
+      "Medications for diabetes - moringa might lower blood sugar; monitor blood sugar closely (WebMD).",
+      "Levothyroxine - potential interaction: animal studies suggest moringa inhibits thyroxine-to-triiodothyronine conversion, and RxList suggests it may decrease levothyroxine absorption; framed as potential, not confirmed (Drugs.com, RxList)."
+    ],
+    "pregnancy_flag": "Avoid - pregnant and breastfeeding women should avoid use (MSK); no pregnancy/lactation safety data; abortifacient effects reported with oral leaf extract in rats (Drugs.com).",
+    "dosha_caution": "Bitter, pungent and heating - shigru is classically tikshna/ushna and used for kapha conditions; not used as a daily teal in large amounts in classical practice",
+    "modern_source": "MSKCC About Herbs 'Moringa oleifera' (mskcc.org, fetched 2026-08-30); WebMD Moringa (webmd.com/vitamins-supplements/moringa + ingredientmono-1242, fetched 2026-08-30); Drugs.com Natural Products Professional 'Moringa' (drugs.com/npp/moringa.html, fetched 2026-08-30); RxList Moringa (rxlist.com/supplements/moringa.htm) - contraindication/interaction/pregnancy claims reflect only the fetched page text",
+    "modern_source_verified": true
+  },
+  {
+    "herb": "cardamom",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Excess intake may cause mouth ulcers or digestive heat in Pitta-dominant individuals",
+      "Avoid large medicinal doses during acute gastric irritation"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Heating in excess; may aggravate Pitta when used in large quantities.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "cumin",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Excess may cause hyperacidity or heartburn in sensitive individuals",
+      "Large amounts may stimulate uterine contractions; use cautiously in pregnancy"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Warming; excess may aggravate Pitta and dry Vata.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "fennel",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May cause allergic reactions in individuals sensitive to carrots or Apiaceae family plants",
+      "Excess intake may have mild estrogenic effects"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Balancing for Vata and Kapha; may increase Pitta in excess due to heating potency.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "celery",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May lower blood pressure; use caution if already on antihypertensive medication",
+      "Contains oxalates; moderate intake advised for individuals with kidney stone history"
+    ],
+    "interactions": [
+      "May potentiate antihypertensive and anticoagulant medications"
+    ],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Light and drying; excess may aggravate Vata.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "mustard",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May aggravate Pitta and cause gastric irritation in excess",
+      "Can irritate the stomach lining; avoid in cases of active gastritis or ulcers"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Strongly heating; aggravates Pitta in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "garden radish",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Contains goitrogenic compounds; avoid excessive intake with thyroid disorders",
+      "May cause gas and bloating in sensitive individuals"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Heating and pungent; may aggravate Pitta and Vata in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "garlic",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Mild antiplatelet activity; avoid large quantities before surgery or if on anticoagulants",
+      "May aggravate Pitta and cause gastric irritation in excess"
+    ],
+    "interactions": [
+      "May potentiate anticoagulant and antiplatelet medications",
+      "May affect blood sugar levels; monitor if on hypoglycemic agents"
+    ],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Heating and heavy in excess; may aggravate Pitta and increase Kapha.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "onion",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May cause heartburn or gastric discomfort in excess, especially raw",
+      "Can worsen symptoms in individuals with acid reflux or GERD"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Heating in excess; may aggravate Pitta and Kapha (heavy, oily qualities).",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "fenugreek",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May lower blood sugar; monitor if diabetic or on hypoglycemic medication",
+      "Excess intake may cause gastrointestinal discomfort or maple-syrup body odor"
+    ],
+    "interactions": [
+      "May potentiate hypoglycemic agents and anticoagulant drugs"
+    ],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Bitter and heating; excess may aggravate Pitta and deplete moisture in Vata types.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "ajwain",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Highly heating; excess may cause hyperacidity or gastric irritation",
+      "Avoid large amounts in active peptic ulcer or severe Pitta conditions"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Strongly heating and pungent; aggravates Pitta in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "dhanyaka",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May cause allergic reactions in individuals sensitive to Apiaceae family plants",
+      "Excess raw intake may cause mild digestive upset in some individuals"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Generally tridoshic at food levels; slight cooling tendency.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "yavani",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May cause skin sensitization in some individuals with topical use",
+      "Excess internal use may cause digestive irritation"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Heating and bitter; may aggravate Pitta in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "shatapushpa",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "May cause allergic reactions in Apiaceae-sensitive individuals",
+      "Large doses may have mild estrogenic effects"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Mildly warming and light; balancing for Kapha, may increase Pitta in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "trapusha",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Mild diuretic effect; excessive intake may increase urination",
+      "May aggravate Vata when consumed raw and cold in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Cooling and light; excess raw/cold use may aggravate Vata and weak Agni.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "karkaru",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Bland and moist; excess may increase Kapha and cause congestion",
+      "May aggravate digestive sluggishness if consumed in very large amounts"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Cooling and heavy; excess may increase Kapha and weaken Agni.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "chavya",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Heating and pungent; excess may cause gastric irritation or hyperacidity",
+      "Avoid in severe Pitta conditions or active gastric ulcers"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Strongly heating; aggravates Pitta in excess.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "bael",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Astringent and binding; may worsen constipation if taken without adequate water",
+      "Excess unripe fruit may cause digestive sluggishness"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Cooling and astringent; may aggravate Vata in excess without oil/lubrication.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
+    "modern_source_verified": false
+  },
+  {
+    "herb": "khasa",
+    "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
+    "contraindications": [
+      "Very cooling; excess may suppress digestive fire (Agni)",
+      "May increase Kapha and cause congestion in excess"
+    ],
+    "interactions": [],
+    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "dosha_caution": "Strongly cooling and sweet; aggravates Kapha in excess, pacifies Pitta.",
+    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
     "modern_source_verified": false
   }
 ]

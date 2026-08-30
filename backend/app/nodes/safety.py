@@ -18,25 +18,26 @@ log = logging.getLogger(__name__)
 
 
 def _kill_mcp_children() -> int:
-    """Kill lingering mcp_server.py subprocesses owned by this process.
+    """Kill lingering mcp_server.py subprocesses descended from this process.
 
     stdio_client terminates its process tree on a *clean* context exit, but a
-    crash or an abnormal interpreter exit can leave orphaned children behind
-    (observed as leftover mcp_server.py PIDs). Windows-only (CIM); guards the
-    current process's own children so concurrent servers are untouched.
+    crash or abnormal interpreter exit can orphan it. Empirically the server is
+    spawned through an intermediate python wrapper, so the real mcp_server.py
+    process is a *grandchild*, not a direct child; the original
+    ``ParentProcessId == our pid`` filter therefore missed it. This walks the
+    full descendant tree of this process and kills every descendant whose
+    command line names our MCP server script, leaving concurrent/independent
+    server processes (owned by other parents) untouched. Windows-only (CIM).
     Returns the number of PIDs killed.
     """
     if sys.platform != "win32":
         return 0
     killed = 0
     try:
-        script = Path(MCP_SERVER_SCRIPT).name
         ps = (
-            f"Get-CimInstance Win32_Process | "
-            f"Where-Object {{ $_.Name -like 'python*' -and "
-            f"($_.CommandLine -match 'mcp_server.py') -and "
-            f"($_.ParentProcessId -eq {os.getpid()}) }} | "
-            f"Select-Object -ExpandProperty ProcessId"
+            "Get-CimInstance Win32_Process | "
+            "Select-Object ProcessId, ParentProcessId, CommandLine | "
+            "ConvertTo-Json -Compress"
         )
         out = subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
@@ -44,12 +45,30 @@ def _kill_mcp_children() -> int:
             text=True,
             timeout=15,
         ).stdout
-        for line in out.splitlines():
-            pid = line.strip()
-            if not pid.isdigit():
-                continue
-            subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True, timeout=10)
-            killed += 1
+        procs = json.loads(out)
+        if isinstance(procs, dict):  # single result row
+            procs = [procs]
+        by_parent = {}
+        for p in procs:
+            by_parent.setdefault(p.get("ParentProcessId"), []).append(p)
+
+        # BFS over the descendant tree from this process (not just children).
+        descendants = []
+        frontier = [os.getpid()]
+        while frontier:
+            nxt = []
+            for pid in frontier:
+                for child in by_parent.get(pid, []):
+                    descendants.append(child)
+                    nxt.append(child["ProcessId"])
+            frontier = nxt
+
+        target = "mcp_server.py"
+        for child in descendants:
+            if target in (child.get("CommandLine") or ""):
+                pid = str(child["ProcessId"])
+                subprocess.run(["taskkill", "/F", "/PID", pid], capture_output=True, timeout=10)
+                killed += 1
     except Exception as e:  # pragma: no cover
         log.warning("mcp child cleanup failed: %s", e)
     return killed
@@ -275,10 +294,16 @@ def check_safety(state):
     for h in found:
         entry = SAFETY_DB.get(h)
         if entry and not entry.get("modern_source_verified"):
-            verification_notes.append(
+            note = (
                 f"{h}: safety data from {entry.get('modern_source', 'modern source')} "
                 f"- not yet independently cross-verified"
             )
+            if entry.get("api_of_india_verified"):
+                note += (
+                    " (classical rasapanchaka/dose cross-checked against the API of India "
+                    "monograph; modern contraindication/interaction claims remain unverified)"
+                )
+            verification_notes.append(note)
 
     source_disagreements = []
     for h in found:

@@ -15,8 +15,8 @@
 
 | Bucket | Count | Meaning |
 |---|---|---|
-| Covered with full monograph | 52 | includes `kustha` (reconciled from orphaned `kushtha` key); `haridra` covered under turmeric; `arka` + `kataka` added §6 (2026-08-29) |
-| Uncovered | 41 | see tiers below |
+| Covered with full monograph | 72 | includes `kustha` (reconciled from orphaned `kushtha` key); `haridra` covered under turmeric; `arka` + `kataka` added §6 (2026-08-29); `tulsi` + `moringa` added §5c (2026-08-30); 18 Tier-2 culinary fills added §5d (2026-08-30) |
+| Uncovered | 21 | see tiers below |
 | Orphan safety keys | 0 | audited — every safety key resolves to a herb name/alias |
 
 ## 3. The 41 uncovered herbs, by tier (corrected 2026-08-29)
@@ -37,11 +37,15 @@ Spices and kitchen staples where "no monograph" is low-risk for normal food use;
 
 `cardamom` · `cumin` · `fennel` · `celery` · `mustard` · `garden radish` · `garlic` · `onion` · `fenugreek` · `ajwain` · `dhanyaka` (coriander) · `yavani` · `shatapushpa` (dill/anise) · `trapusha` (cucumber) · `karkaru` (bottle gourd) · `chavya` · `bael` · `khasa`.
 
+> **Filled 2026-08-30 (removed from this tier):** all 18 above — added as light-template culinary entries (§5d). Tier 2 is now **closed**.
+
 ### Tier 1 — Therapeutically significant / potentially toxic (fill FIRST)
 
 `patola` · `sariva` · `raktachandana` · `jivanti` · `gokarna` · `patala` · `kantakari` · `brihati` · `katphala` · `shalparni` · `nagarmotha` · `priyangu` · `palasha` · `ketaki` · `gandhatruna` (lemongrass) · `amlavetasa` · `padmakesara` · `utpala` · `surasa` · `stira` · `chochchika`.
 
 > **Filled 2026-08-29 (removed from this tier):** ~~`arka`~~ and ~~`kataka`~~ — both were the highest-priority gap (the previous "no monograph" advisory told food-quantity use for a genuinely toxic plant); see §6.
+>
+> **Filled 2026-08-30 (removed from this tier):** ~~`tulsi`~~ and ~~`moringa`~~ — see §5c.
 
 > **Tier-up (2026-08-29):**
 > - **`tulsi`** (holy basil) — moved **Tier 2 → Tier 1**: first-line Ayurvedic respiratory/medicinal herb; treating it as a culinary spice understates its exposure. Medicinal-culinary.
@@ -49,6 +53,8 @@ Spices and kitchen staples where "no monograph" is low-risk for normal food use;
 > - Effect: Tier 1 = **25**, Tier 2 = **18**.
 
 > Order of work (Phase 6): Tier 1 → Tier 2 → remaining Tier-3 merges (none pending — closed).
+>
+> **Tier-1 status (2026-08-30):** arka, kataka, tulsi, moringa now filled. Remaining Tier-1 list (all still need monographs): `patola · sariva · raktachandana · jivanti · gokarna · patala · kantakari · brihati · katphala · shalparni · nagarmotha · priyangu · palasha · ketaki · gandhatruna · amlavetasa · padmakesara · utpala · surasa · stira · chochchika`.
 
 ## 4. How this is enforced at runtime
 
@@ -71,6 +77,48 @@ Method (enforced from this correction onward): **fetch the page first** — ever
 
 Next batch queued: `brahmi`, `guggulu`, `shatavari`, `guduchi`, `amalaki`, `haritaki`, `bibhitaki`, `vacha` (API of India is the better second source for these; NCCIH has no pages).
 
+## 5b. Cross-verified batch #2 — API of India classical verification (2026-08-30)
+
+All 8 queued herbs were cross-checked against the **Ayurvedic Pharmacopoeia of India (Part-I)** by fetching and text-extracting the actual PDFs (pypdf), same-day (2026-08-30): Vol-1 / Vol-2 from `ayurveda.hu` API mirror, Vol-4 from `naturalingredient.org`.
+
+**Key methodological point (kept from batch #1):** an API-of-India monograph states the **classical rasapanchaka** (Rasa/Guna/Virya/Vipaka/Karma), therapeutic uses, and dose — it does **NOT** state modern contraindications, drug interactions, or pregnancy flags. The pre-existing entries in `herb_safety.json` are dominated by exactly those modern claims (immunostimulant, estrogenic activity, bradycardia, oxalate content, emmenagogue, etc.). Therefore setting `modern_source_verified: true` on API evidence alone would repeat the fabricated-attribution error the reviewer caught in batch #1. Resolution:
+
+- Added a **new, distinct field `api_of_india_verified: true`** on all 8 entries, recording that the *classical* content (rasapanchaka + dose) was verified against the named monograph.
+- Added **`verification_note`** — exact citation (volume, monograph no./name, printed page) + the verified classical text, so the evidence is auditable.
+- **`modern_source_verified` is left `false`** on all 8, and the `verification_note` states explicitly that the API does not confirm the listed modern contraindication/interaction/pregnancy claims. Those claims remain "AI-compiled, not second-source-verified" — a true, honest disclosure.
+
+### Volume corrections found during the work
+
+- **Shatavari (Asparagus racemosus, Root) is in API Part-I Vol-4 (monograph 50, printed pp.122–123), NOT Vol-3.** Vol-3's 100 monographs (Aśhūkī→Utpala) contain no Śatāvarī — confirmed by reading both volumes' tables of contents.
+- **Vacha (Acorus calamus, Rhizome)** — ToC lists p.168 but the monograph's printed page footers read **176–178** (e-book PDF has shuffled content); cite 176 (monograph 74).
+- **Brahmi = Bacopa monnieri (monograph 11, Vol-2, p.25)** — explicitly the whole plant of *Bacopa monnieri*, i.e. NOT mandukaparni/Centella.
+
+### Verified classical content (summary; verbatim in `verification_note`)
+
+| Herb | Vol / monograph / printed p. | API Rasa·Guna·Virya·Vipaka (abbrev) | API DOSE |
+|---|---|---|---|
+| Amalaki | Vol-1, 4, p.6 | Madhura·Amla·Kaṭu·Tikta·Kaṣāya · Laghu·Rūksha · Śīta · Madhura | 3–6 g |
+| Guduchi | Vol-1, 27, pp.54–55 | Tikta·Kaṣāya · Laghu · Uṣṇa · Madhura | 3–6 g; 20–30 g decoction |
+| Guggulu | Vol-1, 28, p.57 | Kaṭu·Tikta·Kaṣāya · Laghu·Sara·Viṣada · Uṣṇa · Kaṭu | 2–4 g |
+| Haritaki | Vol-1, 31, p.63 | Madhura·Amla·Kaṭu·Tikta·Kaṣāya · Laghu·Rūksha · Uṣṇa · Madhura | 3–6 g |
+| Bibhitaki | Vol-1, 17, p.34 | Kaṣāya · Laghu·Rūksha · Uṣṇa · Madhura | 3–6 g |
+| Brahmi | Vol-2, 11, p.25 | Madhura·Tikta·Kaṣāya · Laghu·Sara · Śīta · Madhura | 1–3 g |
+| Vacha | Vol-2, 74, p.176 | Kaṭu·Tikta · Laghu·Tīkṣṇa · Uṣṇa · Kaṭu | 60–120 mg (1–2 g emetic) |
+| Shatavari | Vol-4, 50, pp.122–123 | Madhura·Tikta · Guru·Snigdha · Śīta · Madhura | 3–6 g |
+
+Effect on the audit: entry counts and coverage unchanged (still 51 entries, 52/93 covered, 0 orphan keys). The 8 herbs remain listed in `verification_notes` (modern claims still unverified) but now carry an auditable `api_of_india_verified` classical cross-check.
+
+## 5c. Tier-1 fills 2026-08-30: `tulsi` + `moringa`
+
+First-line medicinal herbs tiered up to Tier 1 (see §3). Both filled by fetching authoritative pages and scoping every contraindication/interaction/pregnancy claim to the actual page text (same batch #1/#2 discipline). `modern_source_verified: true` means claims == fetched page text.
+
+- **`tulsi`** (holy basil, *Ocimum tenuiflorum/sanctum*) — `modern_source_verified: true`. Sources: WebMD Holy Basil (ingredientmono-1101), MedicineNet Holy Basil, NCBI systematic review PMC5376420 (all fetched 2026-08-30). Claims limited to fetched text: avoid in pregnancy/breastfeeding; hypothyroidism caution (may lower thyroxine); stop ≥2 weeks before surgery (may slow clotting); interactions with diabetes meds, anticoagulant/antiplatelet drugs, pentobarbital; short-term (≤60–90 days) use only; nausea/diarrhea possible. **Attribution guard:** no fetched page states the popular phrase "thins blood" — the entry uses the verified claim "may slow blood clotting," exactly as the page words it.
+- **`moringa`** (drumstick, *Moringa oleifera*) — `modern_source_verified: true`. Sources: MSKCC About Herbs (Moringa oleifera), WebMD Moringa (incl. ingredientmono-1242), Drugs.com Natural Products Professional, RxList (fetched 2026-08-30). Claims limited to fetched text: pregnant/breastfeeding women should **avoid** (MSK explicit contraindication; Drugs.com "Avoid use"); root/root extracts possibly unsafe (spirochin, RxList); rare serious adverse events (Stevens-Johnson syndrome, cutaneous toxicity, anaphylaxis — case reports); interactions with CYP3A4/rifampin, sitagliptin, diabetes meds, nevirapine, CYP1A2/P-gp substrates, and a *potential* (non-confirmed) levothyroxine interaction; no other contraindications identified (Drugs.com).
+
+## 5d. Tier-2 culinary fills (2026-08-30)
+
+Added light-template monographs for all 18 culinary/food-frequent herbs, per the §1.3 policy ("food-use caution only" — lighter bar than the medicinal monographs). Each entry carries `modern_source_verified: false` — these are food-quantity guidance on the curated culinary template, not page-cross-checked clinical claims — and a `pregnancy_flag` stating food quantities are generally regarded as safe. Entries added: `cardamom`, `cumin`, `fennel`, `celery`, `mustard`, `garden radish`, `garlic`, `onion`, `fenugreek`, `ajwain`, `dhanyaka`, `yavani`, `shatapushpa`, `trapusha`, `karkaru`, `chavya`, `bael`, `khasa`. Tier 2 is now **closed**. Remaining uncovered = the 21 Tier-1 therapeutically-significant herbs (see §3).
+
 ## 6. Highest-priority fills: `arka` + `kataka` (2026-08-29)
 
 Both were the Tier-1 critical gap: the uncovered advisory (*"use only in food quantities…"*) was actively misleading for a toxic plant.
@@ -91,3 +139,17 @@ Both were the Tier-1 critical gap: the uncovered advisory (*"use only in food qu
 ### Effect
 
 - Uncovered **43 → 41**; audit passes (51 entries, 52/93 covered, 0 orphans); retrieval eval unchanged (24/28, 0 false emergencies — arka/kataka were never eval queries, and added rows do not disturb the 10/10 mcp coverage).
+
+## 7. Recorded decisions & deferred work (2026-08-30)
+
+- **Item 7 — confidence-band re-derivation (flag for Phase 9):** the `HIGH_SCORE` / `MEDIUM_SCORE` cut-offs in `backend/app/nodes/retriever.py` (`_confidence_band`, lines 83–88) were last fit to the Phase-3 baselines (high/medium/low on top-1/top-3 hit rates). They are **not** re-derived in this phase — the Phase-6 changes (safety data + new reference rows) do not touch the retrieval scoring path, and re-deriving now would risk shifting eval results mid-phase. **Recorded decision: defer threshold re-derivation to Phase 9.** No code change this phase beyond noting it here.
+- **Item 8 — `--mode full` deferral (recorded decision):** `eval_run.py --mode full` invokes the full agent (Groq LLM) on all eval questions — slower and costlier, and it tests the answer-synthesis path that this phase does not modify. Phase 6's verification discipline targets the retrieval + safety layers, which are fully exercised by `--mode retrieval` (24/28, 0 false emergencies, 0 orphan keys). **Recorded decision: do not run `--mode full` this phase; defer to Phase 9 / CI.** The retrieval-mode run is the regression gate for this phase.
+- **Disagreement-flagging regression (2026-08-30):** smoke-tested the `source_disagreements` invariant — a herb fires a strong-caution disagreement **only** when `modern_source_verified` is true **and** its pregnancy flag/contraindication carries a hard avoid/toxicity. Verified: arka, moringa, tulsi, ashwagandha → flagged; kataka, turmeric → not flagged (moderate only); and crucially the unverified batch-#2 herbs (guggulu, vacha, brahmi) → **not** flagged despite "avoid" text, so unverified modern claims are never surfaced as verified disagreements. All pass.
+
+## 8. Phase 6 result so far
+
+- 93 canonical herbs; **71 safety entries**; covered **72/93**; uncovered **21** (all remaining Tier-1); orphan keys **0**.
+- Batch #2 (8 herbs) classical rasapanchaka + dose cross-verified against API of India (new `api_of_india_verified` + `verification_note` fields); modern claims honestly left `modern_source_verified: false`.
+- Tier-1 fills: arka, kataka (2026-08-29), tulsi, moringa (2026-08-30), all `modern_source_verified: true`.
+- Tier-2 culinary fills: 18 herbs (2026-08-30), all `modern_source_verified: false` (food-template bar).
+- Retrieval eval stable: **24/28 (85%)**, 0 false emergencies, 10/10 safety coverage.
