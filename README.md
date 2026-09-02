@@ -4,7 +4,7 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/status-Phase%205%20%E2%80%94%20MCP%20Tool%20Integration-22c55e)
+![Status](https://img.shields.io/badge/status-Phase%207%20%E2%80%94%20Interactive%20Frontend-f59e0b)
 ![Corpus](https://img.shields.io/badge/Corpus-20%20Chapters%20%E2%80%A2%202%2C490%20Verses-3b82f6)
 ![License](https://img.shields.io/badge/license-Custom-gray)
 ![AI](https://img.shields.io/badge/AI-Agentic%20RAG-f59e0b)
@@ -84,8 +84,8 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **3** | Retrieval & RAG pipeline | ✅ **Done** |
 | **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
 | **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
-| **6** | Safety & trust layer (source verification) | 🔄 **In progress** — data layer complete (93/93 file coverage), final reachability hardening of the remaining gaps in progress |
-| **7** | Interactive frontend | ⏳ **Planned** |
+| **6** | Safety & trust layer (source verification) | ✅ **Done** |
+| **7** | Interactive frontend | 🔄 **In progress** |
 
 </div>
 
@@ -251,7 +251,7 @@ python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end ans
 - [x] **Phase 3** — Retrieval pipeline & verse embeddings
 - [x] **Phase 4** — Agentic reasoning, tool use & safety guardrails
 - [x] **Phase 5** — MCP tool integration & herb-safety layer
-- [ ] **Phase 6** — Safety & trust layer (2nd-source verification, numeric confidence, reasoning trace)
+- [x] **Phase 6** — Safety & trust layer (2nd-source verification, numeric confidence, reasoning trace)
 - [ ] **Phase 7** — Interactive frontend ("show reasoning" toggle)
 
 ---
