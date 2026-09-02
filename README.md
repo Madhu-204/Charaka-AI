@@ -259,3 +259,5 @@ python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end ans
 ## 🤝 Disclaimer
 
 **Charaka AI is for educational and general-wellness purposes only.** It is not a medical device and does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for any health concern — especially for emergencies, chronic conditions, pregnancy, or children.
+---
+_Last updated 2026-09-02._
