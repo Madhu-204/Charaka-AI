@@ -30,7 +30,7 @@ export default function App() {
     >
       <Sidebar view={view} onNavigate={onNavigate} onClose={() => setMenuOpen(false)} />
 
-      <main className="main-col">
+      <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>
         <div className="disclaimer-banner">
           <button
             className="menu-toggle"

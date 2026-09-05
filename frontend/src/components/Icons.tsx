@@ -26,6 +26,16 @@ export function IconLeaf(props: IconProps) {
   );
 }
 
+export function IconPlant(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 21v-8" />
+      <path d="M12 12c0-4 3-7 8-7 0 5-3 8-8 8Z" />
+      <path d="M12 11c0-3-2-5-6-5 0 4 2 6 6 6Z" />
+    </svg>
+  );
+}
+
 export function IconChat(props: IconProps) {
   return (
     <svg {...base(props)}>

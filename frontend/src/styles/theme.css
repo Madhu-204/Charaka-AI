@@ -4,6 +4,7 @@
   --olive: #5C6B47;
   --olive-deep: #46543a;
   --olive-dark: #3C4830;
+  --olive-bg: #343E24;
   --terracotta: #C1663D;
   --terracotta-deep: #a8522f;
   --amber: #F4E2BB;
@@ -17,14 +18,14 @@
   --danger-bg: #F3DfDD;
   --white: #ffffff;
   --border-w: 1.5px;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 6px;
+  --radius-sm: 6px;
   --shadow: 0 1px 3px rgba(60, 72, 48, 0.12), 0 4px 14px rgba(60, 72, 48, 0.08);
   --shadow-sm: 0 1px 2px rgba(60, 72, 48, 0.10);
-  --font-serif: Georgia, "Times New Roman", serif;
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", sans-serif;
+  --font-serif: "Marcellus", "Spectral", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --sidebar-w: 220px;
-  --reasoning-w: 280px;
+  --reasoning-w: 380px;
 }
 
 *,
@@ -41,7 +42,7 @@ body,
 }
 
 body {
-  background: var(--cream);
+  background: var(--olive-bg);
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 15px;
