@@ -1,0 +1,224 @@
+:root {
+  --cream: #F5EFE0;
+  --sand: #FAF7F0;
+  --olive: #5C6B47;
+  --olive-deep: #46543a;
+  --olive-dark: #3C4830;
+  --terracotta: #C1663D;
+  --terracotta-deep: #a8522f;
+  --amber: #F4E2BB;
+  --amber-deep: #b08a3e;
+  --chip-green: #E5EBD9;
+  --table-head: #EAE2CF;
+  --text: #2E3526;
+  --text-muted: #6B7260;
+  --text-faint: #8A9078;
+  --danger: #A53F3F;
+  --danger-bg: #F3DfDD;
+  --white: #ffffff;
+  --border-w: 1.5px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 3px rgba(60, 72, 48, 0.12), 0 4px 14px rgba(60, 72, 48, 0.08);
+  --shadow-sm: 0 1px 2px rgba(60, 72, 48, 0.10);
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", sans-serif;
+  --sidebar-w: 220px;
+  --reasoning-w: 280px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--cream);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--olive);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(92, 107, 71, 0.35);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 107, 71, 0.55);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* ---------- Shared primitives ---------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--olive);
+  background: var(--sand);
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.pill--terracotta {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: #fff;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  padding: 3px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge--verified {
+  background: var(--olive);
+  color: #fff;
+}
+
+.badge--api {
+  background: var(--chip-green);
+  color: var(--olive-deep);
+  border: 1px solid var(--olive);
+}
+
+.badge--ai {
+  background: var(--amber);
+  color: #6b5418;
+  border: 1px solid #d9c08a;
+}
+
+.badge--neutral {
+  background: var(--chip-green);
+  color: var(--text-muted);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--olive);
+  color: #fff;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn:hover {
+  background: var(--olive-deep);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--terracotta {
+  background: var(--terracotta);
+}
+
+.btn--terracotta:hover {
+  background: var(--terracotta-deep);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--olive);
+  border: 1.5px solid var(--olive);
+}
+
+.btn--ghost:hover {
+  background: var(--chip-green);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Markdown body rendered inside assistant cards */
+.md-body > *:first-child {
+  margin-top: 0;
+}
+
+.md-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.md-body p {
+  margin: 0.4em 0;
+}
+
+.md-body ul,
+.md-body ol {
+  margin: 0.4em 0;
+  padding-left: 1.3em;
+}
+
+.md-body li {
+  margin: 0.2em 0;
+}
+
+.md-body strong {
+  color: var(--olive-dark);
+}
+
+.md-body h1, .md-body h2, .md-body h3, .md-body h4 {
+  margin: 0.7em 0 0.3em;
+  color: var(--olive-dark);
+}

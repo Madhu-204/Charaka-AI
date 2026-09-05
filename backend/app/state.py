@@ -6,6 +6,8 @@ class AgentState(TypedDict, total=False):
     followup_context: Optional[str]
     is_emergency: bool
     emergency_reason: Optional[str]
+    dosha: Optional[str]
+    dosha_scores: Optional[dict]
     expanded_query: str
     canonical_term: Optional[str]
     retrieved: List[dict]

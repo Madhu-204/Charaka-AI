@@ -187,7 +187,7 @@ backend/
 
 ## 🛠️ Tech Stack
 
-`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI` · `MCP` · `langchain-mcp-adapters`
+`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI` · `MCP` · `langchain-mcp-adapters` · `React` · `TypeScript` · `Vite`
 
 ---
 
@@ -234,6 +234,21 @@ python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end ans
 - Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.
 - Herb queries invoke the MCP `check_herb_safety` tool, falling back gracefully to a local JSON lookup if the MCP subprocess cannot start.
 - Citations are verse-traceable (`cs_<sthana>_<chapter>_<verse>`).
+
+### Frontend (Phase 7)
+
+```bash
+cd frontend
+npm install                          # once
+npm run dev                          # Vite dev server → http://localhost:5173
+```
+
+- Points at `http://localhost:8000` by default; override with `VITE_API_URL` in `frontend/.env` if needed.
+- Backend must be running for chat, herb library, and feedback to work:
+  - `POST /ask` (chat + dosha badge + reasoning trace)
+  - `GET /herbs` (real herb catalogue from `herbs.json` + `herb_safety.json`)
+  - `POST /feedback` (thumbs up/down → `backend/feedback_log.jsonl`)
+- Saved answers persist in the browser (`localStorage`).
 
 ---
 

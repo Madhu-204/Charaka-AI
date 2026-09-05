@@ -12,6 +12,13 @@ chroma_db/
 # Secrets
 .env
 
+# Runtime data
+backend/feedback_log.jsonl
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
 # Editor / OS
 .vscode/
 .idea/
