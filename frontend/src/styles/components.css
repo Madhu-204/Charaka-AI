@@ -337,11 +337,11 @@
 
 .chat-cursor {
   display: inline;
-  font-weight: 300;
+  font-weight: 700;
   color: var(--olive);
-  animation: blink 0.7s step-end infinite;
+  animation: blink 0.6s step-end infinite;
   margin-left: 1px;
-  font-size: inherit;
+  font-size: 1.1em;
   line-height: 1;
   vertical-align: baseline;
 }
@@ -360,6 +360,33 @@
 
 .chat-reveal {
   animation: chat-reveal 0.35s ease both;
+}
+
+/* Typing progress indicator under the bubble */
+.chat-generating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.chat-generating__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--olive);
+  animation: typing 1.2s infinite ease-in-out;
+}
+
+.chat-generating__dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-generating__dot:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 /* Chat input bar */

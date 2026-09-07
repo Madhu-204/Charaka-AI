@@ -47,6 +47,10 @@ export function ChatView({ onReasoning }: ChatViewProps) {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: "smooth" });
   }, []);
 
+  const scrollToBottomFast = useCallback(() => {
+    feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: "auto" });
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading, scrollToBottom]);
@@ -171,7 +175,7 @@ export function ChatView({ onReasoning }: ChatViewProps) {
             key={m.id}
             message={m}
             isNew={m.id === lastAssistantId}
-            onContentChange={scrollToBottom}
+            onContentChange={scrollToBottomFast}
             onFeedback={handleFeedback}
             onToggleReasoning={handleToggleReasoning}
             onSave={handleSave}

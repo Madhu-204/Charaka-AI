@@ -79,6 +79,19 @@ export function ChatBubble({
     }
   }, [isNew, displayedChars, message.content.length]);
 
+  // When typing completes, let metadata settle before scrolling to bottom
+  const completedRef = useRef(false);
+  useEffect(() => {
+    if (!isNew) return;
+    if (isTyped && !completedRef.current) {
+      completedRef.current = true;
+      const t = setTimeout(() => {
+        onContentChange?.();
+      }, 80);
+      return () => clearTimeout(t);
+    }
+  }, [isTyped, isNew, onContentChange]);
+
   const citations = buildChatCitations(message);
   const rt = message.reasoning;
   const steps = stepsFromTrace(rt?.steps);
@@ -97,12 +110,21 @@ export function ChatBubble({
         </div>
       </div>
 
-      {message.role === "assistant" && !isEmergency && (
+      {message.role === "assistant" && isTyping && (
+        <div className="chat-generating">
+          <span className="chat-generating__dot" />
+          <span className="chat-generating__dot" />
+          <span className="chat-generating__dot" />
+          <span>Generating…</span>
+        </div>
+      )}
+
+      {message.role === "assistant" && isTyped && (
         <>
           {(message.dosha || message.confidence || message.chapter) && (
             <div
-              className={`msg__meta ${isTyped ? "chat-reveal" : ""}`}
-              style={isTyped ? { animationDelay: "0ms" } : undefined}
+              className="msg__meta chat-reveal"
+              style={{ animationDelay: "0ms" }}
             >
               {message.dosha && (
                 <span className="badge chip-dosha">
@@ -123,10 +145,27 @@ export function ChatBubble({
             </div>
           )}
 
-          {message.safetyFlags && message.safetyFlags.length > 0 && (
+          {isEmergency && (
             <div
-              className={`safety-note ${isTyped ? "chat-reveal" : ""}`}
-              style={isTyped ? { animationDelay: "60ms" } : undefined}
+              className="msg__meta chat-reveal"
+              style={{ animationDelay: "0ms" }}
+            >
+              <span className="badge badge--ai">
+                <IconShield width={13} height={13} />
+                Emergency redirect
+              </span>
+              {message.categoryTag && (
+                <span className="badge chip-confidence">
+                  {categoryLabel(message.categoryTag)}
+                </span>
+              )}
+            </div>
+          )}
+
+          {!isEmergency && message.safetyFlags && message.safetyFlags.length > 0 && (
+            <div
+              className="safety-note chat-reveal"
+              style={{ animationDelay: "60ms" }}
             >
               <div className="safety-note__heading">
                 <IconShield width={15} height={15} />
@@ -140,58 +179,60 @@ export function ChatBubble({
             </div>
           )}
 
-          <div
-            className={`msg__sources ${isTyped ? "chat-reveal" : ""}`}
-            style={isTyped ? { animationDelay: "120ms" } : undefined}
-          >
-            <div className="sources-row">
-              <button
-                className="sources-row__trigger"
-                aria-expanded={sourcesOpen}
-                onClick={() => setSourcesOpen((o) => !o)}
-              >
-                <IconBook width={16} height={16} />
-                <span>Sources ({citations.length})</span>
-                <IconChevronDown className="chev" width={15} height={15} />
-              </button>
-              {sourcesOpen && citations.length > 0 && (
-                <div className="sources-row__body">
-                  {citations.map((c, i) => (
-                    <div
-                      className="source-item chat-reveal"
-                      key={i}
-                      style={{ animationDelay: `${i * 50}ms` }}
-                    >
-                      <div className="source-item__title">
-                        {c.title}
-                        {c.badge && (
-                          <span
-                            className={`badge ${
-                              c.badge === "ai" ? "badge--ai" : "badge--neutral"
-                            }`}
-                          >
-                            {c.badgeText}
-                          </span>
-                        )}
+          {!isEmergency && (
+            <div
+              className="msg__sources chat-reveal"
+              style={{ animationDelay: "120ms" }}
+            >
+              <div className="sources-row">
+                <button
+                  className="sources-row__trigger"
+                  aria-expanded={sourcesOpen}
+                  onClick={() => setSourcesOpen((o) => !o)}
+                >
+                  <IconBook width={16} height={16} />
+                  <span>Sources ({citations.length})</span>
+                  <IconChevronDown className="chev" width={15} height={15} />
+                </button>
+                {sourcesOpen && citations.length > 0 && (
+                  <div className="sources-row__body">
+                    {citations.map((c, i) => (
+                      <div
+                        className="source-item chat-reveal"
+                        key={i}
+                        style={{ animationDelay: `${i * 50}ms` }}
+                      >
+                        <div className="source-item__title">
+                          {c.title}
+                          {c.badge && (
+                            <span
+                              className={`badge ${
+                                c.badge === "ai" ? "badge--ai" : "badge--neutral"
+                              }`}
+                            >
+                              {c.badgeText}
+                            </span>
+                          )}
+                        </div>
+                        <div className="source-item__meta">{c.detail}</div>
                       </div>
-                      <div className="source-item__meta">{c.detail}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {sourcesOpen && citations.length === 0 && (
-                <div className="sources-row__body">
-                  <div className="source-item">
-                    <div className="source-item__meta">
-                      No verse-level sources available for this reply.
+                    ))}
+                  </div>
+                )}
+                {sourcesOpen && citations.length === 0 && (
+                  <div className="sources-row__body">
+                    <div className="source-item">
+                      <div className="source-item__meta">
+                        No verse-level sources available for this reply.
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {message.showReasoning && (
+          {!isEmergency && message.showReasoning && (
             <div
               className="inline-reason chat-reveal"
               style={{ animationDelay: "0ms" }}
@@ -213,68 +254,56 @@ export function ChatBubble({
             </div>
           )}
 
-          <div
-            className={`msg__actions ${isTyped ? "chat-reveal" : ""}`}
-            style={isTyped ? { animationDelay: "180ms" } : undefined}
-          >
-            <button
-              className={`icon-btn ${
-                message.feedback === "up" ? "icon-btn--active" : ""
-              }`}
-              onClick={() => onFeedback(message.id, "up")}
-              title="Helpful"
-              aria-label="Mark helpful"
+          {!isEmergency && (
+            <div
+              className="msg__actions chat-reveal"
+              style={{ animationDelay: "180ms" }}
             >
-              <IconThumbUp width={16} height={16} />
-            </button>
-            <button
-              className={`icon-btn ${
-                message.feedback === "down" ? "icon-btn--active" : ""
-              }`}
-              onClick={() => onFeedback(message.id, "down")}
-              title="Not helpful"
-              aria-label="Mark not helpful"
-            >
-              <IconThumbDown width={16} height={16} />
-            </button>
-            <button
-              className={`icon-btn ${message.saved ? "icon-btn--saved" : ""}`}
-              onClick={() => onSave(message.id)}
-              title={message.saved ? "Saved" : "Save answer"}
-              aria-label="Save answer"
-            >
-              {message.saved ? (
-                <IconBookmarkFilled width={16} height={16} />
-              ) : (
-                <IconBookmark width={16} height={16} />
-              )}
-            </button>
-
-            <label className="toggle">
-              <span>Show reasoning</span>
               <button
-                className="toggle__switch"
-                role="switch"
-                aria-checked={message.showReasoning === true}
-                onClick={() => onToggleReasoning(message.id)}
-              />
-            </label>
-          </div>
-        </>
-      )}
+                className={`icon-btn ${
+                  message.feedback === "up" ? "icon-btn--active" : ""
+                }`}
+                onClick={() => onFeedback(message.id, "up")}
+                title="Helpful"
+                aria-label="Mark helpful"
+              >
+                <IconThumbUp width={16} height={16} />
+              </button>
+              <button
+                className={`icon-btn ${
+                  message.feedback === "down" ? "icon-btn--active" : ""
+                }`}
+                onClick={() => onFeedback(message.id, "down")}
+                title="Not helpful"
+                aria-label="Mark not helpful"
+              >
+                <IconThumbDown width={16} height={16} />
+              </button>
+              <button
+                className={`icon-btn ${message.saved ? "icon-btn--saved" : ""}`}
+                onClick={() => onSave(message.id)}
+                title={message.saved ? "Saved" : "Save answer"}
+                aria-label="Save answer"
+              >
+                {message.saved ? (
+                  <IconBookmarkFilled width={16} height={16} />
+                ) : (
+                  <IconBookmark width={16} height={16} />
+                )}
+              </button>
 
-      {message.role === "assistant" && isEmergency && (
-        <div className="msg__meta">
-          <span className="badge badge--ai">
-            <IconShield width={13} height={13} />
-            Emergency redirect
-          </span>
-          {message.categoryTag && (
-            <span className="badge chip-confidence">
-              {categoryLabel(message.categoryTag)}
-            </span>
+              <label className="toggle">
+                <span>Show reasoning</span>
+                <button
+                  className="toggle__switch"
+                  role="switch"
+                  aria-checked={message.showReasoning === true}
+                  onClick={() => onToggleReasoning(message.id)}
+                />
+              </label>
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
