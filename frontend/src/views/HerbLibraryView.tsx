@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { fetchHerbs } from "../api";
 import type { HerbSummary } from "../types";
 import type { ReasoningContent } from "../components/ReasoningPanel";
+import { herbImageUrl } from "../lib/herbImages";
 import {
   IconChevronLeft,
   IconChevronRight,
+  IconInfo,
   IconSearch,
 } from "../components/Icons";
 
@@ -25,24 +27,69 @@ function artColor(name: string): string {
 function HerbArt({ name }: { name: string }) {
   const color = artColor(name);
   return (
-    <svg width="74" height="74" viewBox="0 0 74 74" fill="none" aria-hidden>
-      <circle cx="37" cy="37" r="34" fill={color} opacity="0.08" />
-      <circle cx="37" cy="37" r="34" stroke={color} strokeWidth="1.4" opacity="0.5" />
-      <g stroke={color} strokeWidth="2" strokeLinecap="round" fill="none">
-        <path d="M37 52c-12-8-16-22-6-32 12-8 24-3 24 12 0 10-7 16-18 20Z" fill={color} opacity="0.25" />
-        <path d="M37 52V44" />
-        <path d="M41 27c4-6 10-8 14-6" />
-        <circle cx="24" cy="36" r="2.5" fill={color} opacity="0.6" />
-        <circle cx="30" cy="24" r="2" fill={color} opacity="0.6" />
+    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden>
+      <circle cx="60" cy="60" r="52" fill={color} opacity="0.07" />
+      <circle cx="60" cy="60" r="52" stroke={color} strokeWidth="1.3" opacity="0.45" strokeDasharray="3 5" />
+      <g stroke={color} strokeWidth="2.2" strokeLinecap="round">
+        <path d="M60 98 V42" />
+        <path d="M60 78 C 40 74 30 60 34 46 C 48 42 58 52 60 62 Z" fill={color} opacity="0.18" />
+        <path d="M60 78 C 80 74 90 60 86 46 C 72 42 62 52 60 62 Z" fill={color} opacity="0.18" />
+        <path d="M60 60 C 44 56 38 46 42 34 C 56 32 60 42 60 50 Z" fill={color} opacity="0.26" />
+        <path d="M60 60 C 76 56 82 46 78 34 C 64 32 60 42 60 50 Z" fill={color} opacity="0.26" />
+      </g>
+      <g fill={color}>
+        <circle cx="60" cy="30" r="5" />
+        <circle cx="49" cy="33" r="3.6" />
+        <circle cx="71" cy="33" r="3.6" />
+        <circle cx="51" cy="42" r="3.2" />
+        <circle cx="69" cy="42" r="3.2" />
       </g>
     </svg>
   );
 }
 
-function verificationBadge(h: HerbSummary): { text: string; tone: "verified" | "api" | "ai" } {
+function HerbImage({
+  name,
+  className = "herb-card__img",
+  artClassName = "herb-card__img-art",
+  style,
+}: {
+  name: string;
+  className?: string;
+  artClassName?: string;
+  style?: CSSProperties;
+}) {
+  const [failed, setFailed] = useState(false);
+  const url = useMemo(() => herbImageUrl(name), [name]);
+  if (url && !failed) {
+    return (
+      <img
+        className={className}
+        src={url}
+        alt={name}
+        loading="lazy"
+        style={style}
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return (
+    <div className={artClassName} style={style}>
+      <HerbArt name={name} />
+      <span className="herb-card__img-art-label">Image unavailable</span>
+    </div>
+  );
+}
+
+function hasSevereFlag(h: HerbSummary): boolean {
+  const f = (h.pregnancy_flag ?? "").toLowerCase();
+  return /strictly avoid|avoid|not recommended|contraindicated|unsafe/.test(f);
+}
+
+function verificationBadge(h: HerbSummary): { text: string; tone: "verified" | "api" | "ref" } {
   if (h.modern_source_verified) return { text: "Source verified", tone: "verified" };
-  if (h.api_of_india_verified) return { text: "Classical API cross-checked", tone: "api" };
-  return { text: "AI-compiled, unverified", tone: "ai" };
+  if (h.api_of_india_verified) return { text: "Classical cross-checked", tone: "api" };
+  return { text: "Reference only", tone: "ref" };
 }
 
 function reasoningFor(h: HerbSummary): ReasoningContent {
@@ -55,7 +102,9 @@ function reasoningFor(h: HerbSummary): ReasoningContent {
         : []),
       ...(h.modern_source_verified
         ? ["Modern contraindications matched to a fetched page text"]
-        : ["Modern claims not independently verified"]),
+        : h.api_of_india_verified
+          ? ["Modern claims are reference-level and not independently cross-checked"]
+          : ["Summary for study; consult a practitioner before use"]),
       `Catalogue lookup for "${h.name}"`,
     ],
     citations: [
@@ -84,7 +133,7 @@ function reasoningFor(h: HerbSummary): ReasoningContent {
         ? [{ title: "Modern source", detail: h.modern_source.slice(0, 180), badge: "neutral" as const, badgeText: "Cited" }]
         : []),
       ...(h.verification_note
-        ? [{ title: "Verification note", detail: h.verification_note.slice(0, 200), badge: "ai" as const, badgeText: "AI-compiled, unverified" }]
+        ? [{ title: "Verification note", detail: h.verification_note.slice(0, 200), badge: "ref" as const, badgeText: "Reference only" }]
         : []),
     ],
     showSearch: true,
@@ -99,6 +148,29 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
   const [verifyFilter, setVerifyFilter] = useState("all");
   const [selected, setSelected] = useState<HerbSummary | null>(null);
   const [page, setPage] = useState(0);
+  const [showHowTo, setShowHowTo] = useState(false);
+  const [zoom, setZoom] = useState(1);
+
+  const clearSelection = useCallback(() => {
+    setSelected(null);
+    onReasoning(null);
+    setZoom(1);
+  }, [onReasoning]);
+
+  useEffect(() => {
+    if (selected) setZoom(1);
+  }, [selected?.name]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setShowHowTo(false);
+        clearSelection();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [clearSelection]);
 
   useEffect(() => {
     fetchHerbs()
@@ -117,27 +189,26 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return herbs.filter((h) => {
-      if (q) {
-        const hay = `${h.name} ${h.botanical ?? ""} ${h.aliases.join(" ")}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      if (doshaFilter !== "all" && !h.dosha_tags.includes(doshaFilter)) return false;
-      if (verifyFilter === "sv" && !h.modern_source_verified) return false;
-      if (verifyFilter === "api" && !h.api_of_india_verified) return false;
-      if (verifyFilter === "ai" && (h.modern_source_verified || h.api_of_india_verified)) return false;
-      return true;
-    });
+    const weight = (h: HerbSummary) =>
+      h.modern_source_verified ? 0 : h.api_of_india_verified ? 1 : 2;
+    return herbs
+      .filter((h) => {
+        if (q) {
+          const hay = `${h.name} ${h.botanical ?? ""} ${h.aliases.join(" ")}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        if (doshaFilter !== "all" && !h.dosha_tags.includes(doshaFilter)) return false;
+        if (verifyFilter === "sv" && !h.modern_source_verified) return false;
+        if (verifyFilter === "api" && !h.api_of_india_verified) return false;
+        if (verifyFilter === "ai" && (h.modern_source_verified || h.api_of_india_verified)) return false;
+        return true;
+      })
+      .sort((a, b) => weight(a) - weight(b) || a.name.localeCompare(b.name));
   }, [herbs, search, doshaFilter, verifyFilter]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pages - 1);
   const visible = filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
-
-  function clearSelection() {
-    setSelected(null);
-    onReasoning(null);
-  }
 
   function toggleSelect(h: HerbSummary) {
     if (selected?.name === h.name) {
@@ -191,10 +262,47 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
         >
           <option value="all">Verification: All</option>
           <option value="sv">Source verified</option>
-          <option value="api">Classical API cross-checked</option>
-          <option value="ai">AI-compiled, unverified</option>
+          <option value="api">Classical cross-checked</option>
+          <option value="ai">Reference only</option>
         </select>
+        <button
+          className={`howto-toggle ${showHowTo ? "howto-toggle--open" : ""}`}
+          onClick={() => setShowHowTo((o) => !o)}
+          aria-expanded={showHowTo}
+          aria-label="How to read these herbs"
+        >
+          <IconInfo width={16} height={16} />
+          How to read these herbs
+        </button>
       </div>
+
+      {showHowTo && (
+        <div className="verify-popup" role="tooltip">
+          <strong>How to read these herbs</strong>
+          <div className="verify-popup__row">
+            <span className="tag tag--verified">Source verified</span>
+            <span>modern safety claims checked against a fetched reference page</span>
+          </div>
+          <div className="verify-popup__row">
+            <span className="tag tag--api">Classical cross-checked</span>
+            <span>classical properties matched to an API of India monograph</span>
+          </div>
+          <div className="verify-popup__row">
+            <span className="tag tag--ref">Reference only</span>
+            <span>informative summary for study</span>
+          </div>
+          <p className="verify-popup__disclaimer">
+            This is educational material, not medical advice.
+          </p>
+          <button
+            className="verify-popup__close"
+            onClick={() => setShowHowTo(false)}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {loading && <div className="empty-state">Loading herb catalogue…</div>}
 
@@ -215,29 +323,43 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
               const isSel = selected?.name === h.name;
               return (
                 <div className={`herb-card ${isSel ? "herb-card--selected" : ""}`} key={h.name}>
-                  <div className="herb-card__art">
-                    <HerbArt name={h.name} />
+                  <div className="herb-card__media">
+                    <HerbImage name={h.name} />
                   </div>
-                  <div className="herb-card__name">{h.name}</div>
-                  <div className="herb-card__botanical">
-                    {h.botanical ?? "Botanical name pending"}
-                  </div>
-                  <div className="herb-card__tags">
-                    {h.dosha_tags.map((t) => (
-                      <span className="tag" key={t}>
-                        {t}
+                  <div className="herb-card__body">
+                    <div className="herb-card__name">{h.name}</div>
+                    <div className="herb-card__botanical">
+                      {h.botanical ?? "Botanical name pending"}
+                    </div>
+                    <div className="herb-card__alias">
+                      {h.aliases.find((a) => a.toLowerCase() !== h.name.toLowerCase()) ?? ""}
+                    </div>
+                    <div className="herb-card__tags">
+                      {h.dosha_tags.slice(0, 3).map((t) => (
+                        <span className={`tag tag--dosha tag--dosha-${t.toLowerCase()}`} key={t}>
+                          {t}
+                        </span>
+                      ))}
+                      {hasSevereFlag(h) && (
+                        <span className="tag tag--danger">Pregnancy caution</span>
+                      )}
+                      <span
+                        className={
+                          v.tone === "verified"
+                            ? "tag tag--verified"
+                            : v.tone === "ref"
+                              ? "tag tag--ref"
+                              : "tag tag--api"
+                        }
+                      >
+                        {v.text}
                       </span>
-                    ))}
-                    <span
-                      className={v.tone === "verified" ? "tag tag--verified" : v.tone === "ai" ? "tag tag--ai" : "tag tag--api"}
-                    >
-                      {v.text}
-                    </span>
-                  </div>
-                  <div className="herb-card__actions">
-                    <button className="btn" onClick={() => toggleSelect(h)}>
-                      {isSel ? "Collapse" : "Learn More"}
-                    </button>
+                    </div>
+                    <div className="herb-card__actions">
+                      <button className="btn" onClick={() => toggleSelect(h)}>
+                        Learn More
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -245,65 +367,116 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
           </div>
 
           {selected && (
-            <div className="herb-detail">
-              <h3>{selected.name}</h3>
-              <div className="herb-detail__sub">
-                {selected.botanical ?? "Botanical name pending cataloguing"}
-              </div>
-              {selected.aliases.length > 0 && (
-                <div className="herb-card__tags" style={{ marginBottom: 12 }}>
-                  {selected.aliases.slice(0, 6).map((a) => (
-                    <span className="tag" key={a}>
-                      {a}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <div className="herb-detail__grid">
-                <div className="herb-detail__block">
-                  <h4>Dosha caution</h4>
-                  <p style={{ fontSize: 13.5 }}>
-                    {selected.dosha_caution || "No specific dosha caution recorded."}
+            <div className="modal-backdrop" onClick={clearSelection} role="presentation">
+              <div
+                className="herb-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label={selected.name}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="herb-modal__close"
+                  onClick={clearSelection}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+                <div className="herb-modal__content">
+                  {selected && (
+                    <div className="herb-modal__gallery">
+                      <div className="herb-modal__stage">
+                        <HerbImage
+                          name={selected.name}
+                          className="herb-modal__img"
+                          artClassName="herb-modal__img-art herb-card__img-art"
+                          style={{ transform: `scale(${zoom})` }}
+                        />
+                      </div>
+                      <div className="herb-modal__zoom">
+                        <button
+                          className="herb-modal__zoom-btn"
+                          onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+                          disabled={zoom <= 0.5}
+                          aria-label="Zoom out"
+                        >
+                          −
+                        </button>
+                        <span className="herb-modal__zoom-label">{Math.round(zoom * 100)}%</span>
+                        <button
+                          className="herb-modal__zoom-btn"
+                          onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
+                          disabled={zoom >= 4}
+                          aria-label="Zoom in"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <h3>{selected.name}</h3>
+                  <div className="herb-detail__sub">
+                    {selected.botanical ?? "Botanical name pending cataloguing"}
+                  </div>
+                  {selected.aliases.length > 0 && (
+                    <div className="herb-card__tags" style={{ marginBottom: 12 }}>
+                      {selected.aliases.slice(0, 6).map((a) => (
+                        <span className="tag" key={a}>
+                          {a}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="herb-detail__grid">
+                    <div className="herb-detail__block">
+                      <h4>Dosha caution</h4>
+                      <p style={{ fontSize: 13.5 }}>
+                        {selected.dosha_caution || "No specific dosha caution recorded."}
+                      </p>
+                    </div>
+                    <div className="herb-detail__block">
+                      <h4>Pregnancy flag</h4>
+                      <p style={{ fontSize: 13.5 }}>
+                        {selected.pregnancy_flag || "No specific pregnancy data on file."}
+                      </p>
+                    </div>
+                    {selected.contraindications.length > 0 && (
+                      <div className="herb-detail__block">
+                        <h4>Contraindications</h4>
+                        <ul>
+                          {selected.contraindications.slice(0, 5).map((c, i) => (
+                            <li key={i}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {selected.interactions.length > 0 && (
+                      <div className="herb-detail__block">
+                        <h4>Interactions</h4>
+                        <ul>
+                          {selected.interactions.slice(0, 5).map((c, i) => (
+                            <li key={i}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {selected.classical_source && (
+                      <div className="herb-detail__block">
+                        <h4>Classical source</h4>
+                        <p style={{ fontSize: 13.5 }}>{selected.classical_source}</p>
+                      </div>
+                    )}
+                    {selected.verification_note && (
+                      <div className="herb-detail__block">
+                        <h4>Verification note</h4>
+                        <p style={{ fontSize: 13.5 }}>{selected.verification_note}</p>
+                      </div>
+                    )}
+                  </div>
+                  <p className="herb-modal__disclaimer">
+                    This is educational material, not medical advice.
                   </p>
                 </div>
-                <div className="herb-detail__block">
-                  <h4>Pregnancy flag</h4>
-                  <p style={{ fontSize: 13.5 }}>
-                    {selected.pregnancy_flag || "No specific pregnancy data on file."}
-                  </p>
-                </div>
-                {selected.contraindications.length > 0 && (
-                  <div className="herb-detail__block">
-                    <h4>Contraindications</h4>
-                    <ul>
-                      {selected.contraindications.slice(0, 5).map((c, i) => (
-                        <li key={i}>{c}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {selected.interactions.length > 0 && (
-                  <div className="herb-detail__block">
-                    <h4>Interactions</h4>
-                    <ul>
-                      {selected.interactions.slice(0, 5).map((c, i) => (
-                        <li key={i}>{c}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {selected.classical_source && (
-                  <div className="herb-detail__block">
-                    <h4>Classical source</h4>
-                    <p style={{ fontSize: 13.5 }}>{selected.classical_source}</p>
-                  </div>
-                )}
-                {selected.verification_note && (
-                  <div className="herb-detail__block">
-                    <h4>Verification note</h4>
-                    <p style={{ fontSize: 13.5 }}>{selected.verification_note}</p>
-                  </div>
-                )}
               </div>
             </div>
           )}

@@ -19,6 +19,9 @@ backend/feedback_log.jsonl
 frontend/node_modules/
 frontend/dist/
 
+# Documentation
+docs/
+
 # Editor / OS
 .vscode/
 .idea/

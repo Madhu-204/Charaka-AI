@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ChatMessage, FeedbackRating } from "../types";
 import { buildChatCitations, chapterLabel, stepsFromTrace, categoryLabel } from "../lib/format";
@@ -18,10 +18,66 @@ interface ChatBubbleProps {
   onFeedback: (id: string, rating: FeedbackRating) => void;
   onToggleReasoning: (id: string) => void;
   onSave: (id: string) => void;
+  isNew?: boolean;
+  onContentChange?: () => void;
 }
 
-export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: ChatBubbleProps) {
+export function ChatBubble({
+  message,
+  onFeedback,
+  onToggleReasoning,
+  onSave,
+  isNew,
+  onContentChange,
+}: ChatBubbleProps) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [displayedChars, setDisplayedChars] = useState(
+    isNew ? 0 : message.content.length,
+  );
+
+  const isTyping = displayedChars < message.content.length;
+  const isTyped = displayedChars >= message.content.length;
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Typewriter — mount-only, reveals content at ~200 chars/sec
+  useEffect(() => {
+    if (!isNew) return;
+    const target = message.content.length;
+    if (target === 0) return;
+
+    const charsPerTick = Math.max(3, Math.ceil(target / 180));
+    let current = 0;
+
+    intervalRef.current = setInterval(() => {
+      current = Math.min(current + charsPerTick, target);
+      setDisplayedChars(current);
+      onContentChange?.();
+      if (current >= target) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+      }
+    }, 18);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If isNew flips to false before typewriter finishes, complete instantly
+  useEffect(() => {
+    if (!isNew && displayedChars < message.content.length) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setDisplayedChars(message.content.length);
+    }
+  }, [isNew, displayedChars, message.content.length]);
 
   const citations = buildChatCitations(message);
   const rt = message.reasoning;
@@ -29,17 +85,25 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
   const isEmergency = message.isEmergency === true;
 
   return (
-    <div className={`msg ${message.role === "user" ? "msg--user" : "msg--assistant"} ${isEmergency ? "msg--emergency" : ""}`}>
+    <div
+      className={`msg ${message.role === "user" ? "msg--user" : "msg--assistant"} ${
+        isEmergency ? "msg--emergency" : ""
+      }`}
+    >
       <div className="msg__bubble">
         <div className="md-body">
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+          <ReactMarkdown>{message.content.slice(0, displayedChars)}</ReactMarkdown>
+          {isTyping && <span className="chat-cursor">|</span>}
         </div>
       </div>
 
       {message.role === "assistant" && !isEmergency && (
         <>
           {(message.dosha || message.confidence || message.chapter) && (
-            <div className="msg__meta">
+            <div
+              className={`msg__meta ${isTyped ? "chat-reveal" : ""}`}
+              style={isTyped ? { animationDelay: "0ms" } : undefined}
+            >
               {message.dosha && (
                 <span className="badge chip-dosha">
                   <IconLeaf width={13} height={13} />
@@ -47,16 +111,23 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
                 </span>
               )}
               {message.confidence && (
-                <span className="badge chip-confidence">Confidence: {message.confidence}</span>
+                <span className="badge chip-confidence">
+                  Confidence: {message.confidence}
+                </span>
               )}
               {message.chapter && (
-                <span className="badge chip-confidence">{chapterLabel(message.chapter)}</span>
+                <span className="badge chip-confidence">
+                  {chapterLabel(message.chapter)}
+                </span>
               )}
             </div>
           )}
 
-          {(message.safetyFlags && message.safetyFlags.length > 0) && (
-            <div className="safety-note">
+          {message.safetyFlags && message.safetyFlags.length > 0 && (
+            <div
+              className={`safety-note ${isTyped ? "chat-reveal" : ""}`}
+              style={isTyped ? { animationDelay: "60ms" } : undefined}
+            >
               <div className="safety-note__heading">
                 <IconShield width={15} height={15} />
                 Safety note
@@ -69,7 +140,10 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
             </div>
           )}
 
-          <div className="msg__sources">
+          <div
+            className={`msg__sources ${isTyped ? "chat-reveal" : ""}`}
+            style={isTyped ? { animationDelay: "120ms" } : undefined}
+          >
             <div className="sources-row">
               <button
                 className="sources-row__trigger"
@@ -83,11 +157,19 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
               {sourcesOpen && citations.length > 0 && (
                 <div className="sources-row__body">
                   {citations.map((c, i) => (
-                    <div className="source-item" key={i}>
+                    <div
+                      className="source-item chat-reveal"
+                      key={i}
+                      style={{ animationDelay: `${i * 50}ms` }}
+                    >
                       <div className="source-item__title">
                         {c.title}
                         {c.badge && (
-                          <span className={`badge ${c.badge === "ai" ? "badge--ai" : "badge--neutral"}`}>
+                          <span
+                            className={`badge ${
+                              c.badge === "ai" ? "badge--ai" : "badge--neutral"
+                            }`}
+                          >
                             {c.badgeText}
                           </span>
                         )}
@@ -100,7 +182,9 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
               {sourcesOpen && citations.length === 0 && (
                 <div className="sources-row__body">
                   <div className="source-item">
-                    <div className="source-item__meta">No verse-level sources available for this reply.</div>
+                    <div className="source-item__meta">
+                      No verse-level sources available for this reply.
+                    </div>
                   </div>
                 </div>
               )}
@@ -108,11 +192,18 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
           </div>
 
           {message.showReasoning && (
-            <div className="inline-reason">
+            <div
+              className="inline-reason chat-reveal"
+              style={{ animationDelay: "0ms" }}
+            >
               <div className="inline-reason__title">Reasoning trace</div>
               {steps.length > 0 ? (
                 steps.map((s, i) => (
-                  <div className="timeline__step" key={i}>
+                  <div
+                    className="timeline__step chat-reveal"
+                    key={i}
+                    style={{ animationDelay: `${i * 50}ms` }}
+                  >
                     <span>{s}</span>
                   </div>
                 ))
@@ -122,9 +213,14 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
             </div>
           )}
 
-          <div className="msg__actions">
+          <div
+            className={`msg__actions ${isTyped ? "chat-reveal" : ""}`}
+            style={isTyped ? { animationDelay: "180ms" } : undefined}
+          >
             <button
-              className={`icon-btn ${message.feedback === "up" ? "icon-btn--active" : ""}`}
+              className={`icon-btn ${
+                message.feedback === "up" ? "icon-btn--active" : ""
+              }`}
               onClick={() => onFeedback(message.id, "up")}
               title="Helpful"
               aria-label="Mark helpful"
@@ -132,7 +228,9 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
               <IconThumbUp width={16} height={16} />
             </button>
             <button
-              className={`icon-btn ${message.feedback === "down" ? "icon-btn--active" : ""}`}
+              className={`icon-btn ${
+                message.feedback === "down" ? "icon-btn--active" : ""
+              }`}
               onClick={() => onFeedback(message.id, "down")}
               title="Not helpful"
               aria-label="Mark not helpful"
@@ -172,7 +270,9 @@ export function ChatBubble({ message, onFeedback, onToggleReasoning, onSave }: C
             Emergency redirect
           </span>
           {message.categoryTag && (
-            <span className="badge chip-confidence">{categoryLabel(message.categoryTag)}</span>
+            <span className="badge chip-confidence">
+              {categoryLabel(message.categoryTag)}
+            </span>
           )}
         </div>
       )}

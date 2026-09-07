@@ -19,22 +19,38 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
-  if (!res.ok) {
-    throw new ApiError(res.status, `Request failed (${res.status})`);
+async function request<T>(
+  path: string,
+  init?: RequestInit,
+  timeoutMs = 60_000
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...init,
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new ApiError(res.status, `Request failed (${res.status})`);
+    }
+    return (await res.json()) as T;
+  } catch (e) {
+    if (controller.signal.aborted) {
+      throw new ApiError(408, "The answer took too long — backend timed out.");
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-  return (await res.json()) as T;
 }
 
 export async function ask(query: string): Promise<AskResponse> {
   return request<AskResponse>("/ask", {
     method: "POST",
     body: JSON.stringify({ query }),
-  });
+  }, 120_000);
 }
 
 export async function fetchHerbs(): Promise<HerbSummary[]> {

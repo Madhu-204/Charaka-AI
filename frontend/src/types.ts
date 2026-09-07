@@ -24,7 +24,7 @@ export interface AskResponse {
   answer: string;
   is_emergency: boolean;
   confidence: Confidence | null;
-  chapter: string | null;
+  chapter: string | number | null;
   category_tag: string | null;
   safety_flags: string[];
   dosha: string | null;
@@ -41,7 +41,7 @@ export interface ChatMessage {
   query?: string;
   isEmergency?: boolean;
   confidence?: Confidence | null;
-  chapter?: string | null;
+  chapter?: string | number | null;
   categoryTag?: string | null;
   dosha?: string | null;
   safetyFlags?: string[];
@@ -78,11 +78,18 @@ export interface SavedAnswer {
   reasoning: ReasoningTrace | null;
 }
 
-export type CitationBadge = "verified" | "api" | "ai" | "neutral" | "safety";
+export type CitationBadge = "verified" | "api" | "ref" | "ai" | "neutral" | "safety";
 
 export interface Citation {
   title: string;
   detail: string;
   badge?: CitationBadge;
   badgeText?: string;
+}
+
+export type TraceCheckKind = "emergency" | "pattern" | "source" | "safety";
+
+export interface TraceCheck {
+  kind: TraceCheckKind;
+  status: string;
 }

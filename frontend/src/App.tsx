@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import type { ViewName } from "./types";
 import type { ReasoningContent } from "./components/ReasoningPanel";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Sidebar } from "./components/Sidebar";
 import { ReasoningPanel } from "./components/ReasoningPanel";
 import { ChatView } from "./views/ChatView";
@@ -25,38 +26,44 @@ export default function App() {
   }, []);
 
   return (
-    <div
-      className={`app ${panelOpen ? "panel-open" : ""} ${menuOpen ? "menu-open" : ""}`}
-    >
-      <Sidebar view={view} onNavigate={onNavigate} onClose={() => setMenuOpen(false)} />
+    <ErrorBoundary>
+      <div
+        className={`app ${panelOpen ? "panel-open" : ""} ${menuOpen ? "menu-open" : ""}`}
+      >
+        <Sidebar view={view} onNavigate={onNavigate} onClose={() => setMenuOpen(false)} />
 
-      <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>
-        <div className="disclaimer-banner">
-          <button
-            className="menu-toggle"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle navigation"
-          >
-            <IconMenu width={16} height={16} />
-            Menu
-          </button>
-          <span>General wellness guidance from classical texts — not a diagnosis.</span>
-        </div>
+        <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>
+          <div className="disclaimer-banner">
+            <button
+              className="menu-toggle"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Toggle navigation"
+            >
+              <IconMenu width={16} height={16} />
+              Menu
+            </button>
+            <span>General wellness guidance from classical texts — not a diagnosis.</span>
+          </div>
 
-        {view === "chat" && <ChatView onReasoning={onReasoning} />}
-        {view === "herbs" && <HerbLibraryView onReasoning={onReasoning} />}
-        {view === "saved" && <SavedAnswersView onReasoning={onReasoning} />}
-        {view === "about" && <AboutView onReasoning={onReasoning} />}
-      </main>
+          <ErrorBoundary>
+            {view === "chat" && <ChatView onReasoning={onReasoning} />}
+            {view === "herbs" && <HerbLibraryView onReasoning={onReasoning} />}
+            {view === "saved" && <SavedAnswersView onReasoning={onReasoning} />}
+            {view === "about" && <AboutView onReasoning={onReasoning} />}
+          </ErrorBoundary>
+        </main>
 
-      <div className="app__backdrop" onClick={() => setPanelOpen(false)} />
+        <div className="app__backdrop" onClick={() => setPanelOpen(false)} />
 
-      <button className="panel-toggle" onClick={() => setPanelOpen((o) => !o)}>
-        <IconAlert width={15} height={15} />
-        Sources &amp; Reasoning
-      </button>
+        <button className="panel-toggle" onClick={() => setPanelOpen((o) => !o)}>
+          <IconAlert width={15} height={15} />
+          Sources &amp; Reasoning
+        </button>
 
-      <ReasoningPanel content={reasoning} onClose={() => setPanelOpen(false)} />
-    </div>
+        <ErrorBoundary>
+          <ReasoningPanel content={reasoning} onClose={() => setPanelOpen(false)} />
+        </ErrorBoundary>
+      </div>
+    </ErrorBoundary>
   );
 }

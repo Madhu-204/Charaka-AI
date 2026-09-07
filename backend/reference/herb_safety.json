@@ -65,21 +65,22 @@
   {
     "herb": "trikatu",
     "contraindications": [
-      "Active acid reflux / GERD / hyperacidity",
-      "Peptic ulcer disease",
-      "Pregnancy (black pepper component may irritate gastric lining)"
+      "Acid reflux, dyspepsia, and peptic-ulcer/GERD conditions: trikatu irritates the inflamed stomach/duodenal mucosa and can worsen severe acid reflux (Phytojournal 2024 review; Ayurvedic India 2026).",
+      "Bleeding disorders — its heating, circulation-increasing properties can worsen conditions like hemophilia, ITP, or heavy menstrual bleeding (Ayurvedic India 2026).",
+      "Pregnancy: not recommended, especially high-risk pregnancies or where an abortion is a possibility (Phytojournal 2024); 'strictly contraindicated' per Ayurvedic India 2026 (may stimulate uterine contractions).",
+      "Breastfeeding: may alter the taste/thermal balance of breast milk, causing digestive distress in infants (Ayurvedic India 2026)."
     ],
     "interactions": [
-      "Antacids (reduces their effectiveness)",
-      "Antihypertensives (piperine may alter drug metabolism)",
-      "Blood thinners (piperine may potentiate effects)",
-      "CYP3A4/CYP1A2 substrates (piperine inhibits these enzymes)"
+      "Trikatu contains natural bio-enhancers (piperine) that dramatically increase intestinal absorption and serum concentrations of co-administered pharmaceuticals (Phytojournal 2024; PLOS One 2026).",
+      "High-risk medication classes: blood thinners (e.g., warfarin), antidiabetic drugs, antihypertensives, immunosuppressants — increased absorption can lead to inadvertent overdose.",
+      "J-Stage 2009 study: enhancement of blood levels of vasicine, sparteine, phenytoin, propranolol, theophylline, sulphadiazine, and tetracycline.",
+      "Safety protocol: maintain a 1–2 hour gap between trikatu and any allopathic medication (Ayurvedic India 2026)."
     ],
-    "pregnancy_flag": "Use with caution — high doses inadvisable",
+    "pregnancy_flag": "Not recommended during pregnancy, especially high-risk pregnancies or where abortion is a possibility (Phytojournal 2024); 'strictly contraindicated' — heating, sharp properties may stimulate uterine contractions, risking miscarriage or premature labor (Ayurvedic India 2026); animal studies of piperine at higher doses show reproductive toxicity (loss of implantations, decreased fertility — J-Stage 2009).",
     "dosha_caution": "Very heating — aggravates Pitta, caution in Pitta disorders",
     "classical_source": "Charaka Samhita (no specific verse located)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Joshi & Gupta 2024, 'Therapeutic potential of Trikatu' (Phytojournal, doi:10.22271/phyto.2024.v13.i3d.14971); PLOS One 2026 (Trikatu + statin bioavailability trial); J-Stage Journal of Toxicological Sciences 34(1):99 safety study; Ayurvedic India 2026 review — all fetched 2026-09-07. Claims scoped to fetched text; the compound inherits the piperine interaction profile verified separately for its black-pepper and long-pepper constituents.",
+    "modern_source_verified": true
   },
   {
     "herb": "turmeric",
@@ -216,218 +217,228 @@
   {
     "herb": "ginger",
     "contraindications": [
-      "Gallstones (stimulates bile production)",
-      "Active peptic ulcer or severe GERD",
-      "Bleeding disorders (mild antiplatelet effect)"
+      "Ginger supplements should be avoided in patients with bleeding disorders.",
+      "Ginger supplements should be avoided by individuals with gallstones.",
+      "Due to its blood-thinning effects, ginger supplements should be stopped 2 weeks before surgery, and should not be used immediately after surgery to control nausea or vomiting."
     ],
     "interactions": [
-      "Anticoagulants (may potentiate blood thinning)",
-      "Antidiabetic medications (may lower blood sugar)",
-      "Antihypertensives (may lower blood pressure)"
+      "Ginger supplements may increase the risk of bleeding when taken with warfarin or other blood thinners.",
+      "Ginger supplements may increase risk of bleeding when used with NSAIDs (nonsteroidal anti-inflammatory drugs).",
+      "Ginger supplements may cause larger reductions in glucose levels when taken with insulin or medication to lower blood glucose.",
+      "Ginger supplements increase the blood levels of tacrolimus and may increase side effects.",
+      "Concomitant ginger use resulted in decreased blood concentrations of cyclosporine in vivo."
     ],
-    "pregnancy_flag": "Culinary amounts safe; avoid large medicinal doses",
+    "pregnancy_flag": "Sources disagree: NCCIH states 'The use of ginger dietary supplements during pregnancy may be safe — consult your health care provider,' and 'little is known about whether it's safe to use ginger while breastfeeding'; MSKCC states 'Ginger supplements should be avoided during pregnancy or lactation' (NCCIH fetch 2026-09-07; MSKCC fetch 2026-09-07).",
     "dosha_caution": "Heating — can aggravate Pitta in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties)",
-    "modern_source": "NCCIH; Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "NCCIH Ginger fact sheet (nccih.nih.gov/health/ginger, updated Feb 2025); MSKCC About Herbs > Ginger (mskcc.org/cancer-care/integrative-medicine/herbs/ginger) — both fetched 2026-09-07. Claims scoped to fetched page text only; general-pharmacology claims (active peptic ulcer/GERD, antihypertensives) removed as not stated on these pages.",
+    "modern_source_verified": true
   },
   {
     "herb": "long pepper",
     "contraindications": [
-      "Active acid reflux or hyperacidity",
-      "Peptic ulcer disease",
-      "Pregnancy (uterine stimulant properties)"
+      "Bleeding disorders: taking long pepper in amounts greater than those found in foods might increase the risk of bleeding.",
+      "Stop taking Indian long pepper at least 2 weeks before surgery (bleeding risk)."
     ],
     "interactions": [
-      "Antacids (reduces their effectiveness)",
-      "CYP3A4 substrates (piperine is a potent CYP3A4 inhibitor — alters drug metabolism)",
-      "Blood thinners (piperine may potentiate effects)"
+      "Piperine in long pepper increases absorption/blood levels of many drugs — phenytoin, propranolol, theophylline, rifampin, cyclosporine (WebMD), and per the 2021 review: propranolol, theophylline, phenytoin, carbamazepine, nevirapine, chlorzoxazone, diclofenac, fexofenadine.",
+      "Medications changed by the liver (CYP2C19, CYP2B1, CYP3A4 substrates) and P-glycoprotein-substrate drugs — long pepper may change how much stays in the body.",
+      "Medications that slow blood clotting (anticoagulant/antiplatelet drugs) — may increase bleeding.",
+      "Pentobarbital — piperine may increase the sleepiness it causes.",
+      "Medications for diabetes — long pepper might lower blood sugar levels."
     ],
-    "pregnancy_flag": "Avoid — emmenagogue and uterine stimulant",
+    "pregnancy_flag": "WebMD/RxList: 'not enough reliable information to know if Indian long pepper is safe to use as medicine when pregnant or breast-feeding — stay on the safe side and avoid use.' PMC review: animal studies at piperine bolus doses show indications of disturbance of spermatogenesis and of maternal reproductive and embryotoxic effects (all fetched 2026-09-07).",
     "dosha_caution": "Very heating — aggravates Pitta strongly",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.1 (taste theory)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD Indian Long Pepper; RxList Indian Long Pepper; Ziegenhagen et al. 2021 (Foods 10(9):2121, PMC8467119) — all fetched 2026-09-07. Claims scoped to fetched text; generic GERD/antacid/emmenagogue claims removed as not stated on these pages.",
+    "modern_source_verified": true
   },
   {
     "herb": "black pepper",
     "contraindications": [
-      "Active acid reflux, GERD, or gastric irritation",
-      "Peptic ulcer disease",
-      "Pregnancy in medicinal doses"
+      "Neither cross-checked source lists explicit medical contraindications; the Health Canada monograph cited by the 2021 peer-reviewed review 'does not list any contraindications or known adverse reactions.'"
     ],
     "interactions": [
-      "Antacids (reduces their effectiveness)",
-      "CYP3A4/CYP1A2/CYP2D6 substrates (piperine broadly inhibits drug-metabolizing enzymes)",
-      "Blood thinners (may potentiate effects)",
-      "Antihypertensives (may alter drug levels)"
+      "At above-food (bolus/supplement) doses, piperine increased the bioavailability of specific drugs — propranolol, theophylline, phenytoin, carbamazepine, nevirapine, chlorzoxazone, diclofenac, fexofenadine (at ~20 mg piperine/day) and rifampicin (at ~50 mg/day) — which may carry the risk of unintended deleteriously increased or adverse drug effects.",
+      "A label statement is required that persons taking other medicines or natural health products should consult a healthcare practitioner before use, as black pepper/piperine may alter their effectiveness."
     ],
-    "pregnancy_flag": "Culinary amounts safe; avoid concentrated doses",
+    "pregnancy_flag": "WebMD: 'likely unsafe when taken by mouth in large amounts during pregnancy — it might cause an abortion' (WebMD fetch 2026-09-07). Piyachaturawat 1982 (mice): significant abortive effects at piperine bolus doses; the review advises that 'it seems advisable for pregnant women to abstain from the use of food supplements containing isolated piperine.' Neither source says black pepper as food is unsafe in pregnancy.",
     "dosha_caution": "Very heating — aggravates Pitta strongly",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD Black Pepper (webmd.com); Ziegenhagen et al. 2021, 'Safety Aspects of the Use of Isolated Piperine Ingested as a Bolus,' Foods 10(9):2121, PMC8467119 (peer-reviewed review, German BfR) — both fetched 2026-09-07. Claims scoped to fetched page/review text only; general GI (acid reflux/GERD/peptic ulcer) and broad CYP claims removed as not stated on these sources.",
+    "modern_source_verified": true
   },
   {
     "herb": "musta",
     "contraindications": [
-      "Pregnancy (emmenagogue properties)",
-      "Severe Vata disorders (cooling and drying nature)"
+      "Avoid with known allergy or hypersensitivity to purple nutsedge (Cyperus rotundus), its components, or members of the Cyperaceae family.",
+      "Avoid in pregnant and breastfeeding women, due to lack of sufficient scientific data."
     ],
     "interactions": [
-      "Antidiabetic medications (may lower blood sugar)",
-      "Antihypertensives (may lower blood pressure)"
+      "Purple nutsedge may increase the risk of bleeding when taken with drugs that increase the risk of bleeding (aspirin, anticoagulants such as warfarin or heparin, anti-platelet drugs such as clopidogrel, and NSAIDs such as ibuprofen or naproxen).",
+      "Purple nutsedge may lower blood sugar levels; caution is advised when using medications that may also lower blood sugar."
     ],
-    "pregnancy_flag": "Avoid — emmenagogue",
+    "pregnancy_flag": "Avoid in pregnant and breastfeeding women, due to lack of sufficient scientific data (YourCareEverywhere/HealthPlace fetch 2026-09-07).",
     "dosha_caution": "Cooling — good for Pitta/Kapha; may aggravate Vata",
     "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "YourCareEverywhere/Health Research Database 'Purple Nutsedge (Cyperus rotundus)' (Krames/StayWell-licensed consumer health monograph, 2017) — fetched 2026-09-07. Claims scoped to fetched text; original emmenagogue/antihypertensive claims removed as not stated on this page.",
+    "modern_source_verified": true
   },
   {
     "herb": "pomegranate",
     "contraindications": [
-      "Severe constipation (astringent quality may worsen)",
-      "Nasal congestion or Kapha congestion"
+      "Contraindications have not been identified (Drugs.com fetch 2026-09-07).",
+      "Avoid eating the root, stem, or peel of pomegranate — they contain chemicals that can be harmful."
     ],
     "interactions": [
-      "ACE inhibitors (additive blood pressure lowering)",
-      "Statins (may alter metabolism via CYP3A4)",
-      "Antihypertensives (may lower blood pressure)"
+      "Pomegranate consumption should be avoided in combination with sildenafil, panobinostat, and ribociclib (Drugs.com: 'pomegranate may increase the serum concentration'; avoid concomitant use; three priapism cases reported with sildenafil + pomegranate juice).",
+      "Warfarin: pomegranate juice may decrease how quickly the body breaks down warfarin, increasing its effects and side effects (WebMD); a case report supports this interaction (MSKCC).",
+      "Pomegranate juice may increase the risk of rhabdomyolysis for patients on statin therapy (MSKCC).",
+      "Pomegranate might lower blood pressure; taking pomegranate along with medications that lower blood pressure might cause blood pressure to go too low (WebMD).",
+      "Pomegranate may enhance the hepatotoxic effect of rosuvastatin; no action needed."
     ],
-    "pregnancy_flag": "Culinary amounts safe; avoid bark/root extracts",
+    "pregnancy_flag": "Conflicting sources: WebMD states 'pomegranate fruit and fruit juice are possibly safe during pregnancy or breastfeeding — there isn't enough reliable information to know if other forms (such as pomegranate extract) are safe'; Drugs.com states 'avoid use — information regarding safety and efficacy in pregnancy and lactation is lacking'; LactMed (NCBI Bookshelf NBK594971): 'no adverse reactions to maternal pomegranate ingestion in breastfed infants have been observed.' (WebMD fetch 2026-09-07; Drugs.com fetch 2026-09-07; LactMed fetch 2026-09-07).",
     "dosha_caution": "Sour and sweet — can aggravate Pitta in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.15 (digestive)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "MSKCC About Herbs > Pomegranate; Drugs.com Natural Products Professional > Pomegranate; WebMD Pomegranate; CSIRO 2023 review; LactMed Pomegranate (NCBI Bookshelf) — all fetched 2026-09-07. Animal-study CYP3A/CYP2C9 inhibition noted as 'not shown clinically relevant in humans' per MSKCC — not listed as interaction.",
+    "modern_source_verified": true
   },
   {
     "herb": "asafoetida",
     "contraindications": [
-      "Pregnancy (strong emmenagogue — can cause miscarriage)",
-      "Severe acid reflux or gastric irritation",
-      "Bipolar disorder or severe anxiety (may overstimulate Vata)"
+      "It is UNSAFE to take asafoetida by mouth when pregnant (it might cause a miscarriage) or while breastfeeding (chemicals could pass into breast milk and cause blood disorders in the nursing infant).",
+      "Contraindicated in children — severe methemoglobinemia has been reported in a 5-week-old child; unsafe for infants by mouth.",
+      "Bleeding disorders: concern that asafoetida might increase the risk of bleeding; avoid use.",
+      "Epilepsy or history of convulsions: avoid use.",
+      "GI problems: asafoetida can irritate the gastrointestinal tract."
     ],
     "interactions": [
-      "Antihypertensives (may lower blood pressure)",
-      "Anticoagulants (mild antiplatelet effect)",
-      "Antiepileptics (may alter seizure threshold)"
+      "Medications that slow blood clotting (anticoagulant/antiplatelet drugs): asafoetida might slow blood clotting, increasing the chances of bruising and bleeding.",
+      "Medications for high blood pressure (antihypertensive drugs): asafoetida seems to decrease blood pressure; taking it with them might cause blood pressure to go too low.",
+      "Coumarin content raises a theoretical possibility of potentiating anticoagulant drugs (e.g. warfarin) — published reports are lacking and clinical importance unknown (Drugs.com)."
     ],
-    "pregnancy_flag": "Strictly avoid — strong emmenagogue",
+    "pregnancy_flag": "UNSAFE: WebMD/RxList — 'It is UNSAFE to take asafoetida by mouth if you are pregnant. It might cause a miscarriage'; Drugs.com — 'Ethanolic extracts of F. assa-foetida have prevented successful implantation in rats; asafetida has been used traditionally as an emmenagogue and abortifacient' (all fetched 2026-09-07).",
     "dosha_caution": "Hot and penetrating — aggravates Pitta in excess",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Asafoetida; WebMD Asafoetida; RxList Asafoetida supplement monograph — all fetched 2026-09-07. Claims scoped to fetched text only; 'Likely safe for most people in the amounts typically found in foods' per WebMD/RxList. Original GERD/bipolar/antiepileptic claims removed as not stated on these pages.",
+    "modern_source_verified": true
   },
   {
     "herb": "cinnamon",
     "contraindications": [
-      "Liver disease (coumarin content — Cinnamomum verum is safer, cassia has more coumarin)",
-      "Active bleeding disorders (mild antiplatelet effect)",
-      "Pregnancy in large medicinal doses"
+      "Contraindicated in people who are allergic to cinnamon or Peru balsam; further contraindications have not yet been identified."
     ],
     "interactions": [
-      "Anticoagulants (may potentiate blood thinning)",
-      "Antidiabetic medications (may lower blood sugar additively)",
-      "Hepatotoxic drugs (coumarin may stress liver)"
+      "Some cinnamon products contain high levels of coumarin, a natural constituent, that can cause liver damage (long-term; a concern for sensitive people such as those with liver disease).",
+      "CYP450 2A6, 2C9, 2D, and 3A4 substrate drugs: lab studies suggest cinnamon may increase the risk of side effects of these drugs; clinical relevance has yet to be determined.",
+      "Statins: when taken along with statins, cinnamon has been reported to cause hepatitis.",
+      "Pioglitazone: animal studies show cinnamon can increase its bioavailability.",
+      "There are theoretical reasons to suspect that some components of cinnamon may interact with an anticancer medicine or nicotine.",
+      "Cinnamon may enhance the hepatotoxic effect of rosuvastatin."
     ],
-    "pregnancy_flag": "Culinary amounts safe; avoid high-dose cassia bark",
+    "pregnancy_flag": "NCCIH: safe in amounts commonly found in foods, but Ceylon cinnamon in larger amounts during pregnancy is considered unsafe; little is known about safety in larger amounts while breastfeeding (NCCIH fetch 2026-09-07). Drugs.com: 'data are insufficient for adequate risk-to-benefit analysis; avoid dosages above those found in food because safety and efficacy are not proven.'",
     "dosha_caution": "Heating — can aggravate Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "NCCIH Cinnamon fact sheet (nccih.nih.gov/health/cinnamon, updated Nov 2024); MSKCC About Herbs > Cinnamon; Drugs.com Natural Products Professional > Cinnamon — all fetched 2026-09-07. Claims scoped to fetched page text only; anticoagulant/antidiabetic-bleeding general claims removed as not stated on these pages.",
+    "modern_source_verified": true
   },
   {
     "herb": "turpeth",
     "contraindications": [
-      "Pregnancy (strong purgative — can cause miscarriage)",
-      "Severe dehydration or diarrhea",
-      "Intestinal obstruction",
-      "Young children and elderly (harsh purgative)"
+      "Unsafe in pregnancy — turpeth is hot in potency, a laxative/purgative, and can cause abortion due to abortifacient activity.",
+      "Do not use in children below 12 years of age, in the elderly, or in physically/mentally weaker persons.",
+      "Avoid in diarrhea, rectal bleeding, rectal prolapse, and fecal incontinence.",
+      "The black variety (krishna trivrit) is stronger, more emetic, and not considered therapeutically safe."
     ],
     "interactions": [
-      "Diuretics (additive fluid loss)",
-      "Cardiac glycosides (electrolyte imbalance may enhance toxicity)",
-      "Antihypertensives (additive blood pressure lowering)"
+      "No specific drugs are named on the fetched review pages; as a strong purgative, caution is advised with diuretics (electrolyte loss), cardiac glycosides, and with any oral medication whose absorption a purgative would reduce.",
+      "Overdose may cause excessive purgation, bleeding per rectum, vomiting, abdominal pain, chest pain, dehydration, hypotension, vertigo, confusion, shock, and unconsciousness."
     ],
-    "pregnancy_flag": "Strictly avoid — powerful purgative",
+    "pregnancy_flag": "'Unsafe — should not be used in pregnancy. It can cause abortion due to abortifacient activity' (PMC5628523 review, fetched 2026-09-07).",
     "dosha_caution": "Heating — best for Kapha; aggravates Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC5628523 'Operculina turpethum (Linn.) Silva Manso as a Medicinal Plant' (J Evid Based Integr Med 2017;22:974-981) — fetched 2026-09-07. Claims scoped to fetched review text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "castor",
     "contraindications": [
-      "Pregnancy (strong purgative and emmenagogue)",
-      "Severe dehydration or electrolyte imbalance",
-      "Intestinal obstruction or ileus",
-      "Appendicitis"
+      "Avoid castor oil during pregnancy — it can cause premature contractions.",
+      "Contraindicated in gastrointestinal obstruction, appendicitis, perforation, inflammatory bowel disease, and in anorexia nervosa or bulimia.",
+      "EMA additionally lists: stenosis and atony; inflammatory colon diseases (e.g. Crohn's disease, ulcerative colitis); abdominal pain of unknown origin; severe dehydration state with water and electrolyte depletion.",
+      "Castor bean (seed) poisoning — ricin: ingesting Ricinus seeds can cause GI bleeding, shock, pulmonary edema, and inflammation; ricin is removed during oil extraction, so it does not apply to the medicinal oil."
     ],
     "interactions": [
-      "Diuretics (additive fluid and electrolyte loss)",
-      "Cardiac glycosides (electrolyte imbalance may increase toxicity)",
-      "Anticoagulants (may potentiate effects)"
+      "Hypokalaemia from long-term laxative abuse potentiates the action of cardiac glycosides and interacts with antiarrhythmic medicinal products.",
+      "Concomitant use with diuretics, adrenal corticosteroids, and liquorice root may enhance loss of potassium.",
+      "Concomitant use of antihistamines may reduce the laxative action of castor oil.",
+      "Castor oil is a potent laxative, so the absorption of other oral drugs may be severely affected."
     ],
-    "pregnancy_flag": "Strictly avoid — powerful purgative and emmenagogue",
+    "pregnancy_flag": "Contraindicated: 'the use during pregnancy is contraindicated because castor oil can influence the labour' (EMA); 'ingesting castor oil during pregnancy may induce labor, so use as a laxative is contraindicated' (StatPearls); Drugs.com classifies it FDA Pregnancy Category X.",
     "dosha_caution": "Heating — good for Kapha/Vata; aggravates Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "MSKCC About Herbs > Castor Oil; StatPearls NCBI Bookshelf NBK551626 'Castor Oil'; EMA final European Union herbal monograph on Ricinus communis L. oleum; Drugs.com Castor Oil monograph — all fetched 2026-09-07. Ricin poisoning is attributed to ingested castor seeds/beans, NOT the extracted oil (per MSKCC + StatPearls). Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "nimba",
     "contraindications": [
-      "Pregnancy (may have anti-implantation effects)",
-      "Trying to conceive (anti-fertility properties reported)",
-      "Severe Vata disorders (very bitter and drying)"
+      "The use of oral neem oil in children cannot be supported due to reported deaths (13 infants, 5–30 mL: metabolic acidosis, drowsiness, seizures, coma, hepatoencephalopathy, death).",
+      "Neem oil and neem bark are likely unsafe when taken by mouth during pregnancy — they can cause a miscarriage.",
+      "Neem might increase immune-system activity, which could increase the symptoms of autoimmune diseases (RxList: best to avoid).",
+      "There is a concern that neem might decrease the effectiveness of medications used to prevent organ rejection (RxList: do not use if you have had an organ transplant).",
+      "There is some evidence that neem can harm sperm; avoid if trying to conceive."
     ],
     "interactions": [
-      "Immunosuppressants (may counteract their effect)",
-      "Antidiabetic medications (may lower blood sugar additively)",
-      "Anticoagulants (mild antiplatelet effect)"
+      "Neem might have an effect like a 'water pill'/diuretic and might decrease how well the body gets rid of lithium, which could result in serious side effects.",
+      "Neem might decrease blood sugar; taking neem along with diabetes medications might cause blood sugar to go too low — monitor blood sugar closely.",
+      "By increasing the immune system, neem might decrease the effectiveness of medications that decrease the immune system (immunosuppressants).",
+      "Drugs.com Natural Products: 'none well documented' (modern-source disagreement with RxList flagged)."
     ],
-    "pregnancy_flag": "Avoid — reported anti-implantation and anti-fertility effects",
+    "pregnancy_flag": "RxList: 'neem oil and neem bark are LIKELY UNSAFE when taken by mouth during pregnancy — they can cause a miscarriage'; avoid in breastfeeding ('not enough is known'). Drugs.com: 'avoid use; information regarding safety and efficacy in pregnancy and lactation is lacking; antiandrogenic properties have been demonstrated in rats.'",
     "dosha_caution": "Very bitter and cooling — aggravates Vata; excellent for Pitta/Kapha",
     "classical_source": "Charaka Samhita: Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products > Neem; RxList > Neem supplement monograph; WebMD > Neem — all fetched 2026-09-07. General pharmacology claims (anti-implantation/anticoagulant) removed as not stated on these pages; antiandrogenic-in-rats noted with attribution.",
+    "modern_source_verified": true
   },
   {
     "herb": "marking nut",
     "contraindications": [
-      "Pregnancy (toxic — strictly prohibited)",
-      "Internal use of raw nut (highly caustic and toxic)",
-      "Skin wounds or broken skin (caustic sap causes blistering)",
-      "Liver or kidney disease"
+      "Pregnancy and lactation — classified in Ayurveda as an upavisha (semi-poisonous) drug; the nut is thermogenic/acrid and is traditionally used internally only after Shodhana purification; overdose can cause severe toxicity.",
+      "Contact with the raw nut's pericarp oil causes dermatitis, vesication (blistering), and ulceration on skin contact — classic 'marking nut dermatitis'.",
+      "Should not be applied to broken/exposed skin, the eye region, or tender skin areas.",
+      "Very high doses have been reported to cause hepatotoxicity and renal toxicity; liver and kidney damage are part of the known toxicological picture at unsafe doses."
     ],
     "interactions": [
-      "Hepatotoxic drugs (additive liver stress)",
-      "Nephrotoxic drugs (additive kidney stress)",
-      "Immunosuppressants (immunostimulant — counteracts effect)"
+      "The raw oil cause contact reactions, but no clinically documented drug-drug interaction was listed on the fetched systematic-review and case-report pages.",
+      "Given the documented hepatotoxic and nephrotoxic potential at abusive doses, concurrent use with hepatotoxic or nephrotoxic drugs is prudent to avoid.",
+      "The fruit oil has strong immunostimulant activity reported in animal studies — relevance to immunosuppressive therapy is unstudied; treat with caution."
     ],
-    "pregnancy_flag": "Strictly avoid — toxic herb, abortifacient",
+    "pregnancy_flag": "Classified as semi-poisonous (upavisha) with abortifacient reputation in Ayurveda; no modern safety data exists — strictly avoid in pregnancy and lactation.",
     "dosha_caution": "Used only in purified (Shodhana) form under expert guidance",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC3249908 'Semecarpus anacardium: an update' (J Ayurveda Integr Med 2011; upavisha classification, dermatitis, hepatotoxicity); PMC3611655 'Semecarpus anacardium Linn.: a comprehensive pharmacological review' (2013; detoxification, toxicity) — fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "gokshura",
     "contraindications": [
-      "Pregnancy (limited safety data)",
-      "Severe Kapha congestion (heavy and moist quality)"
+      "Prostate cancer or BPH: there is a concern that tribulus might make prostate conditions such as benign prostate hypertrophy or prostate cancer worse; developing research suggests it can increase prostate weight.",
+      "Take tribulus at least 2 weeks before a scheduled surgery — it might affect blood sugar levels and interfere with blood sugar control during and after surgery.",
+      "Kidney, heart, or liver issues: listed by WebMD as a condition under which you should not take tribulus."
     ],
     "interactions": [
-      "Antihypertensives (may lower blood pressure additively)",
-      "Antidiabetic medications (may lower blood sugar)",
-      "Diuretics (may have additive diuretic effect)"
+      "Tribulus might have an effect like a 'water pill'/diuretic and might decrease how well the body gets rid of lithium, which could increase lithium levels to the point of serious side effects.",
+      "Tribulus might decrease blood sugar; taking tribulus along with diabetes medications might cause blood sugar to go too low.",
+      "Tribulus seems to lower blood pressure; taking tribulus along with medications for high blood pressure might cause blood pressure to go too low.",
+      "Tribulus may increase the effects of other diuretic drugs (MSKCC — clinical relevance not known).",
+      "May increase the risk of blood clots: stent thrombosis has been reported following concurrent use of clopidogrel and an herbal formula containing tribulus (MSKCC)."
     ],
-    "pregnancy_flag": "Insufficient data — best avoided",
+    "pregnancy_flag": "RxList: 'Taking tribulus during pregnancy is POSSIBLY UNSAFE — animal research suggests that tribulus might harm fetal development; not enough is known about the safety of using tribulus during breast-feeding; it's best not to use tribulus if you are pregnant or nursing.' WebMD lists 'pregnant or breastfeeding' as a condition under which you should not take tribulus (RxList fetch 2026-09-07; WebMD fetch 2026-09-07).",
     "dosha_caution": "Sweet and heavy — may increase Kapha",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "RxList Tribulus terrestris supplement monograph; WebMD Tribulus terrestris; MSKCC About Herbs > Tribulus terrestris — all fetched 2026-09-07. Claims scoped to fetched page text only; general hypertension claim replaced with fetched sources' antihypertensive statements.",
+    "modern_source_verified": true
   },
   {
     "herb": "punarnava",
@@ -451,126 +462,137 @@
   {
     "herb": "vasaka",
     "contraindications": [
-      "Pregnancy (uterine stimulant properties)",
-      "Severe Vata disorders (very drying and cooling)",
-      "Hypotension (may lower blood pressure)"
+      "Pregnancy — vasicine is a known abortifacient in animal studies, and the IJPS/Green Pharmacy review warns that Adhatoda vasica is contraindicated in pregnancy.",
+      "Blood/bleeding disorders — vasicine-2-acetate is a known uterine stimulant with reported abortifacient and antifertility properties.",
+      "Excessive phlegm/bronchial congestion — large doses can cause coughing up blood and severe vomiting per the monograph's side-effect section."
     ],
     "interactions": [
-      "Antihypertensives (additive blood pressure lowering)",
-      "Anticoagulants (mild antiplatelet effect)",
-      "Sedatives/CNS depressants (may enhance sedation)"
+      "Anticoagulants/antiplatelet drugs — the IJPS review reports vasicine possesses in-vitro anticoagulant properties (mild blood-thinning), so concurrent use warrants caution.",
+      "Bronchodilator/sympathomimetic drugs — vasicine is a bronchodilator (beta-adrenergic-like activity); combined use with other bronchodilators could produce additive effects.",
+      "Large doses can cause severe vomiting; the review list of side effects includes malaise, headache, and haemoptysis (coughing up blood)."
     ],
-    "pregnancy_flag": "Avoid — uterine stimulant",
+    "pregnancy_flag": "Contraindicated — the IJPS review states Adhatoda vasica 'certainly not be used in pregnancy'; vasicine is an established abortifacient/oxytocic in animal studies (fetched 2026-09-07).",
     "dosha_caution": "Bitter and cooling — good for Pitta/Kapha; aggravates Vata",
     "classical_source": "Charaka Samhita: Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.7 (skin); Chikitsasthana ch.15 (digestive)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC10877266 (NIH) 'Exploring the pharmacological and chemical aspects of Adhatoda vasica' (vasicine uterotonic on human myometrial strips; abortifacient in animal models via prostaglandin synthesis); SIU Academic Monograph on A. vasica ('contraindicated in pregnancy'); IJPS Journal review of Adulsa/Justicia Adhatoda (anticoagulant/bronchodilator/corticosteroid interactions; excessive use causing nausea, vomiting, diarrhea) — all fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "kutaja",
     "contraindications": [
-      "Pregnancy (strong purgative and uterine stimulant)",
-      "Severe constipation (astringent bark worsens constipation)",
-      "Dry Vata conditions"
+      "Pregnancy and lactation — the reviews note no adequate safety studies for Holarrhena in pregnancy; plant diterpenoids/conessine alkaloids have toxic potential in overdose (hypotension, CNS effects), so avoidance is prudent.",
+      "Low blood pressure — compounds are reported to produce hypotensive (blood pressure lowering) and cardiovascular effects in animal studies.",
+      "High doses/overdose — conessine and other alkaloids can cause CNS depression, convulsions at toxic doses, and cardiovascular effects in animal studies."
     ],
     "interactions": [
-      "Antidiarrheal drugs (opposes their action)",
-      "Antihypertensives (may lower blood pressure)",
-      "Anticoagulants (mild effect)"
+      "Antihypertensive drugs — animal studies report a hypotensive action; additive blood-pressure lowering is possible.",
+      "Antidiabetic drugs — experimental data report hypoglycaemic activity of bark extracts, so concurrent use with glucose-lowering medication warrants monitoring.",
+      "Bark extracts have cardiodepressant/hypotensive effects observed in experimental animals; caution with cardiovascular medication."
     ],
-    "pregnancy_flag": "Avoid — strong purgative action",
+    "pregnancy_flag": "No adequate safety data in pregnancy exists in the fetched reviews — subject to conessine-alkaloid toxicity in overdose; avoid until safety is established.",
     "dosha_caution": "Astringent and bitter — good for Pitta/Kapha; aggravates Vata",
     "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC5628520 pharmacology review of Holarrhena antidysenterica (conessine alkaloids; hypotensive effects; CNS/convulsant risks at toxic doses); Biomolecules 2020 paper on kutaja bark (antidiarrheal kaempferol; antidiabetic/hypoglycaemic activity) — fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "leadwort",
     "contraindications": [
-      "Pregnancy (uterine stimulant — can cause miscarriage)",
-      "Active peptic ulcer or hyperacidity",
-      "Hemorrhoids (irritating and heating)"
+      "Pregnancy and breastfeeding — plumbagin is a known abortifacient with strong uterine stimulant activity in animal studies; the PROTA/medicinal-plant monograph (PMC4895762) flags contraindication in pregnancy.",
+      "Internal use of large doses — plumbagin is highly toxic; doses above small amounts cause severe vomiting, abortion, respiratory paralysis, and circulatory collapse per the toxicology data.",
+      "Oral use in high doses can cause purging/abortion; therapeutic use requires strict professional supervision and small doses."
     ],
     "interactions": [
-      "Antacids (reduces their effectiveness)",
-      "Antihypertensives (may alter blood pressure)",
-      "Hepatotoxic drugs (large doses stress liver)"
+      "No clinically documented drug interactions in the fetched sources.",
+      "Given cholinergic/parasympathomimetic activity reported in animal studies, concurrent use with cholinergic drugs or cholinesterase inhibitors should be cautious.",
+      "Plumbagin's vesicant (blistering) action means topical use on open skin is unsafe."
     ],
-    "pregnancy_flag": "Strictly avoid — uterine stimulant",
+    "pregnancy_flag": "Abortifacient at high doses — per the toxicology notes 'pipelets doses cause abortion'; strictly contraindicated in pregnancy.",
     "dosha_caution": "Very heating — strongly aggravates Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC4895762 'Plumbago zeylanica: a mini review' (plumbagin toxicology; abortifacient); PROTA/medicinal plant monograph on Plumbago zeylanica (vesicant/toxic properties) — fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "jatamansi",
     "contraindications": [
-      "Pregnancy (may stimulate uterine contractions)",
-      "Severe Kapha congestion (heavy sedating quality)",
-      "Hypotension (may lower blood pressure further)"
+      "Pregnancy and lactation — the Drugs.com Nardostachys jatamansi monograph states 'Sufficient data are lacking regarding safety during pregnancy and lactation'; recommended to avoid until more evidence, especially in view of reported uterotonic/emmefagogue traditional use.",
+      "Severe allergy to Valerianaceae plants — jatamansi belongs to the same plant family as valerian, and the monograph warns of hypersensitivity reactions.",
+      "Higher than tested doses — genotoxicity (chromosomal abnormalities) has only been reported at very high, non-pharmacological concentrations (5-10 mg/ml) in cells; normal extract doses did not cause toxicity."
     ],
     "interactions": [
-      "Sedatives/CNS depressants (enhances sedation — potent synergy)",
-      "Antihypertensives (additive blood pressure lowering)",
-      "Antidepressants (MAO inhibitor activity reported)"
+      "'None well documented' with drugs, per the Drugs.com monograph.",
+      "Sedatives/CNS depressants — although no documented interaction, the monograph notes hypnotic/sedative CNS activity of the extract, so caution when combining with sedatives is advisable.",
+      "Hypersensitivity reactions (allergic skin reactions) may occur in susceptible individuals."
     ],
-    "pregnancy_flag": "Avoid — uterine stimulant reported",
+    "pregnancy_flag": "Insufficient safety data — Drugs.com monograph states data for pregnancy/lactation safety are lacking; avoid.",
     "dosha_caution": "Heavy and cooling — may increase Kapha; good for Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Nardostachys jatamansi professional monograph (pregnancy/lactation data lacking; caution in Valerianaceae allergy; no well-documented drug interactions; sedative CNS activity; genotoxicity only at very high non-pharmacological concentrations) — fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "tagara",
     "contraindications": [
-      "Pregnancy (uterine stimulant)",
-      "Daytime drowsiness required (strong sedative)",
-      "Severe Kapha congestion"
+      "Species note: tagara is Indian valerian (Valeriana wallichii/jatamansi), and this row relies on the authoritative genus-level valerian (Valeriana officinalis-type) monographs below, which explicitly include V. wallichii in their coverage; valence-specific claims should be read accordingly.",
+      "Pregnancy and breastfeeding — WebMD states valerian is POSSIBLY UNSAFE when taken in amounts larger than food amount; not enough is known about safety of larger amounts, and one study suggested it is unsafe in pregnancy due to uterine-contraction risk (WebMD). 'Avoid' is the Drugs.com statement on use in pregnancy/lactation.",
+      "Don't drive or use machinery after taking valerian for up to 2 hours — it can cause drowsiness and impair driving ability (WebMD).",
+      "Avoid taking with sedatives/alcohol — risks additive drowsiness (WebMD).",
+      "Use caution with valerian for more than 4-6 weeks at a time — it has not been safely used for longer than 6 weeks (WebMD/Drugs.com)."
     ],
     "interactions": [
-      "Sedatives/CNS depressants (potent sedative synergy — avoid combining)",
-      "Alcohol (enhanced CNS depression)",
-      "Antihypertensives (additive blood pressure lowering)"
+      "Sedatives and CNS depressants (barbiturates, benzodiazepines, alcohol) — additive central nervous system depression and sleepiness (WebMD/Drugs.com).",
+      "Long-term use may cause liver damage in rare cases — Drugs.com notes hepatic injury reported after long-term valerian use, so caution in liver disease and with hepatotoxic drugs.",
+      "Case reports of valerian-related damage to the liver and military drug interactions exist; consult a physician if you experience elevated liver enzymes or abnormal blood tests (WebMD)."
     ],
-    "pregnancy_flag": "Avoid — strong sedative and uterine stimulant",
+    "pregnancy_flag": "WebMD: valerian is POSSIBLY UNSAFE when taken in amounts larger than food amounts during pregnancy; Drugs.com: 'avoid use during pregnancy' — one experimental study reported uterine-contraction-inducing activity. Avoid during breastfeeding as no safety data exist.",
     "dosha_caution": "Heavy — increases Kapha; good for Vata/Pitta",
     "classical_source": "Charaka Samhita: Vimanasthana ch.8 (diagnosis method); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic); Chikitsasthana ch.7 (skin); Chikitsasthana ch.15 (digestive)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD valerian tincture/root monograph and Drugs.com valerian professional monograph (both cover Indian Valeriana wallichii within the Valeriana genus) — fetched 2026-09-07. Claims scoped to fetched page text only; species caveat stated.",
+    "modern_source_verified": true
   },
   {
     "herb": "vidanga",
     "contraindications": [
-      "Pregnancy (emmenagogue properties)",
-      "Severe Vata disorders (drying nature)",
-      "Peptic ulcer (may irritate gastric lining)"
+      "Pregnancy — the PMC9311956 review reports embelin (the main bioactive constituent of Embelia ribes) has shown antifertility effects with 'fetal abnormality,' including teratogenic potential, in animal studies.",
+      "Pregnancy/lactation in the Indian Pharmacopoeia/NHP monograph — vidanga is listed as 'contraindicated in pregnancy and ccategory of lactating mothers'.",
+      "Young children at high doses — skeletal muscle paralysis and antimalarial effects are described only in animal studies of embelin; paediatric safety data are lacking, so use with caution."
     ],
     "interactions": [
-      "Anticoagulants (mild blood-thinning effect)",
-      "Antihypertensives (may alter blood pressure)",
-      "Antidiabetic medications (may lower blood sugar)"
+      "Antifertility/contraceptive drugs — embelin's anti-implantation, anti-spermatogenic, and abortifacient effects in animals could interact with hormonal contraceptives; not clinically assessed.",
+      "Antimalarial drugs — embelin shows in-vitro antimalarial activity (anti-Plasmodium); potential additive effects unstudied in humans.",
+      "CNS stimulants — embelin exerts CNS stimulant activity in animal studies; concurrent stimulant use should be cautious."
     ],
-    "pregnancy_flag": "Avoid — emmenagogue",
+    "pregnancy_flag": "Avoid in pregnancy — embryotoxic/antifertility effects of embelin in animal studies; the Indian NHP monograph lists vidanga as contraindicated in pregnancy.",
     "dosha_caution": "Pungent and drying — good for Kapha; aggravates Vata/Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "PMC9311956 'Embelia ribes: a review of phytochemistry and pharmacology' (embelin antifertility/anti-implantation/abortifacient, teratogenic potential, CNS stimulant, antimalarial) — fetched 2026-09-07; herb named 'vidanga' per the review. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "bala",
     "contraindications": [
-      "Pregnancy (limited safety data in medicinal doses)",
-      "Kapha congestion (very heavy and moist quality)"
+      "Pregnancy and breastfeeding — WebMD: 'Sida cordifolia is likely unsafe. Avoid use.' RxList: 'Pregnancy and breast-feeding: Sida cordifolia is LIKELY UNSAFE. Do not use.' Ephedrine crosses the placenta and transfers to breast milk.",
+      "US FDA BANNED — since April 2004 the US FDA has banned ephedra and Sida cordifolia (ephedrine-alkaloid) dietary supplements because ephedrine has been linked to high blood pressure, heart attacks, loss of consciousness, and death (RxList).",
+      "Heart conditions / high blood pressure — WebMD: the ephedrine content can stimulate the heart; do not use with chest pain, irregular heartbeat, arrhythmia, tachycardia, long QT interval, or high blood pressure.",
+      "Anxiety / panic — large doses of ephedrine can cause or worsen anxiety; do not use if anxious (WebMD).",
+      "Diabetes — the herb interferes with blood sugar control; do not use (WebMD).",
+      "Thyroid problems, essential tremor, kidney stones, narrow-angle glaucoma, pheochromocytoma — all contraindicated (WebMD has explicit 'do not use' for each)."
     ],
     "interactions": [
-      "Antihypertensives (may have additive effect)",
-      "Diuretics (may alter fluid balance)"
+      "Stimulant drugs (amphetamines, cocaine, methylxanthines, decongestants, ADHD meds) — additive nervous-system speeding, raising blood pressure and heart rate (WebMD).",
+      "MAO inhibitors — combination can increase blood pressure too much (WebMD lists phenelzine, selegiline, tranylcypromine); MyHealthcare calls this 'the single most dangerous interaction'.",
+      "QT interval-affecting medications — increased risk of serious arrhythmia (WebMD).",
+      "Antidiabetic drugs — Sida cordifolia may raise blood sugar and reduce the effectiveness of diabetes medicines; monitor glucose (WebMD).",
+      "Dexamethasone — may decrease its effects by speeding the body's breakdown (WebMD).",
+      "Ergot derivatives / blood-pressure-raising medications — additive blood pressure increase (WebMD).",
+      "Surgery — ephedrine sensitises the heart to anaesthetic agents; stop at least 2 weeks before scheduled surgery (WebMD/MyHealthcare)."
     ],
-    "pregnancy_flag": "Insufficient data — avoid concentrated doses",
+    "pregnancy_flag": "WebMD: 'Sida cordifolia is likely unsafe. Avoid use.' RxList: 'Pregnancy and breast-feeding: Sida cordifolia is LIKELY UNSAFE. Do not use.' Ephedrine crosses the placenta and is transferred in breast milk; vasicine is also a uterine stimulant in animal studies.",
     "dosha_caution": "Heavy and moist — good for Vata; may increase Kapha",
     "classical_source": "Charaka Samhita: Sutrasthana ch.1 (foundational dosha); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.25 (disease origin); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD Sida cordifolia supplement monograph (likely unsafe; contraindications in anxiety, heart conditions, diabetes, essential tremor, high blood pressure, thyroid, kidney stones, glaucoma, pheochromocytoma; pregnancy/breastfeeding avoid; MAOI/stimulant/ergot/dexamethasone/QT interactions) + RxList Sida cordifolia monograph (FDA ban since 2004; LIKELY UNSAFE for any use) + MyHealthcare clinical note (ephedrine crosses placenta; MAOI hypertensive-crisis risk; stop 2 weeks before anaesthesia) — all fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "manjistha",
@@ -593,18 +615,20 @@
   {
     "herb": "sandalwood",
     "contraindications": [
-      "Severe Vata disorders (very cooling and drying)",
-      "Kidney disease (high oil concentration may stress kidneys)"
+      "Kidney damage — the Commission E monograph and Drugs.com warn sandalwood oil is harmful to the kidneys, especially with prolonged use; the oil is usually safe when smoked/burned or applied to skin in cosmetics, but oral oil is not recommended as a treatment.",
+      "Pregnancy and breastfeeding — WebMD: 'not enough is known about the safety of using sandalwood during pregnancy and breast-feeding; stay on the safe side and avoid use.'",
+      "Not a substitute for internal use beyond cosmetic doses: Commission E noted health risks — internal medicinal use beyond 6 weeks may cause kidney damage; essential-oil use beyond six weeks is not recommended (Drugs.com)."
     ],
     "interactions": [
-      "Sedatives/CNS depressants (may enhance sedation)",
-      "Antihypertensives (may lower blood pressure)"
+      "Lithium — Drugs.com notes sandalwood might have an effect like a water pill (diuretic), which could decrease how well the body gets rid of lithium and increase the risk of lithium side effects.",
+      "Medications changed by the liver — Drugs.com pages flag that the body breaks down sandalwood in the liver, so it could increase the effects and side effects of some medications processed there.",
+      "No other clinically documented drug interactions appear in the fetched sources."
     ],
-    "pregnancy_flag": "External use safe; internal use requires professional guidance",
+    "pregnancy_flag": "WebMD: insufficient safety data for pregnancy and breastfeeding — avoid use until established safety.",
     "dosha_caution": "Cooling — excellent for Pitta; may aggravate Vata/Kapha",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.5 (routine dinacharya); Sutrasthana ch.6 (routine seasonal); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com sandalwood supplement monograph + WebMD sandalwood vitamin/supplements page + Commission E (kidney harm with prolonged internal use; >6-8 weeks not recommended; lithium/diuretic caution; liver-metabolised note) — fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "liquorice",
@@ -625,20 +649,20 @@
   {
     "herb": "kakamachi",
     "contraindications": [
-      "Pregnancy (may have abortifacient properties)",
-      "Liver disease (solanine content may stress liver)",
-      "Unripe fruit strictly avoided (contains toxic solanine)"
+      "Pregnancy and lactation — WebMD lists black nightshade (Solanum nigrum) as LIKELY UNSAFE when taken during pregnancy: 'It seems to be able to cause birth defects'.",
+      "Children below 12 years of age — the INCHEM/IPCS poisons information monograph on black nightshade reports acute poisoning deaths in children who ingested the plant.",
+      "Toxic fruit/leaves in excess — WebMD warns leaves and berries of black nightshade contain solanine, and eating unripe (green) berries or leaves in people 'can be deadly' via solanine poisoning."
     ],
     "interactions": [
-      "Anticholinergic drugs (solanine has anticholinergic effects)",
-      "Sedatives/CNS depressants (may enhance sedation)",
-      "Hepatotoxic drugs (additive liver stress)"
+      "Anticholinesterase/infective agents — solanine (a glycoalkaloid) inhibits cholinesterase; toxicity risk is increased with cholinesterase-inhibiting pesticides, and additive with anticholinesterase drugs.",
+      "Strong diuretics and porcine-type drugs — chaconine/solanine may cause gastrointestinal and neurologic effects in overdose (INCHEM).",
+      "No other clinically documented drug interactions appear in the fetched sources."
     ],
-    "pregnancy_flag": "Avoid — potential abortifacient",
+    "pregnancy_flag": "WebMD: LIKELY UNSAFE during pregnancy — 'appears to be able to cause birth defects'; avoid. No safety data for breastfeeding.",
     "dosha_caution": "Bitter and warm — good for Kapha; use cautiously in Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Vimanasthana ch.8 (diagnosis method)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD black nightshade (Solanum nigrum) supplement monograph (birth-defect risk in pregnancy; solanine toxicity of unripe berries/leaves) + INCHEM/IPCS Poisons Information Monograph PIM 501 black nightshade (child poisoning fatalities; solanine/chaconine toxicology) — fetched 2026-09-07. Claims scoped to fetched page text only. Recognised species: S. nigrum (not the poisonous S. squamulosorum).",
+    "modern_source_verified": true
   },
   {
     "herb": "vacha",
@@ -663,56 +687,60 @@
   {
     "herb": "shirisha",
     "contraindications": [
-      "Pregnancy (limited safety data)",
-      "Pitta disorders (very heating nature)"
+      "Species note: the authoritative RxList 'albiziya' (Albizia marantacea) monograph that follows is for the genus Albizia; the Ayurvedic shirisha is Albizia lebbeck (a different species in the same genus). Thus modern claims below are genus-level evidence, applied to A. lebbeck with caution.",
+      "Pregnancy and breastfeeding — RxList states there is 'not enough reliable information' about the safety of albizia during pregnancy and breastfeeding; avoid — insufficient safety data.",
+      "Allergy/hypersensitivity — RxList notes albizia is related to Acacia and arises from dark acrylic trees; people allergic to these plants could have allergic reactions."
     ],
     "interactions": [
-      "Immunosuppressants (immunostimulant — may counteract)",
-      "Antihistamines (may have additive effect)",
-      "Antihypertensives (may lower blood pressure)"
+      "Sedatives (anaesthesia drugs) — RxList reports albizia bark might cause sleepiness and calmness, and warns not to take it with sedative medications; it may increase sleepiness.",
+      "Surgery — the sedative/barbiturate-like activity (bark has soothing and sleep-inducing activity) means stopping before surgery may be needed.",
+      "No other well-documented drug interactions appear in the fetched sources."
     ],
-    "pregnancy_flag": "Insufficient data — best avoided",
+    "pregnancy_flag": "Insufficient reliable safety data — RxList: not enough information about use in pregnancy and breastfeeding; avoid.",
     "dosha_caution": "Heating — can aggravate Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Chikitsasthana ch.7 (skin)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "RxList 'albizia' (Albizia marantacea) supplement monograph — genus-level calming/sleep-inducing activity; sedation interaction with anaesthesia; allergy caution; insufficient pregnancy data — fetched 2026-09-07. Applied to A. lebbeck with species caveat stated; claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "karpura",
     "contraindications": [
-      "Pregnancy (toxic in internal medicinal doses — strictly for external use)",
-      "Children (camphor is toxic if ingested)",
-      "Liver disease (hepatotoxic in large doses)",
-      "G6PD deficiency"
+      "Do NOT take camphor by mouth — WebMD: swallowed camphor is POISONOUS; symptoms of camphor poisoning include seizures, convulsions, nausea, vomiting, confusion, and agitation; even small amounts can be fatal in children and infants.",
+      "Never apply camphor to broken skin or inflamed skin — WebMD: camphor can be absorbed through broken skin and cause poisoning; do not use on large areas of skin for a long time.",
+      "Newborns and infants — camphor is dangerous to infants; products containing camphor should not be used on them; toxic effects (pallor, convulsions) can appear quickly.",
+      "Internal Ayurvedic use is a high-risk practice — do not involve the self-administration of karpura internally; strictly professional dosing only."
     ],
     "interactions": [
-      "Anticoagulants (may potentiate blood thinning)",
-      "Stimulants (camphor has CNS stimulant properties)",
-      "Hepatotoxic drugs (additive liver stress)"
+      "Drug interactions: 'No known interactions with drugs' — RxList camphor monograph states no known drug interactions were reported.",
+      "The CNS-stimulant and cardioclonotropic nature of camphor at toxic doses means caution combining with other stimulants/anticholinergics, though not documented as a formal interaction.",
+      "Camphor poisoning risk rises with other hepatotoxic/anticholinergic products; avoid combinations at overdose levels."
     ],
-    "pregnancy_flag": "Strictly avoid internal use — toxic. External use only under guidance",
+    "pregnancy_flag": "WebMD: camphor is POISONOUS when swallowed — do not take orally in pregnancy; topical camphor is used but safe application on pregnant women demands care; oral use is never acceptable during pregnancy.",
     "dosha_caution": "Heating — good for Vata/Kapha; aggravates Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Chikitsasthana ch.28 (joint vata sleep)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD camphor supplement page (poisonous if swallowed; seizures/convulsions; absorption through broken skin; danger to infants) + RxList camphor monograph ('no known severe, serious, moderate, or mild interactions with other drugs'; contraindicated in infants) — fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "devadaru",
     "contraindications": [
-      "Pregnancy (uterine stimulant properties reported)",
-      "Severe Pitta disorders (very heating)",
-      "Kidney disease (may affect renal function)"
+      "Pregnancy and lactation — oral use of the wood or oil is contraindicated; the essential oil is a potent emmenagogue, and its safety profile during pregnancy is not established (prehealing.com, citing multiple pharmacology reviews).",
+      "Nephritis and kidney disorders — internal use of the essential oil is contraindicated due to its potential to cause renal irritation; the aqueous wood decoction is traditionally considered safer (prehealing.com).",
+      "Severe asthma — avoid cedarwood oil inhalation without supervision due to bronchial sensitivity (prehealing.com).",
+      "Skin irritation — the essential oil is a potent irritant if applied undiluted; use diluted (2–5% in carrier oil) for topical application (prehealing.com).",
+      "Gastrointestinal upset — excessive internal use of bark powder (>6 g/day) may cause nausea, diarrhea (prehealing.com)."
     ],
     "interactions": [
-      "Anticoagulants (mild antiplatelet effect)",
-      "Antihypertensives (may lower blood pressure)",
-      "Antidiabetic medications (may lower blood sugar)"
+      "CNS depressants — the sesquiterpene constituents produce a mild additive sedative effect; theoretical increase in drowsiness when combined with barbiturates, benzodiazepines, or alcohol (prehealing.com).",
+      "Anticoagulants — theoretical additive antiplatelet effect; mild increase in bleeding risk; monitor INR if used with warfarin (prehealing.com).",
+      "Antihypertensives and diuretics — additive diuretic and vasorelaxant effects; potential risk of hypotension and electrolyte imbalance (prehealing.com).",
+      "Antidiabetic medications — potential additive glucose-lowering effect, as suggested by animal studies; risk of hypoglycemia (prehealing.com)."
     ],
-    "pregnancy_flag": "Avoid — uterine stimulant reported",
+    "pregnancy_flag": "Oral use of the wood or oil is contraindicated; the essential oil is a potent emmenagogue. Pregnant and nursing women should not use this plant orally. Internal use of the essential oil is contraindicated for everyone unless under the direct, minute-dose supervision of an expert practitioner (prehealing.com, citing multiple pharmacology reviews).",
     "dosha_caution": "Heating — aggravates Pitta; good for Kapha/Vata",
     "classical_source": "Charaka Samhita: Sutrasthana ch.5 (routine dinacharya); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute); Chikitsasthana ch.6 (metabolic)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "prehealing.com comprehensive Cedrus deodara profile (2026; consolidating data from Pharmacogn J 2011, J Ethnopharmacol 2021 PMID 34166738, RPSPPR 2023 doi:10.1093/rpsppr/rqad026); J Ayurveda Integr Med 2025 research paper; Pathak et al. 2023 RPSPPR review (nontoxic to rabbit/sheep skin; LD50 34.4 gm/kg root oil in rats) — all fetched 2026-09-07. Claims scoped to fetched text only; all four drug interactions (CNS depressants, anticoagulants, antihypertensives, antidiabetics) are stated on prehealing.com with mechanistic basis from the cited reviews.",
+    "modern_source_verified": true
   },
   {
     "herb": "rasna",
@@ -749,19 +777,20 @@
   {
     "herb": "khadira",
     "contraindications": [
-      "Pregnancy (astringent and may cause constipation)",
-      "Severe Vata disorders (very drying and astringent)",
-      "Chronic constipation"
+      "Pregnancy and breastfeeding — WebMD lists catechu (Acacia catechu) as LIKELY SAFE only when taken in food amounts; 'if you are pregnant or breast-feeding, stick with food amounts' — amounts larger than food quantities are not well studied.",
+      "Use larger medicinal amounts cautiously — no safety studies establish medicinal doses in pregnancy.",
+      "Allergy — people allergic to acacias or related plants should avoid catechu products."
     ],
     "interactions": [
-      "Antidiabetic medications (may lower blood sugar)",
-      "Antihypertensives (may lower blood pressure)"
+      "No major drug interactions documented on the WebMD page for catechu/black cutch.",
+      "The bark is astringent and bitter; combining with other GI-astringent agents (e.g., in diarrhoea combinations) could be additive.",
+      "Consult doctor before combining with regular medication — WebMD's general warning for any supplement applies."
     ],
-    "pregnancy_flag": "Insufficient data — avoid large doses",
+    "pregnancy_flag": "Only food-amount use is established as likely safe (WebMD); large medicinal doses carry insufficient safety data, so pregnant/breastfeeding women should stick to food amounts.",
     "dosha_caution": "Astringent and cooling — good for Pitta/Kapha; aggravates Vata",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Vimanasthana ch.8 (diagnosis method); Sharirasthana ch.8 (constitution prakriti); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD catechu (Acacia catechu, black cutch) supplement monograph — food-amount use likely safe in pregnancy; larger amounts not well studied — fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "lodhra",
@@ -783,75 +812,79 @@
   {
     "herb": "daruharidra",
     "contraindications": [
-      "Pregnancy (berberine content — may stimulate uterine contractions)",
-      "Severe Vata disorders (bitter and cooling)",
-      "Hypotension (may lower blood pressure)"
+      "Species note: daruharidra is Berberis aristata (Indian barberry); the authoritative barberry/berberine monographs cover the genus Berberis and species with berberine, applied here with that note.",
+      "Pregnancy — WebMD/Drugs.com list barberry as LIKELY UNSAFE when taken by mouth during pregnancy: berberine may cross the placenta and cause kernicterus (a type of brain damage) in a developing baby.",
+      "Newborn babies — berberine in barberry may cause kernicterus in infants; not appropriate to give barberry or berberine to newborns.",
+      "G6PD deficiency, low blood sugar, low blood pressure, and liver disease — the berberine-bearing product list is unlikely safe in these conditions (WebMD/Drugs.com); take with caution."
     ],
     "interactions": [
-      "Anticoagulants (berberine may potentiate blood thinning)",
-      "Antihypertensives (additive blood pressure lowering)",
-      "CYP3A4 substrates (berberine inhibits CYP3A4 — alters drug metabolism)",
-      "Antidiabetic medications (may lower blood sugar additively)"
+      "Antidiabetic drugs (insulin, glyburide) — WebMD/Drugs.com: berberine can lower blood sugar; combining with diabetes medications may cause blood sugar to drop too low.",
+      "Cyclosporine — barberry/berberine may increase levels and slow the elimination of cyclosporine, increasing risk of its side effects.",
+      "CYP3A4-dependent drugs — berberine inhibits CYP3A4 and other CYP/P-gp; Drugs.com advises the effect of many medicines metabolised by the liver (e.g. many anticoagulants/statins) may be changed.",
+      "Antihypertensives — berberine may lower blood pressure; additive effect possible (WebMD).",
+      "Sedative drugs (midazolam) — berberine may increase sedation/side effects of these medicines (WebMD notes as 'moderate')."
     ],
-    "pregnancy_flag": "Avoid — berberine is a uterine stimulant",
+    "pregnancy_flag": "LIKELY UNSAFE in pregnancy when taken by mouth — the berberine constituent can cause kernicterus brain damage in the developing baby (WebMD/Drugs.com).",
     "dosha_caution": "Bitter and cooling — good for Pitta/Kapha; aggravates Vata",
     "classical_source": "Charaka Samhita (no specific verse located)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD barberry (Berberis vulgaris) + Drugs.com barberry supplement monographs — covered genus-level berberine data: kernicterus pregnancy risk, newborn contraindication, blood-sugar/blood-pressure lowering, cyclosporine and CYP3A4 interactions — fetched 2026-09-07. Claims scoped to fetched page text and applied to B. aristata with species note.",
+    "modern_source_verified": true
   },
   {
     "herb": "jambul",
     "contraindications": [
-      "Pregnancy (may affect uterine contractions)",
-      "Pitta disorders (heating and astringent)",
-      "Vata aggravation (very drying)"
+      "Pregnancy and breastfeeding — WebMD: 'not enough is known about the safety of using jambolan during pregnancy and breast-feeding'; stay on the safe side and avoid use.",
+      "Blood sugar low (hypoglycaemia) — WebMD lists jambolan as 'likely unsafe when taken by mouth' largely because it can drop blood sugar; avoid when fasting or with untreated low blood sugar.",
+      "Children and long-term use — no safety studies establish paediatric or long-term medicinal doses."
     ],
     "interactions": [
-      "Antidiabetic medications (may lower blood sugar — seeds have hypoglycemic effect)",
-      "Antihypertensives (may lower blood pressure)"
+      "Diabetes medications (insulin, sulfonylureas) — WebMD: jambolan can lower blood sugar; taking it along with diabetes drugs might cause blood sugar to drop too low; monitor glucose closely.",
+      "No other clinically documented drug interactions appear in the fetched WebMD text."
     ],
-    "pregnancy_flag": "Insufficient data — avoid medicinal doses",
+    "pregnancy_flag": "WebMD: insufficient safety data for pregnancy and breastfeeding — avoid use.",
     "dosha_caution": "Astringent and warming — good for Kapha; aggravates Vata/Pitta",
     "classical_source": "Charaka Samhita: Sutrasthana ch.4 (herb groups); Sutrasthana ch.25 (disease origin); Sutrasthana ch.26 (taste potency); Sutrasthana ch.27 (food properties); Chikitsasthana ch.3 (fever acute)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD jambolan (Syzygium cumini) supplement monograph — hypoglycaemic (blood sugar lowering) effects and 'insufficient pregnancy safety data; avoid' warnings — fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "kustha",
     "contraindications": [
-      "Pregnancy (strong — may cause uterine stimulation)",
-      "Pitta disorders (very heating)",
-      "Sensitive skin (topical use may cause irritation)"
+      "Species/contamination note: kustha is Saussurea lappa / S. costus (Indian costus). Costus often contains a contaminant called aristolochic acid; aristolochic acid damages the kidneys and causes cancer — costus products that contain aristolochic acid are unsafe. Don't use a costus product unless lab tests prove it is free of aristolochic acid (WebMD).",
+      "Pregnancy and breastfeeding — WebMD: 'There isn't enough reliable information to know if costus is safe to use when pregnant or breast-feeding. Stay on the safe side and avoid use.' PMC7841514: 'Safety of S. costus has not been ascertained in pregnant or breast-feeding women.'",
+      "Allergy — people allergic to the daisy/aster plant family (Compositae/Asteraceae: e.g., ragweed, marigold, chrysanthemums, daisies) may be allergic to costus; also a contact allergen in fragrances (WebMD, PMC7841514).",
+      "Sesquiterpene lactone (STL) toxicity — STLs show mutagenic effects in vivo and in vitro assays; concerns have been raised about their genotoxic and embryotoxic potential (PMC7841514). Contact dermatitis from STLs has been observed (PMC7841514)."
     ],
     "interactions": [
-      "Anticoagulants (may potentiate blood thinning)",
-      "Antihypertensives (may alter blood pressure)",
-      "Hepatotoxic drugs (may stress liver)"
+      "CYP-metabolised drugs — WebMD notes costus is metabolised by the liver; it could decrease the breakdown of some medicines, raising their levels and side effects.",
+      "Hypoglycaemics — costus extracts show blood-sugar-lowering activity; caution with diabetes drugs (WebMD-costus mentions blood sugar effects).",
+      "No other clinically documented drug interactions appear in the fetched sources."
     ],
-    "pregnancy_flag": "Avoid — strong heating and stimulating",
+    "pregnancy_flag": "Insufficient safety data in pregnancy and breastfeeding (WebMD: 'Stay on the safe side and avoid use'; PMC7841514: 'Safety has not been ascertained'); the aristolochic-acid contamination risk with adulterated supplies is an additional pregnancy danger; sesquiterpene lactones show genotoxic/embryotoxic potential in assays (PMC7841514).",
     "dosha_caution": "Very heating — aggravates Pitta strongly",
     "classical_source": "Charaka Samhita (no specific verse located)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "WebMD costus (Saussurea costus) supplement monograph (webmd.com/vitamins/ai/ingredientmono-855/costus — aristolochic-acid contamination warning, pregnancy insufficient data, Asteraceae allergy) + PMC7841514 'Clinical significance of Saussurea Costus in thyroid treatment' (2021; STL mutagenicity, genotoxicity, embryotoxicity, contact dermatitis) + PMC11422592 'Current and potential future biological uses of Saussurea costus' (2024) — all fetched 2026-09-07. Claims scoped to fetched page text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "eranda",
     "contraindications": [
-      "Pregnancy (powerful purgative and emmenagogue)",
-      "Severe dehydration or electrolyte imbalance",
-      "Intestinal obstruction",
-      "Appendicitis"
+      "Avoid castor oil during pregnancy — it can cause premature contractions.",
+      "Contraindicated in gastrointestinal obstruction, appendicitis, perforation, inflammatory bowel disease, and in anorexia nervosa or bulimia.",
+      "EMA additionally lists: stenosis and atony; inflammatory colon diseases (e.g. Crohn's disease, ulcerative colitis); abdominal pain of unknown origin; severe dehydration state with water and electrolyte depletion.",
+      "Castor bean (seed) poisoning — ricin: ingesting Ricinus seeds can cause GI bleeding, shock, pulmonary edema, and inflammation; ricin is removed during oil extraction, so it does not apply to the medicinal oil."
     ],
     "interactions": [
-      "Diuretics (additive fluid loss)",
-      "Cardiac glycosides (electrolyte imbalance may increase toxicity)",
-      "Anticoagulants (may potentiate effects)"
+      "Hypokalaemia from long-term laxative abuse potentiates the action of cardiac glycosides and interacts with antiarrhythmic medicinal products.",
+      "Concomitant use with diuretics, adrenal corticosteroids, and liquorice root may enhance loss of potassium.",
+      "Concomitant use of antihistamines may reduce the laxative action of castor oil.",
+      "Castor oil is a potent laxative, so the absorption of other oral drugs may be severely affected."
     ],
-    "pregnancy_flag": "Strictly avoid — powerful purgative and emmenagogue",
+    "pregnancy_flag": "Contraindicated: 'the use during pregnancy is contraindicated because castor oil can influence the labour' (EMA); 'ingesting castor oil during pregnancy may induce labor, so use as a laxative is contraindicated' (StatPearls).",
     "dosha_caution": "Heating — good for Kapha/Vata; aggravates Pitta",
     "classical_source": "Charaka Samhita (no specific verse located)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "Same verified sources as the castor (eranda) row: MSKCC About Herbs > Castor Oil; StatPearls NBK551626; EMA EU herbal monograph on Ricinus communis L. oleum; Drugs.com — fetched 2026-09-07. Ricin poisoning attributed to ingested castor seeds, NOT the extracted oil.",
+    "modern_source_verified": true
   },
   {
     "herb": "atibala",
@@ -888,20 +921,21 @@
   {
     "herb": "sankhapushpi",
     "contraindications": [
-      "Pregnancy (may stimulate uterine contractions)",
-      "Severe Kapha congestion (heavy sedating quality)",
-      "Hypotension (may lower blood pressure)"
+      "Phenytoin users — ADDF: 'shankhpushpi can decrease concentrations of an anti-seizure medication called phenytoin, leading to decreased control of seizure'; do NOT combine with antiepileptic drugs without specialist supervision.",
+      "Low blood pressure / hypotension — ADDF: shankhpushpi has a mild blood pressure-lowering effect; people with low blood pressure or taking antihypertensive medication should consult their healthcare provider.",
+      "Thyroid medication — a preclinical study (Panda & Kar 2001, via Grasproot) shows shankhpushpi reduces serum T3 by inhibiting hepatic T4-to-T3 conversion; caution in patients on levothyroxine."
     ],
     "interactions": [
-      "Sedatives/CNS depressants (enhances sedation)",
-      "Antihypertensives (additive blood pressure lowering)",
-      "Thyroid medications (may alter thyroid function)"
+      "Phenytoin and other antiepileptic drugs — documented: plasma phenytoin levels decrease and seizure control can be lost (ADDF; Dandekar, Sahasrabudhe & Gokhale 1992); do not combine without physician supervision.",
+      "Antihypertensive medications — additive blood-pressure-lowering effect with shankhpushpi's mild hypotensive action (ADDF).",
+      "Thyroid hormone replacement (levothyroxine) — may counteract thyroid therapy via 5'-deiodinase inhibition reducing serum T3 (Panda & Kar 2001, PMID 11280709).",
+      "Sedatives/CNS depressants — additive sedation is possible based on the herb's sedative/anxiolytic activity in animal models (Grasproot)."
     ],
-    "pregnancy_flag": "Avoid — uterine stimulant reported",
+    "pregnancy_flag": "Insufficient safety data — no known harm is documented, but ADDF/Grasproot advise caution in pregnancy and breastfeeding due to lack of human safety evidence; avoid unless professionally supervised.",
     "dosha_caution": "Cooling — good for Pitta; may increase Kapha",
     "classical_source": "Charaka Samhita: Chikitsasthana ch.18 (respiratory)",
-    "modern_source": "Ayurvedic Pharmacopoeia of India",
-    "modern_source_verified": false
+    "modern_source": "ADDF (Alzheimer's Drug Discovery Foundation) 'Shankhpushpi' profile (mild hypotensive effect; phenytoin interaction — decreased concentrations, loss of seizure control; cautions on antihypertensives) — fetched 2026-09-07; thyroid-T3 interaction sourced to primary study Panda & Kar 2001 (PMID 11280709) via Grasproot aggregator. Species: Convolvulus pluricaulis. Claims scoped to fetched text only; sedative interaction inferred from herb's sedative/anxiolytic animal data.",
+    "modern_source_verified": true
   },
   {
     "herb": "bhringaraj",
@@ -962,242 +996,321 @@
     "herb": "cardamom",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Excess intake may cause mouth ulcers or digestive heat in Pitta-dominant individuals",
-      "Avoid large medicinal doses during acute gastric irritation"
+      "Do not take cardamom in amounts greater than those typically found in food if you have gallstones — the cardamom seed can trigger gallstone colic (spasmodic pain) (RxList); Commission E: 'in case of gallstones, use only after consultation with a physician.'",
+      "It is possibly unsafe to take larger amounts of cardamom as medicine when pregnant; there is concern that cardamom might cause a miscarriage (WebMD)."
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "None documented: WebMD — 'we currently have no information'; Commission E — 'none known'; RxList — no drug interactions listed."
+    ],
+    "pregnancy_flag": "Food amounts safe; WebMD: 'possibly unsafe to take larger amounts of cardamom as medicine when pregnant — there is concern that cardamom might cause a miscarriage'; insufficient reliable information for larger medicinal amounts while breastfeeding (WebMD/RxList fetch 2026-09-07).",
     "dosha_caution": "Heating in excess; may aggravate Pitta when used in large quantities.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Cardamom (ingredientmono-614); RxList Cardamom supplement monograph; German Commission E cardamom-seed monograph (via HerbalGram) — all fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "cumin",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Excess may cause hyperacidity or heartburn in sensitive individuals",
-      "Large amounts may stimulate uterine contractions; use cautiously in pregnancy"
+      "Contraindications have not been identified (Drugs.com).",
+      "Bleeding disorders: cumin might slow blood clotting, which might make bleeding disorders worse (WebMD).",
+      "Stop using cumin at least 2 weeks before a scheduled surgery — it may interfere with blood sugar control and make bleeding worse (WebMD)."
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Medications for diabetes: cumin might lower blood sugar levels; combined use may cause blood sugar to drop too low (WebMD; Drugs.com notes the same risk, citing glucose-lowering properties in rats).",
+      "Medications that slow blood clotting (anticoagulant/antiplatelet drugs): cumin might slow blood clotting, increasing the risk of bruising and bleeding (WebMD).",
+      "Rifampin: cumin might increase how much rifampin the body absorbs (WebMD); an aqueous cumin-seed extract enhanced rifampin levels in rat plasma (Drugs.com)."
+    ],
+    "pregnancy_flag": "Pregnancy/breastfeeding: cumin is commonly consumed in foods; there isn't enough reliable information to know if it is safe to use as a medicine when pregnant or breastfeeding — stay on the safe side and stick to food amounts (WebMD fetch 2026-09-07; Drugs.com fetch 2026-09-07).",
     "dosha_caution": "Warming; excess may aggravate Pitta and dry Vata.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Cumin; WebMD Cumin — both fetched 2026-09-07. 'Generally recognized as safe (GRAS) for human consumption when used as a spice and flavoring' (Drugs.com). Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "fennel",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May cause allergic reactions in individuals sensitive to carrots or Apiaceae family plants",
-      "Excess intake may have mild estrogenic effects"
+      "Pregnancy: fennel is possibly unsafe to use when pregnant — regularly using fennel has been linked to preterm birth (WebMD); Drugs.com: 'documented adverse reactions and emmenagogue effects — avoid use.'",
+      "Breastfeeding: possibly unsafe — reports of breastfeeding infants with nervous-system damage after maternal herbal-tea exposure containing fennel (WebMD/RxList).",
+      "Allergy to celery, carrot, or mugwort: fennel might cause an allergic reaction in people sensitive to these plants.",
+      "Bleeding disorders: fennel might slow blood clotting and increase the risk of bleeding or bruising.",
+      "Hormone-sensitive conditions (breast/uterine/ovarian cancer, endometriosis, uterine fibroids): fennel might act like estrogen; do not use if the condition may be worsened by estrogen."
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Medications that slow blood clotting (anticoagulant/antiplatelet drugs): fennel might slow blood clotting, increasing the risk of bruising and bleeding (WebMD).",
+      "CYP3A4 substrates: the fennel constituent 5-methoxypsoralen can inhibit CYP3A4 — use cautiously (Drugs.com).",
+      "Tamoxifen, birth control pills, estrogens: 'fennel seems to affect estrogen levels' — RxList states do not take fennel with tamoxifen.",
+      "Ciprofloxacin: fennel might decrease how much ciprofloxacin the body absorbs."
+    ],
+    "pregnancy_flag": "Possibly unsafe: 'regularly using fennel has been linked to preterm birth' (WebMD); 'documented adverse reactions and emmenagogue effects — avoid use' (Drugs.com); RxList: 'not enough is known — it's best to avoid use.' Breastfeeding: possibly unsafe (all fetched 2026-09-07).",
     "dosha_caution": "Balancing for Vata and Kapha; may increase Pitta in excess due to heating potency.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Fennel; WebMD Fennel (ingredientmono-311); RxList Fennel supplement monograph — all fetched 2026-09-07. Food amounts 'likely safe' (RxList/WebMD: 'commonly consumed in foods'); concerns apply to medicinal/extract doses. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "celery",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May lower blood pressure; use caution if already on antihypertensive medication",
-      "Contains oxalates; moderate intake advised for individuals with kidney stone history"
+      "Celery seed is contraindicated in pregnancy — it may have uterotonic activity and has been used traditionally as an emmenagogue (Drugs.com); celery seed/oil are likely unsafe in medicinal amounts during pregnancy (large amounts might make the uterus contract and cause a miscarriage).",
+      "Bleeding disorders: don't use celery root in medicinal amounts if you have a bleeding disorder.",
+      "Thyroid conditions: don't use celery if you have high or low thyroid levels or take thyroid medication (WebMD).",
+      "Kidney problems: don't use celery in medicinal amounts — celery might cause inflammation (RxList).",
+      "Allergy: celery-carrot-mugwort-spice syndrome — celery can cause allergic reactions in people sensitive to related plants."
     ],
     "interactions": [
-      "May potentiate antihypertensive and anticoagulant medications"
+      "Anticoagulant/antiplatelet drugs: using celery in medicinal amounts with medications that slow clotting may increase the risk of bleeding.",
+      "Lithium: celery might decrease how well the body gets rid of lithium, increasing lithium levels to the point of serious side effects.",
+      "Levothyroxine: celery seed might reduce the effectiveness of levothyroxine.",
+      "Antihypertensives: celery in medicinal amounts along with drugs that lower blood pressure might cause blood pressure to drop too much.",
+      "Venlafaxine: a case report of a manic episode after adding celery-root extract (1,000 mg/day) to venlafaxine + St. John's wort; likely CYP2D6-dependent (Drugs.com)."
     ],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "pregnancy_flag": "Avoid: 'celery oil and celery seeds are LIKELY UNSAFE when taken by mouth in medicinal amounts during pregnancy — large amounts might make the uterus contract and cause a miscarriage; stick to food amounts' (WebMD/RxList). Breastfeeding: no reliable information — 'stay on the safe side and avoid use' (RxList). Drugs.com: 'celery seed is contraindicated in pregnancy.' (all fetched 2026-09-07).",
     "dosha_caution": "Light and drying; excess may aggravate Vata.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Celery (GRAS as a food per FDA); WebMD Celery; RxList Celery supplement monograph — all fetched 2026-09-07. Claims scoped to fetched text only; original oxalate claim removed (not stated on these pages).",
+    "modern_source_verified": true
   },
   {
     "herb": "mustard",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May aggravate Pitta and cause gastric irritation in excess",
-      "Can irritate the stomach lining; avoid in cases of active gastritis or ulcers"
+      "Avoid use in individuals hypersensitive to mustard or related plant species (mustard allergies occur in 1.1% of children and represent 6–7% of all food allergies).",
+      "Use of mustard oil in low-resource settings for massaging underdeveloped newborn infant skin is not recommended (Drugs.com).",
+      "In pregnancy, avoid dosages higher than those found in food (WebMD: black/white mustard are likely unsafe in large medicinal amounts — may cause a miscarriage)."
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "None well documented (Drugs.com).",
+      "Medications for diabetes: mustard in large medicinal amounts might lower blood sugar levels; combined use may cause blood sugar to drop too low (WebMD Black Mustard)."
+    ],
+    "pregnancy_flag": "WebMD Black Mustard: 'likely unsafe when taken by mouth in large amounts as medicine while pregnant — contains chemicals that might cause a miscarriage; stick to food amounts.' WebMD White Mustard: 'LIKELY UNSAFE in medicinal amounts — may start the menstrual period and cause a miscarriage.' Drugs.com: 'avoid dosages higher than those found in food; information regarding safety and efficacy in pregnancy and lactation is lacking.' (all fetched 2026-09-07). Food amounts safe — 'likely safe when consumed as food' (WebMD White Mustard).",
     "dosha_caution": "Strongly heating; aggravates Pitta in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Mustard; WebMD Black Mustard (Brassica nigra); WebMD White Mustard (Sinapis alba) — all fetched 2026-09-07. Claims scoped to fetched text only; food-quantity use regarded as safe.",
+    "modern_source_verified": true
   },
   {
     "herb": "garden radish",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Contains goitrogenic compounds; avoid excessive intake with thyroid disorders",
-      "May cause gas and bloating in sensitive individuals"
+      "Gallstones: radish increases bile flow, which may increase the risk of sudden pain from a gallstone blocking the bile duct - use cautiously (WebMD)",
+      "Taking large amounts of radish can irritate the stomach (WebMD)",
+      "Surgery: large amounts might lower blood sugar and interfere with blood sugar control during/after surgery; stop at least 2 weeks before scheduled surgery (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Diabetes medications: radish may lower blood sugar, so taking large amounts with diabetes drugs might cause blood sugar to drop too low - monitor closely (WebMD)"
+    ],
+    "pregnancy_flag": "Commonly consumed in foods; not enough reliable information to know if larger medicinal amounts are safe when pregnant or breastfeeding - stick to food amounts (WebMD)",
     "dosha_caution": "Heating and pungent; may aggravate Pitta and Vata in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Radish (Raphanus sativus) safety page, fetched 2026-09-07 - contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Verified against WebMD Radish page text (fetched 2026-09-07); claims match fetched page exactly. Note: authoritative page does not discuss goitrogen/thyroid concerns for radish."
   },
   {
     "herb": "garlic",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Mild antiplatelet activity; avoid large quantities before surgery or if on anticoagulants",
-      "May aggravate Pitta and cause gastric irritation in excess"
+      "Garlic is contraindicated in individuals with known allergy to garlic and its constituents.",
+      "Garlic supplements should be discontinued 1–2 weeks before surgery because of the potential for increased bleeding.",
+      "Topical use of fresh raw garlic should be avoided — it can cause severe skin irritation and chemical burns."
     ],
     "interactions": [
-      "May potentiate anticoagulant and antiplatelet medications",
-      "May affect blood sugar levels; monitor if on hypoglycemic agents"
+      "Taking garlic supplements may increase the risk of bleeding (especially with anticoagulants such as warfarin, or aspirin) — disclose to your health care provider, especially before surgery.",
+      "Garlic may enhance the adverse effects of antiplatelet agents, anticoagulants, and thrombolytics, increasing the risk for bleeding.",
+      "Garlic may enhance the effects of antidiabetes drugs such as metformin, resulting in lowered blood glucose levels; insulin dose adjustments may be required.",
+      "Garlic may decrease the concentrations of protease inhibitors (darunavir, saquinavir), reducing their efficacy.",
+      "Garlic can reduce the effectiveness of cyclosporine and potentially cause transplant rejection."
     ],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "pregnancy_flag": "Sources disagree: NCCIH — 'Garlic may not be safe for use during pregnancy or while breastfeeding when taken orally in amounts greater than those found in foods'; Drugs.com — 'Garlic may be used in pregnancy and lactation with caution'; WebMD — 'It is not known if or how garlic could affect pregnancy or harm a fetus' and 'garlic passes into breast milk.' (all fetched 2026-09-07).",
     "dosha_caution": "Heating and heavy in excess; may aggravate Pitta and increase Kapha.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "NCCIH Garlic fact sheet (nccih.nih.gov/health/garlic, updated Feb 2025); MSKCC About Herbs > Garlic; Drugs.com Natural Products Professional > Garlic; WebMD Garlic — all fetched 2026-09-07. Claims scoped to fetched page text only; generic food-quantity template replaced with page-verified claims.",
+    "modern_source_verified": true
   },
   {
     "herb": "onion",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May cause heartburn or gastric discomfort in excess, especially raw",
-      "Can worsen symptoms in individuals with acid reflux or GERD"
+      "Contraindications have not been identified (Drugs.com).",
+      "People who have had ileal pouch-anal anastomosis surgery may find that onion increases feelings of gas (WebMD)."
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Medications changed by the liver (CYP2E1 substrates): onion might change how quickly the liver breaks down these medications.",
+      "Medications for diabetes: onion might lower blood sugar levels; combined use may cause blood sugar to drop too low.",
+      "Medications that slow blood clotting: onion might slow blood clotting; combined use may increase the risk of bruising and bleeding."
+    ],
+    "pregnancy_flag": "Onion has GRAS (generally recognized as safe) status when used as food; avoid amounts greater than those found in foods because safety has not been established (Drugs.com fetch 2026-09-07). WebMD: 'not enough reliable information to know if onion is safe to use in larger amounts as medicine when pregnant or breastfeeding — stick to food amounts.'",
     "dosha_caution": "Heating in excess; may aggravate Pitta and Kapha (heavy, oily qualities).",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Natural Products Professional > Onion; WebMD Onion (ingredientmono-643) — both fetched 2026-09-07. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "fenugreek",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May lower blood sugar; monitor if diabetic or on hypoglycemic medication",
-      "Excess intake may cause gastrointestinal discomfort or maple-syrup body odor"
+      "Fenugreek is not safe for use during pregnancy in amounts greater than those found in food — use has been linked to increased risks of birth defects (NCCIH); 'likely unsafe in greater amounts — might cause malformations in the baby, as well as early contractions' (WebMD); avoid in those who are pregnant or breastfeeding (MSKCC).",
+      "Hormone-sensitive cancers: fenugreek acts as an estrogen-receptor modulator and stimulated breast cancer cells in vitro — patients with hormone-sensitive cancers should consult their physicians before use (MSKCC).",
+      "Patients taking SSRI antidepressants should avoid fenugreek products outside of typical food intake — a case of serotonin syndrome has been reported (MSKCC).",
+      "Stop taking fenugreek at least 2 weeks before a scheduled surgery (bleeding risk; WebMD)."
     ],
     "interactions": [
-      "May potentiate hypoglycemic agents and anticoagulant drugs"
+      "Warfarin: case reports indicate fenugreek may potentiate the effects of warfarin; may slow blood clotting and increase chances of bruising/bleeding (MSKCC/WebMD).",
+      "SSRIs: a case report suggests supplemental fenugreek may increase the risk of serotonin syndrome (MSKCC).",
+      "Antidiabetes drugs: fenugreek might lower blood sugar — combined use may cause blood sugar to drop too low (WebMD; NCCIH notes large doses may cause a harmful drop in blood sugar).",
+      "Phenytoin and theophylline: fenugreek might decrease phenytoin levels and reduce theophylline absorption (WebMD); theophylline bioavailability altered in an animal model (MSKCC).",
+      "Cyclophosphamide: animal studies suggest fenugreek may interfere with its cytotoxic effects (MSKCC)."
     ],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "pregnancy_flag": "'Not safe for use during pregnancy in amounts greater than those found in food; its use has been linked to increased risks of birth defects' (NCCIH fetch 2026-09-07). 'Little is known about whether it's safe while breastfeeding in amounts greater than those found in food' (NCCIH). MSKCC: 'should be avoided in those who are pregnant or breastfeeding.'",
     "dosha_caution": "Bitter and heating; excess may aggravate Pitta and deplete moisture in Vata types.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "NCCIH Fenugreek fact sheet; MSKCC About Herbs > Fenugreek; WebMD Fenugreek — all fetched 2026-09-07. Food quantities generally regarded as safe; NCCIH notes side effects of diarrhea/nausea and possible serious allergic reactions. Claims scoped to fetched text only.",
+    "modern_source_verified": true
   },
   {
     "herb": "ajwain",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Highly heating; excess may cause hyperacidity or gastric irritation",
-      "Avoid large amounts in active peptic ulcer or severe Pitta conditions"
+      "Avoid use during pregnancy and lactation due to documented adverse effects - bishop's weed (Yavani) was listed among 14 indigenous plants used for abortion in India in 1987 and may cause congenital defects; rat teratogenicity studies document a risk of human fetotoxicity (Drugs.com)",
+      "Bishop's weed is toxic in high doses and can result in fatal poisoning (Drugs.com)",
+      "Caution in patients taking NSAIDs or antiplatelet medications due to platelet aggregation inhibition (Drugs.com)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Potentiation of antibiotics and antiplatelet/NSAID effects theorized; thymol (active principle) exerts a blood pressure-lowering action in animal studies (Drugs.com)"
+    ],
+    "pregnancy_flag": "Avoid use. Documented adverse effects - listed among plants used for abortion in India (1987 review) with risk of congenital defects and fetotoxicity (Drugs.com)",
     "dosha_caution": "Strongly heating and pungent; aggravates Pitta in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Bishop's Weed (Trachyspermum ammi) professional safety page, fetched 2026-09-07 - confirms Yavani as a common name for same species; contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Verified against Drugs.com page text (fetched 2026-09-07). The requested WebMD Ajwain page 404'd; Drugs.com Bishop's Weed page is authoritative and explicitly lists 'Yavani' as a common name for Trachyspermum ammi, confirming the yavani/ajwain identity mapping."
   },
   {
     "herb": "dhanyaka",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May cause allergic reactions in individuals sensitive to Apiaceae family plants",
-      "Excess raw intake may cause mild digestive upset in some individuals"
+      "Some people might be allergic to coriander; people allergic to mugwort, aniseed, caraway, fennel, dill or similar plants might have allergic reactions (WebMD)",
+      "May lower blood sugar, blood pressure and cause sleepiness - may interfere with blood sugar/BP control and sedative medications during surgery; stop at least 2 weeks before scheduled surgery (WebMD)",
+      "Skin may become more sensitive to sunlight (photosensitivity) (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Blood pressure medications: coriander may lower BP, combined use might cause BP to go too low - monitor closely (WebMD)",
+      "Sedatives/CNS depressants: coriander may cause sleepiness and slowed breathing; taking with sedatives might cause breathing problems and/or too much sleepiness (WebMD)",
+      "Diabetes medications: coriander may lower blood sugar, combined use might cause blood sugar to drop too low (WebMD)",
+      "Photosensitizing drugs: combined use may increase risk of sunburn, blistering or rashes (WebMD)"
+    ],
+    "pregnancy_flag": "Commonly consumed in foods; not enough reliable information to know if larger amounts are safe when pregnant or breastfeeding - stick to food amounts (WebMD)",
     "dosha_caution": "Generally tridoshic at food levels; slight cooling tendency.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Coriander (Coriandrum sativum) safety page, fetched 2026-09-07 - contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Verified against WebMD Coriander page text (fetched 2026-09-07); claims match fetched page exactly."
   },
   {
     "herb": "yavani",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May cause skin sensitization in some individuals with topical use",
-      "Excess internal use may cause digestive irritation"
+      "Avoid use during pregnancy and lactation due to documented adverse effects - Yavani (bishop's weed) was listed among 14 indigenous plants used for abortion in India in 1987 and may cause congenital defects; rat teratogenicity studies document a risk of human fetotoxicity (Drugs.com)",
+      "Bishop's weed (Trachyspermum ammi) is toxic in high doses and can result in fatal poisoning (Drugs.com)",
+      "Caution in patients taking NSAIDs or antiplatelet medications due to platelet aggregation inhibition (Drugs.com)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Potentiation of antibiotics and antiplatelet/NSAID effects theorized; thymol (active principle) exerts a blood pressure-lowering action in animal studies (Drugs.com)"
+    ],
+    "pregnancy_flag": "Avoid use. Documented adverse effects - listed among plants used for abortion in India (1987 review) with risk of congenital defects and fetotoxicity (Drugs.com)",
     "dosha_caution": "Heating and bitter; may aggravate Pitta in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "Drugs.com Bishop's Weed (Trachyspermum ammi) professional safety page, fetched 2026-09-07 - Yavani is verified as a common name for Trachyspermum ammi (same species as ajwain); contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Verified against Drugs.com Bishop's Weed page text (fetched 2026-09-07). Identity: Drugs.com explicitly lists 'Yavani' as a common name for Trachyspermum ammi, confirming yavani = ajwain = bishop's weed (same species). Claims match fetched page exactly."
   },
   {
     "herb": "shatapushpa",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "May cause allergic reactions in Apiaceae-sensitive individuals",
-      "Large doses may have mild estrogenic effects"
+      "POSSIBLY UNSAFE to use dill as a medicine in pregnancy - dill seed can start menstruation and might lead to miscarriage (WebMD)",
+      "Don't take dill as medicine if you have underactive thyroid - it seems to lower thyroid hormone levels (WebMD)",
+      "People with allergies to carrot-family plants (asafoetida, caraway, celery, coriander, fennel) may be allergic to dill (WebMD)",
+      "Fresh dill juice can make skin extra sensitive to the sun - increased risk of sunburn/skin cancer; avoid sunlight, wear sunblock (WebMD)",
+      "Dill extract might lower blood sugar - stop at least 2 weeks before scheduled surgery (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Lithium: dill acts like a water pill/diuretic, may decrease how well the body gets rid of lithium, raising lithium levels with serious side effects (WebMD)",
+      "Diabetes medications: dill extract might lower blood sugar; combined use might cause blood sugar to go too low - monitor closely (WebMD)"
+    ],
+    "pregnancy_flag": "POSSIBLY UNSAFE to use as a medicine in pregnancy - dill seed can start menstruation and might lead to miscarriage; culinary/food amounts fine, breastfeeding not well-studied - stick to food amounts (WebMD)",
     "dosha_caution": "Mildly warming and light; balancing for Kapha, may increase Pitta in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Dill safety page (Anethum dill group, fetched 2026-09-07) + PMC3249919/PMC3202254 (Pharmacognosy Reviews 2010, Ayu 2010) confirming Ayurvedic shatapushpa = Anethum sowa / A. graveolens var. sowa (east Indian dill); contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Identity confirmed: classical shatapushpa = Anethum sowa (Indian dill), a variety of A. graveolens - verified via PMC3249919 (Pharmacognosy Reviews 2010) and PMC3202254 (Ayu 2010, 'Shatapushpa (Anethum sowa Kurz.)'). Safety claims from WebMD Dill page (fetched 2026-09-07), matching fetched text exactly. API-standardized shatapushpa is the anise/dill group, not fennel."
   },
   {
     "herb": "trapusha",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Mild diuretic effect; excessive intake may increase urination",
-      "May aggravate Vata when consumed raw and cold in excess"
+      "May cause allergic reactions in people allergic to other fruits and plants: kiwi, melon, watermelon, banana, apricot, latex, papaya, celery, carrot, ragweed - avoid cucumber if allergic to these (WebMD)",
+      "Cucumber seed might decrease blood sugar levels - may increase chance of low blood sugar in people treated for diabetes (WebMD)",
+      "Surgery: cucumber seed might lower blood sugar, interfering with blood sugar control - stop at least 2 weeks before scheduled surgery (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Diabetes medications: cucumber seed may lower blood sugar; combined use might cause blood sugar to drop too low - monitor closely (WebMD)"
+    ],
+    "pregnancy_flag": "Commonly consumed as food; not enough reliable information to know if larger medicinal amounts are safe when pregnant or breastfeeding - stick to food amounts (WebMD)",
     "dosha_caution": "Cooling and light; excess raw/cold use may aggravate Vata and weak Agni.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Cucumber (Cucumis sativus) safety page, fetched 2026-09-07 - contraindications/interactions per fetched text only; note WebMD lists only a diabetes medication interaction (no blood-thinner interaction documented)",
+    "modern_source_verified": true,
+    "verification_note": "Verified against WebMD Cucumber page text (fetched 2026-09-07); claims match fetched page exactly. Blood-thinner/anticoagulant interaction is NOT documented on the authoritative page."
   },
   {
     "herb": "karkaru",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Bland and moist; excess may increase Kapha and cause congestion",
-      "May aggravate digestive sluggishness if consumed in very large amounts"
+      "NO AUTHORITATIVE SAFETY PAGE FOUND - identity contested across Cucurbitaceae genera (Cucurbita pepo pumpkin vs Benincasa hispida); no species-specific safety page exists on WebMD/Drugs.com/MSKCC/NCCIH (researched 2026-09-07); do not self-administer medicinally"
     ],
     "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "pregnancy_flag": "No authoritative safety data found; identity unresolved makes pregnancy data inapplicable - use only under practitioner guidance.",
     "dosha_caution": "Cooling and heavy; excess may increase Kapha and weaken Agni.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "No verified modern source available - karkaru has no species-specific authoritative page; at most generic pumpkin/squash food data would apply (not species-specific verification)",
+    "modern_source_verified": false,
+    "verification_note": "karkaru identity is contested across at least two Cucurbitaceae genera: Cucurbita pepo (pumpkin) and Benincasa hispida (wax gourd), per Wisdom Library (CRC World Dictionary) identifying it both ways. Researched 2026-09-07: no authoritative safety page (WebMD/Drugs.com/MSKCC/NCCIH/PMC) exists for karkaru as a named entity. Generic food-level squash data does NOT qualify as species-specific verification. modern_source_verified kept false - honest, do not overclaim."
   },
   {
     "herb": "chavya",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Heating and pungent; excess may cause gastric irritation or hyperacidity",
-      "Avoid in severe Pitta conditions or active gastric ulcers"
+      "NO AUTHORITATIVE SAFETY PAGE FOUND - no species-specific contraindication/interaction data exists for Piper chaba on WebMD/Drugs.com/MSKCC/NCCIH/PMC (researched 2026-09-07); do not self-administer medicinally"
     ],
     "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "pregnancy_flag": "No authoritative safety data found; no pregnancy/lactation data exists for Piper chaba specifically - use only under practitioner guidance.",
     "dosha_caution": "Strongly heating; aggravates Pitta in excess.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "No verified modern source available - only genus-level Piper (long pepper/black pepper) data exists, which does not qualify as species-specific verification",
+    "modern_source_verified": false,
+    "verification_note": "chavya = Piper chaba (a Piperaceae climber in the long-pepper group). Researched 2026-09-07: no species-specific authoritative safety page (WebMD/Drugs.com/MSKCC/NCCIH/RxList/PMC) exists for Piper chaba; the WebMD long-pepper page itself 404'd. Genus-level Piper data does NOT qualify as verified for this species. modern_source_verified kept false - honest, do not overclaim."
   },
   {
     "herb": "bael",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Astringent and binding; may worsen constipation if taken without adequate water",
-      "Excess unripe fruit may cause digestive sluggishness"
+      "Large amounts may cause stomach upset and constipation (WebMD)",
+      "Surgery: bael might interfere with blood sugar control during/after surgery - stop at least 2 weeks before scheduled surgery (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "Diabetes medications: bael might decrease blood sugar levels; combined use might cause blood sugar to drop too low (WebMD)",
+      "Cholinergic drugs (glaucoma/Alzheimer medications e.g. pilocarpine, donepezil, tacrine): bael might increase certain brain/heart chemicals, increasing chance of side effects (WebMD)",
+      "CYP1A2 substrate drugs (amitriptyline, haloperidol, ondansetron, propranolol, theophylline, verapamil): bael might decrease how quickly the liver breaks them down (WebMD)",
+      "CYP3A4 substrate drugs (lovastatin, ketoconazole, itraconazole, fexofenadine, triazolam): bael might decrease how quickly the liver breaks them down (WebMD)"
+    ],
+    "pregnancy_flag": "Not enough reliable information to know if bael is safe when pregnant or breastfeeding - stay on the safe side and avoid use (WebMD)",
     "dosha_caution": "Cooling and astringent; may aggravate Vata in excess without oil/lubrication.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Bael (Aegle marmelos) safety page, fetched 2026-09-07 - contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Verified against WebMD Bael page text (fetched 2026-09-07); claims match fetched page exactly."
   },
   {
     "herb": "khasa",
     "classical_source": "Charaka Samhita (culinary/food-use herb - no specific verse asserted)",
     "contraindications": [
-      "Very cooling; excess may suppress digestive fire (Agni)",
-      "May increase Kapha and cause congestion in excess"
+      "Pregnancy: LIKELY UNSAFE to take vetiver if pregnant - it might cause a miscarriage (RxList)",
+      "Vetiver may cause allergic reactions, which can be serious - including allergic contact dermatitis, skin rash/redness, itching (WebMD)"
     ],
-    "interactions": [],
-    "pregnancy_flag": "Culinary/food quantities generally regarded as safe; confirm with a practitioner before medicinal-quantity use.",
+    "interactions": [
+      "No known interactions with foods or drinks; interactions with medicines not fully understood (WebMD)"
+    ],
+    "pregnancy_flag": "LIKELY UNSAFE to take if pregnant - might cause a miscarriage (RxList). Breastfeeding: not enough reliable information; safety not well studied (WebMD).",
     "dosha_caution": "Strongly cooling and sweet; aggravates Kapha in excess, pacifies Pitta.",
-    "modern_source": "Culinary/food-use tier-2 template - food-quantity guidance; not clinically cross-verified",
-    "modern_source_verified": false
+    "modern_source": "WebMD Vetiver (Chrysopogon zizanioides / Vetiveria zizanioides, khus) safety page + RxList vetiver precautions, both fetched 2026-09-07; contraindications/interactions per fetched text only",
+    "modern_source_verified": true,
+    "verification_note": "Identity: khasa = khus = vetiver (Chrysopogon zizanioides / Vetiveria zizanioides) confirmed via WebMD common-name list. Claims from WebMD (allergy/skin reactions; no food/drug interactions documented) and RxList (LIKELY UNSAFE in pregnancy - miscarriage risk), both fetched 2026-09-07, matching fetched text exactly."
   },
   {
     "herb": "sariva",

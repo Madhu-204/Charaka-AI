@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ask, feedbackPayload, submitFeedback } from "../api";
-import { buildChatCitations, stepsFromTrace, savedFromMessage } from "../lib/format";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ask, ApiError, feedbackPayload, submitFeedback } from "../api";
+import { buildChatCitations, herbCardsFromTrace, primarySourceFromTrace, stepsFromTrace, traceChecksFromTrace, savedFromMessage } from "../lib/format";
 import { addSaved } from "../lib/saved";
 import type { ChatMessage, FeedbackRating } from "../types";
 import type { ReasoningContent } from "../components/ReasoningPanel";
 import { ChatBubble } from "../components/ChatBubble";
-import { IconChat, IconLeaf, IconSend } from "../components/Icons";
+import { IconChat, IconSend } from "../components/Icons";
 
 interface ChatViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
@@ -28,6 +28,9 @@ function reasoningFor(msg: ChatMessage): ReasoningContent {
   return {
     steps: stepsFromTrace(msg.reasoning?.steps),
     citations: buildChatCitations(msg),
+    checks: msg.reasoning ? traceChecksFromTrace(msg.reasoning) : undefined,
+    primarySource: primarySourceFromTrace(msg.reasoning),
+    herbs: herbCardsFromTrace(msg.reasoning),
     showSearch: true,
   };
 }
@@ -91,9 +94,11 @@ export function ChatView({ onReasoning }: ChatViewProps) {
       onReasoning(reasoningFor(assistantMsg));
     } catch (e) {
       setError(
-        e instanceof Error && "status" in e
-          ? "The backend could not answer just now. Make sure the server is running on port 8000."
-          : "Something went wrong. Please try again."
+        e instanceof ApiError && e.status === 408
+          ? e.message
+          : e instanceof Error && "status" in e
+            ? "The backend could not answer just now. Make sure the server is running on port 8000."
+            : "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -133,12 +138,18 @@ export function ChatView({ onReasoning }: ChatViewProps) {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, saved: true } : m)));
   }
 
+  const lastAssistantId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "assistant") return messages[i].id;
+    }
+    return null;
+  }, [messages]);
+
   return (
     <div className="chat-view">
       <div className="chat-feed" ref={feedRef}>
         {messages.length === 0 && !loading && (
           <div className="chat-feed__empty">
-            <IconLeaf width={42} height={42} />
             <h3>Ask Charaka anything about general wellness</h3>
             <p>
               Grounded in 2,490 verses of the Charaka Samhita — every answer cited, every herb
@@ -159,6 +170,8 @@ export function ChatView({ onReasoning }: ChatViewProps) {
           <ChatBubble
             key={m.id}
             message={m}
+            isNew={m.id === lastAssistantId}
+            onContentChange={scrollToBottom}
             onFeedback={handleFeedback}
             onToggleReasoning={handleToggleReasoning}
             onSave={handleSave}

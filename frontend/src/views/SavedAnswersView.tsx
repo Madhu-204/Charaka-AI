@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { SavedAnswer } from "../types";
-import { categoryLabel, buildChatCitations, stepsFromTrace } from "../lib/format";
+import { categoryLabel, buildChatCitations, herbCardsFromTrace, primarySourceFromTrace, stepsFromTrace, traceChecksFromTrace } from "../lib/format";
 import { loadSaved, removeSaved } from "../lib/saved";
 import type { ReasoningContent } from "../components/ReasoningPanel";
 import {
@@ -20,6 +20,9 @@ function reasoningFor(saved: SavedAnswer): ReasoningContent {
   return {
     steps: stepsFromTrace(saved.reasoning?.steps),
     citations: buildChatCitations({ reasoning: saved.reasoning }),
+    checks: saved.reasoning ? traceChecksFromTrace(saved.reasoning) : undefined,
+    primarySource: primarySourceFromTrace(saved.reasoning),
+    herbs: herbCardsFromTrace(saved.reasoning),
     showSearch: true,
   };
 }

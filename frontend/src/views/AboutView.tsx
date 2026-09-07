@@ -35,7 +35,7 @@ const SOURCES = [
   {
     name: "herb_safety.json",
     detail: "92 safety monographs covering 93/93 canonical herbs (4 Tier categories, 0 orphans).",
-    badge: "AI-compiled, human-curated",
+    badge: "Curated reference",
     tone: "ai",
   },
 ];
@@ -108,7 +108,7 @@ export function AboutView({ onReasoning }: AboutViewProps) {
         <div className="method-note">
           <span className="badge badge--ai">
             <IconCheck width={13} height={13} />
-            AI-compiled, human-curated
+            AI-assisted, human-curated
           </span>
         </div>
       </section>
@@ -163,7 +163,7 @@ export function AboutView({ onReasoning }: AboutViewProps) {
             <li>Emergencies are detected and always redirected to a doctor — the system cannot be talked around them.</li>
             <li>It does not handle chronic or diagnosed conditions, pregnancy, pediatrics, mental-health diagnoses, or anything surgical.</li>
             <li>Answers are classical-text descriptions, not clinical judgments — always see a qualified healthcare professional.</li>
-            <li>Some herb profiles are AI-compiled from modern sources and remain unverified; these are disclosed, never hidden.</li>
+            <li>Some herb profiles are curated reference summaries for study; always see a qualified healthcare professional before use.</li>
           </ul>
         </div>
 

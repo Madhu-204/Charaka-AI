@@ -1,4 +1,4 @@
-import type { ChatMessage, Citation, ReasoningTrace, SavedAnswer } from "../types";
+import type { ChatMessage, Citation, ReasoningTrace, SavedAnswer, TraceCheck } from "../types";
 
 export const STHANA_LABELS: Record<string, string> = {
   sutrasthana: "Sutra Sthana",
@@ -35,11 +35,13 @@ export function categoryLabel(tag: string | null | undefined): string {
   return CATEGORY_LABELS[tag] ?? tag;
 }
 
-export function chapterLabel(chapterKey: string | null): string {
-  if (!chapterKey) return "";
-  const [sthana, ch] = chapterKey.split("/");
+export function chapterLabel(chapterKey: string | number | null | undefined): string {
+  if (chapterKey === null || chapterKey === undefined || chapterKey === "") return "";
+  const [sthana, ch] = String(chapterKey).split("/");
   const name = STHANA_LABELS[sthana] ?? sthana;
-  return ch ? `${name} · Ch. ${ch}` : name;
+  if (ch) return `${name} · Ch. ${ch}`;
+  if (/^\d+$/.test(sthana)) return `Ch. ${sthana}`;
+  return name;
 }
 
 export function verseLabel(verseId: string): string {
@@ -128,11 +130,84 @@ export function buildChatCitations(msg: {
 }
 
 export function stepsFromTrace(trace: string[] | undefined): string[] {
-  return (trace ?? []).map((s) =>
-    s
-      .replace(/^(emergency gate|dosha tagger|query expansion|retrieval|safety):\s*/i, "")
-      .replace(/\u2192/g, "→")
-  );
+  return (trace ?? []).map((s) => cleanTraceStep(s));
+}
+
+function cleanTraceStep(s: string): string {
+  return s
+    .replace(/^(emergency gate|dosha tagger|query expansion|retrieval|safety):\s*/i, "")
+    .replace(/\u2192/g, "→");
+}
+
+export function topDosha(scores: Record<string, number> | null | undefined): string | null {
+  if (!scores) return null;
+  const best = Object.entries(scores)
+    .filter(([, v]) => v > 0)
+    .sort(([, a], [, b]) => b - a);
+  return best.length ? best[0][0] : null;
+}
+
+export function traceChecksFromTrace(trace: ReasoningTrace | null | undefined): TraceCheck[] {
+  if (!trace) return [];
+
+  const emergencyStep = (trace.steps ?? []).find((s) => /emergency/i.test(s));
+  const redFlag = emergencyStep ? /RED_FLAG|red flag.*hit|\bhit\b/i.test(emergencyStep) : false;
+  const dosha = topDosha(trace.dosha_scores);
+  const src = trace.retrieved_verses?.[0];
+  const herbs = trace.herbs_found ?? [];
+
+  return [
+    {
+      kind: "emergency",
+      status: redFlag ? "Red flag — doctor advised" : "Checked ✓",
+    },
+    {
+      kind: "pattern",
+      status: dosha ? `${dosha} pattern` : "No pattern matched",
+    },
+    {
+      kind: "source",
+      status: src ? chapterLabel(src.chapter) : "No source",
+    },
+    {
+      kind: "safety",
+      status: herbs.length ? `${herbs.length} herb(s) verified ✓` : "No herbs detected",
+    },
+  ];
+}
+
+export function primarySourceFromTrace(
+  trace: ReasoningTrace | null | undefined
+): Citation | null {
+  const v = trace?.retrieved_verses?.[0];
+  if (!v) return null;
+  return {
+    title: chapterLabel(v.chapter),
+    detail: `${verseLabel(v.verse_id)} — confidence: ${confidenceText(v.score)}`,
+    badge: "neutral",
+    badgeText: "Retrieved",
+  };
+}
+
+export function herbCardsFromTrace(trace: ReasoningTrace | null | undefined): Citation[] {
+  if (!trace) return [];
+  const notes = new Map<string, string>();
+  for (const n of trace.verification_notes ?? []) {
+    const idx = n.indexOf(":");
+    if (idx === -1) continue;
+    notes.set(n.slice(0, idx).trim().toLowerCase(), n.slice(idx + 1).trim());
+  }
+  return (trace.herbs_found ?? []).map((h) => {
+    const source = trace.safety_sources?.[h];
+    const b = badgeForSafetySource(source);
+    const note = notes.get(h.toLowerCase());
+    return {
+      title: h,
+      detail: note ?? (source ? `Safety source: ${source}` : "No safety monograph flagged"),
+      badge: b.badge,
+      badgeText: b.badgeText ?? "Checked",
+    };
+  });
 }
 
 export function savedFromMessage(msg: ChatMessage): SavedAnswer {
