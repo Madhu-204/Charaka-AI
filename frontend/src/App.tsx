@@ -28,12 +28,16 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div
-        className={`app ${panelOpen ? "panel-open" : ""} ${menuOpen ? "menu-open" : ""}`}
+        className={`app ${panelOpen ? "panel-open" : ""} ${menuOpen ? "menu-open" : ""} ${
+          view === "chat" ? "" : "app--no-panel"
+        }`}
       >
         <Sidebar view={view} onNavigate={onNavigate} onClose={() => setMenuOpen(false)} />
 
         <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>
-          <div className="disclaimer-banner">
+          <div
+            className={`disclaimer-banner ${view === "chat" ? "" : "disclaimer-banner--plain"}`}
+          >
             <button
               className="menu-toggle"
               onClick={() => setMenuOpen((o) => !o)}
@@ -42,7 +46,9 @@ export default function App() {
               <IconMenu width={16} height={16} />
               Menu
             </button>
-            <span>General wellness guidance from classical texts — not a diagnosis.</span>
+            {view === "chat" && (
+              <span>General wellness guidance from classical texts — not a diagnosis.</span>
+            )}
           </div>
 
           <ErrorBoundary>
@@ -55,14 +61,18 @@ export default function App() {
 
         <div className="app__backdrop" onClick={() => setPanelOpen(false)} />
 
-        <button className="panel-toggle" onClick={() => setPanelOpen((o) => !o)}>
-          <IconAlert width={15} height={15} />
-          Sources &amp; Reasoning
-        </button>
+        {view === "chat" && (
+          <button className="panel-toggle" onClick={() => setPanelOpen((o) => !o)}>
+            <IconAlert width={15} height={15} />
+            Sources &amp; Reasoning
+          </button>
+        )}
 
-        <ErrorBoundary>
-          <ReasoningPanel content={reasoning} onClose={() => setPanelOpen(false)} />
-        </ErrorBoundary>
+        {view === "chat" && (
+          <ErrorBoundary>
+            <ReasoningPanel content={reasoning} onClose={() => setPanelOpen(false)} />
+          </ErrorBoundary>
+        )}
       </div>
     </ErrorBoundary>
   );

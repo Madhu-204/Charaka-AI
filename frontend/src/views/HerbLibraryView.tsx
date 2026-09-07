@@ -14,7 +14,7 @@ interface HerbLibraryViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
 }
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 5;
 
 const ART_COLORS = ["#C1663D", "#5C6B47", "#8a9a63", "#b98a3e", "#7d5a4b", "#4e7b6c"];
 
@@ -148,6 +148,7 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
   const [verifyFilter, setVerifyFilter] = useState("all");
   const [selected, setSelected] = useState<HerbSummary | null>(null);
   const [page, setPage] = useState(0);
+  const [slideDir, setSlideDir] = useState<"next" | "prev">("next");
   const [showHowTo, setShowHowTo] = useState(false);
   const [zoom, setZoom] = useState(1);
 
@@ -220,7 +221,7 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
   }
 
   return (
-    <div className="view-scroll">
+    <div className="view-scroll herb-view">
       <div className="herb-toolbar">
         <div className="search-field">
           <IconSearch width={17} height={17} />
@@ -317,7 +318,12 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
           <div className="count-label">
             Showing {visible.length} of {filtered.length} herbs
           </div>
-          <div className="herb-grid">
+          <div
+            key={safePage}
+            className={`herb-grid ${
+              slideDir === "next" ? "herb-grid--slide-left" : "herb-grid--slide-right"
+            }`}
+          >
             {visible.map((h) => {
               const v = verificationBadge(h);
               const isSel = selected?.name === h.name;
@@ -484,19 +490,25 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
           <div className="pagination">
             <button
               disabled={safePage === 0}
-              onClick={() => setPage(safePage - 1)}
+              onClick={() => {
+                setSlideDir("prev");
+                setPage(safePage - 1);
+              }}
               aria-label="Previous page"
             >
               <IconChevronLeft width={16} height={16} />
             </button>
             <div className="pagination__dots">
-              {Array.from({ length: Math.min(pages, 7) }).map((_, i) => (
+              {Array.from({ length: pages }).map((_, i) => (
                 <span key={i} className={i === safePage ? "active" : ""} />
               ))}
             </div>
             <button
               disabled={safePage >= pages - 1}
-              onClick={() => setPage(safePage + 1)}
+              onClick={() => {
+                setSlideDir("next");
+                setPage(safePage + 1);
+              }}
               aria-label="Next page"
             >
               <IconChevronRight width={16} height={16} />

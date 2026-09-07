@@ -481,7 +481,7 @@
 
 .search-field input {
   width: 100%;
-  border-radius: 999px;
+  border-radius: 10px;
   border: var(--border-w) solid var(--olive);
   background: var(--sand);
   padding: 10px 16px 10px 40px;
@@ -498,13 +498,14 @@
 }
 
 .filter-drop {
-  border-radius: 999px;
+  border-radius: 10px;
   border: var(--border-w) solid var(--olive);
-  background: var(--sand);
+  background: var(--table-head);
   padding: 9px 14px;
   font-size: 13.5px;
   outline: none;
   color: var(--text);
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -518,8 +519,66 @@
 
 .herb-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 18px;
+}
+
+.herb-grid--slide-left {
+  animation: herbSlideLeft 0.38s ease;
+}
+
+.herb-grid--slide-right {
+  animation: herbSlideRight 0.38s ease;
+}
+
+@keyframes herbSlideLeft {
+  from {
+    transform: translateX(42px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes herbSlideRight {
+  from {
+    transform: translateX(-42px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Herb library: a page of cards shown in one view without scrolling; pagination advances */
+.herb-view {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.herb-view .herb-toolbar {
+  flex-shrink: 0;
+}
+
+.herb-view .count-label {
+  flex-shrink: 0;
+}
+
+.herb-view .herb-grid {
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+
+.herb-view .pagination {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 12px;
 }
 
 .herb-card {
@@ -700,7 +759,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-radius: 999px;
+  border-radius: 10px;
   border: 1.5px solid var(--olive);
   background: var(--chip-green);
   color: var(--olive-deep);
@@ -985,12 +1044,14 @@
 
 .pagination__dots {
   display: inline-flex;
-  gap: 6px;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .pagination__dots span {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: rgba(92, 107, 71, 0.35);
 }
@@ -1224,6 +1285,12 @@
 
   .about-columns {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1100px) {
+  .herb-view {
+    overflow-y: auto;
   }
 }
 

@@ -8,6 +8,12 @@
   padding: 14px;
 }
 
+/* When the Sources & Reasoning panel is absent (herb/saved/about views),
+   let the main column fill the freed-up right column space. */
+.app--no-panel {
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+}
+
 .app,
 .sidebar,
 .main-col,
@@ -149,6 +155,12 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+/* Banner shown only in chat; strip its chrome in other views (menu toggle stays for mobile) */
+.disclaimer-banner--plain {
+  background: transparent;
+  border-bottom: none;
 }
 
 .disclaimer-banner--urgent {
@@ -430,11 +442,17 @@
   .app {
     grid-template-columns: 200px minmax(0, 1fr) 300px;
   }
+  .app.app--no-panel {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
 }
 
 @media (max-width: 980px) {
   .app {
     grid-template-columns: 180px minmax(0, 1fr) 270px;
+  }
+  .app.app--no-panel {
+    grid-template-columns: 180px minmax(0, 1fr);
   }
 }
 
@@ -444,6 +462,9 @@
     padding: 10px;
     gap: 10px;
     overflow-x: auto;
+  }
+  .app.app--no-panel {
+    grid-template-columns: 150px minmax(0, 1fr);
   }
 
   .sidebar,
