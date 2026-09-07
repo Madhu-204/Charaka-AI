@@ -200,7 +200,7 @@
 .reasoning-search {
   width: 100%;
   border-radius: 999px;
-  border: var(--border-w) solid var(--olive);
+  border: 2px solid #3e7035;
   background: #fff;
   padding: 8px 14px 8px 36px;
   font-size: 13px;
@@ -392,7 +392,7 @@
 
 .reason-box {
   background: #fff;
-  border: var(--border-w) solid var(--olive);
+  border: 2px solid #3e7035;
   border-radius: 10px;
   padding: 11px 13px;
 }
