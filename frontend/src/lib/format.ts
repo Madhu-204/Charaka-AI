@@ -7,6 +7,44 @@ export const STHANA_LABELS: Record<string, string> = {
   chikitsasthana: "Chikitsa Sthana",
 };
 
+export const DEVANAGARI_TERMS: Record<string, string> = {
+  vata: "वात",
+  pitta: "पित्त",
+  kapha: "कफ",
+  dosha: "दोष",
+  doshas: "दोष",
+  ayurveda: "आयुर्वेद",
+  charaka: "चरक",
+  samhita: "संहिता",
+  agni: "अग्नि",
+  ama: "आम",
+  ojas: "ओजस",
+  prakriti: "प्रकृति",
+  dinacharya: "दिनचर्या",
+  ritucharya: "ऋतुचर्या",
+  chikitsa: "चिकित्सा",
+  asana: "आसन",
+  pranayama: "प्राणायाम",
+};
+
+export function transliterateTerms(text: string): string {
+  let out = text;
+  for (const [en, dev] of Object.entries(DEVANAGARI_TERMS)) {
+    out = out.replace(new RegExp(`\\b(${en})\\b`, "gi"), `${dev} ($1)`);
+  }
+  return out;
+}
+
+export function attributionLevel(score: number | undefined | null): {
+  label: string;
+  cls: "strong" | "partial" | "nominal";
+} {
+  const s = score ?? 0;
+  if (s >= 0.5) return { label: "Strongly grounded", cls: "strong" };
+  if (s >= 0.25) return { label: "Partially grounded", cls: "partial" };
+  return { label: "Nominal", cls: "nominal" };
+}
+
 export const CATEGORY_LABELS: Record<string, string> = {
   fever_acute: "Fever & Acute Care",
   metabolic: "Metabolism",

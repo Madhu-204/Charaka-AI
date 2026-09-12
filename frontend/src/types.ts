@@ -22,6 +22,13 @@ export interface GroundingInfo {
   notes: string[];
 }
 
+export interface AttributionSegment {
+  sentence: string;
+  verse_index: number;
+  score: number;
+  verse_id: string | null;
+}
+
 export interface ReasoningTrace {
   steps: string[];
   canonical_term: string | null;
@@ -33,12 +40,20 @@ export interface ReasoningTrace {
   verification_notes: string[];
   source_disagreements: string[];
   grounding?: GroundingInfo | null;
+  attribution?: AttributionSegment[] | null;
+}
+
+export interface HindiSummary {
+  title: string;
+  takeaways: string[];
+  doctor_check: string[];
 }
 
 export interface AnswerSummary {
   title: string;
   takeaways: string[];
   doctor_check: string[];
+  hindi?: HindiSummary | null;
 }
 
 export interface AskResponse {
@@ -57,6 +72,9 @@ export interface AskResponse {
   summary?: AnswerSummary | null;
   cache_hit?: boolean;
   grounding?: GroundingInfo | null;
+  attribution?: AttributionSegment[] | null;
+  used_documents?: boolean;
+  document_names?: string[];
   reasoning_trace?: ReasoningTrace;
 }
 
@@ -170,6 +188,13 @@ export interface ChatMessage {
   latencyMs?: number | null;
   summary?: AnswerSummary | null;
   suggestions?: string[] | null;
+  attribution?: AttributionSegment[] | null;
+  usedDocuments?: boolean;
+}
+
+export interface DocRecord {
+  name: string;
+  chunks: number;
 }
 
 export interface HerbSummary {

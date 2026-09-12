@@ -28,6 +28,18 @@ FALLBACK = {
     "doctor_check": ["Consult a doctor if your symptoms persist or worsen."],
 }
 
+HINDI_SYSTEM_PROMPT = """You are the Hindi answer summariser for Charaka AI, an Ayurvedic wellness assistant.
+Given the QUESTION, the ANSWER, and the CITED VERSE TEXTS, produce a JSON object with exactly this shape:
+{
+  "title": "a short label in Devanagari Hindi (max 8 words)",
+  "takeaways": ["up to 3 very short bullet points in Devanagari Hindi, grounded ONLY in the answer"],
+  "doctor_check": ["up to 2 short 'चिकित्सक से मिलें अगर...' lines in Devanagari Hindi, based ONLY on cautions or safety flags in the answer"]
+}
+Rules:
+- takeaways must restate the answer, never add new facts.
+- If the answer is a clarification request or emergency redirect, return empty takeaways.
+- Use simple, natural Devanagari Hindi. Return ONLY the JSON object — no markdown, no commentary."""
+
 
 def _clean(lines):
     out = []
@@ -72,9 +84,9 @@ def _template_summary(query, answer, result):
     }
 
 
-def build_summary(query, answer, result):
+def build_summary(query, answer, result, lang: str = "en"):
     if result.get("is_emergency") or result.get("is_clarification"):
-        return {"title": "", "takeaways": [], "doctor_check": []}
+        return {"title": "", "takeaways": [], "doctor_check": [], "hindi": None}
     rc = result.get("resolved_chapter") or {}
     verse_block = "\n".join(
         f"- {(c.get('text') or '')[:300]}" for c in result.get("retrieved", [])[:3]
@@ -83,6 +95,30 @@ def build_summary(query, answer, result):
         f"QUESTION: {query}\n\nANSWER:\n{answer[:2200]}\n\n"
         f"CITED VERSES:\n{verse_block or 'none'}"
     )
+    parsed = _summarize_en(human, query, answer, result)
+    if lang == "hin":
+        try:
+            out = _summ_llm.invoke(
+                [
+                    SystemMessage(content=HINDI_SYSTEM_PROMPT),
+                    HumanMessage(content=human),
+                ]
+            ).content
+            hindi = json.loads(out)
+            parsed["hindi"] = {
+                "title": str(hindi.get("title") or "").strip()[:80],
+                "takeaways": _clean(hindi.get("takeaways"))[:3],
+                "doctor_check": _clean(hindi.get("doctor_check"))[:2],
+            }
+        except Exception as e:  # noqa: BLE001
+            print(f"[summarize] Hindi Groq call failed ({e}) → no Hindi summary")
+            parsed["hindi"] = None
+    else:
+        parsed["hindi"] = None
+    return parsed
+
+
+def _summarize_en(human: str, query: str, answer: str, result: dict) -> dict:
     try:
         out = _summ_llm.invoke(
             [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=human)]

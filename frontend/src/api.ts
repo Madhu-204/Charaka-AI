@@ -5,6 +5,7 @@ import type {
   CorpusSthana,
   CorpusVerse,
   CorpusSearchResult,
+  DocRecord,
   EvalResult,
   EvalRow,
   FeedbackRating,
@@ -91,6 +92,8 @@ export interface AskStreamOptions {
   conversationId?: string | null;
   history?: { role: string; content: string }[];
   doshaProfile?: string | null;
+  lang?: "en" | "hin" | null;
+  docSession?: string | null;
   timeoutMs?: number;
 }
 
@@ -110,6 +113,8 @@ export async function askStream(
         history: opts.history ?? [],
         conversation_id: opts.conversationId ?? null,
         dosha_profile: opts.doshaProfile ?? null,
+        lang: opts.lang ?? null,
+        doc_session: opts.docSession ?? null,
       }),
       signal: controller.signal,
     });
@@ -254,6 +259,8 @@ export interface ConversationRecord {
     timestamp?: string;
     summary?: AskResponse["summary"];
     suggestions?: string[];
+    attribution?: AskResponse["attribution"];
+    used_documents?: boolean;
   }[];
 }
 
@@ -284,6 +291,37 @@ export async function deleteConversation(id: string): Promise<boolean> {
     { method: "DELETE" }
   );
   return data.ok;
+}
+
+export async function uploadDocument(
+  sessionId: string,
+  file: File
+): Promise<{ ok: boolean; name: string; chunks: number }> {
+  const form = new FormData();
+  form.append("session_id", sessionId);
+  form.append("file", file);
+  const res = await fetch(`${API_URL}/documents/upload`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new ApiError(res.status, (body as { detail?: string })?.detail ?? "Upload failed");
+  }
+  return (await res.json()) as { ok: boolean; name: string; chunks: number };
+}
+
+export async function fetchDocuments(sessionId: string): Promise<DocRecord[]> {
+  const data = await request<{ ok: boolean; documents: DocRecord[] }>(
+    `/documents/${encodeURIComponent(sessionId)}`
+  );
+  return data.documents;
+}
+
+export async function deleteDocuments(sessionId: string): Promise<void> {
+  await request<{ ok: boolean }>(`/documents/${encodeURIComponent(sessionId)}`, {
+    method: "DELETE",
+  });
 }
 
 export async function fetchCorpusSthanas(): Promise<CorpusSthana[]> {

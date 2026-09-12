@@ -39,7 +39,8 @@ Rules you must always follow:
 - If any safety flags are provided, state them clearly before any remedy suggestion.
 - When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user.
 - If a SPECIES/IDENTITY DISCLOSURE is provided for an herb, state it explicitly and prominently BEFORE giving any remedy or safety detail for that herb — never bury it. If a disclosure says an herb's profile is based on a different (closest-match) species, or that one species must not be confused with another, repeat that clearly so the user cannot mistake one plant for another.
-- If SOURCE DISAGREEMENTS are provided, state each one verbatim and frame it as a practitioner-review caution (classical texts describe use, but modern sources flag a strong caution)."""
+- If SOURCE DISAGREEMENTS are provided, state each one verbatim and frame it as a practitioner-review caution (classical texts describe use, but modern sources flag a strong caution).
+- If a USER-SUPPLIED DOCUMENT CONTEXT block is present, you may draw on it, but ALWAYS label anything taken from it as coming from "your uploaded document", cite it with its [U1]/[U2] markers, and never present it as classical Samhita text. Keep the classical corpus as your primary basis."""
 
 FALLBACK_ANSWER = (
     "I couldn't retrieve a grounded answer right now. Classical texts describe "
@@ -117,6 +118,13 @@ def synthesize(state):
             "\nSOURCE DISAGREEMENTS (practitioner-review cautions — state verbatim):\n"
             + "\n".join(f"- {d}" for d in source_disagreements)
         )
+
+    user_docs = state.get("user_docs") or []
+    if user_docs:
+        block = "\n\nUSER-SUPPLIED DOCUMENT CONTEXT (files the user uploaded; NOT the classical corpus):\n"
+        for i, d in enumerate(user_docs, 1):
+            block += f"[U{i}] (from \"{d.get('doc', 'uploaded document')}\", score {d['score']}): {d['text'][:900]}\n"
+        context += block
 
     conversation_block = _format_history(state.get("history"))
     if conversation_block:

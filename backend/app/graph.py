@@ -8,6 +8,7 @@ from app.nodes.retriever import retrieve
 from app.nodes.safety import check_safety
 from app.nodes.synthesis import synthesize
 from app.nodes.grounding import grounding
+from app.nodes.attribution import attribution
 from app.nodes.clarify import clarify
 from app.nodes.tool_router import route_tools
 
@@ -36,6 +37,7 @@ graph.add_node("clarify", clarify)
 graph.add_node("check_safety", check_safety)
 graph.add_node("synthesize", synthesize)
 graph.add_node("grounding", grounding)
+graph.add_node("attribution", attribution)
 
 graph.set_entry_point("check_emergency")
 graph.add_conditional_edges(
@@ -54,6 +56,7 @@ graph.add_conditional_edges(
 graph.add_edge("clarify", END)
 graph.add_edge("check_safety", "synthesize")
 graph.add_edge("synthesize", "grounding")
-graph.add_edge("grounding", END)
+graph.add_edge("grounding", "attribution")
+graph.add_edge("attribution", END)
 
 charaka_agent = graph.compile()

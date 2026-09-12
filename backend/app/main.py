@@ -1,5 +1,6 @@
 import asyncio
 import json
+import mimetypes
 import os
 import threading
 import time
@@ -7,9 +8,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Literal, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -88,6 +89,7 @@ STAGE_LABELS = {
     "check_safety": "Checking herb safety",
     "synthesize": "Grounding answer in classical texts",
     "grounding": "Verifying citations",
+    "attribution": "Aligning answer sentences to sources",
 }
 
 
@@ -96,6 +98,8 @@ class AskRequest(BaseModel):
     history: Optional[List[dict]] = None
     conversation_id: Optional[str] = None
     dosha_profile: Optional[str] = None
+    lang: Optional[Literal["en", "hin"]] = None
+    doc_session: Optional[str] = None
 
 
 class FeedbackRequest(BaseModel):
@@ -141,8 +145,13 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
         "safety_flags": result.get("safety_flags", []),
         "dosha": result.get("dosha") if not is_emergency else None,
         "latency_ms": latency_ms,
+        "used_documents": bool(result.get("used_documents")),
+        "document_names": sorted(
+            {d.get("doc", "uploaded document") for d in result.get("user_docs", [])}
+        ),
     }
     if not is_emergency:
+        response["attribution"] = result.get("attribution", [])
         response["reasoning_trace"] = {
             "steps": result.get("trace", []),
             "canonical_term": result.get("canonical_term"),
@@ -207,11 +216,11 @@ def _suggest_questions(result) -> list:
     return list(dict.fromkeys(out))[:3]
 
 
-def _attach_summaries(resp, query, result):
+def _attach_summaries(resp, query, result, lang: Optional[str] = None):
     resp["suggestions"] = _suggest_questions(result)
     if result.get("final_answer") and not result["is_emergency"]:
         try:
-            resp["summary"] = build_summary(query, resp["answer"], result)
+            resp["summary"] = build_summary(query, resp["answer"], result, lang=lang or "en")
         except Exception as e:  # noqa: BLE001
             print(f"[main] summary failed ({e})")
     return resp
@@ -258,17 +267,17 @@ def _run_graph_collect(state):
 
 async def _event_stream(
     query: str, history: Optional[List[dict]], conversation_id: Optional[str],
-    dosha_profile: Optional[str],
+    dosha_profile: Optional[str], lang: Optional[str] = None,
+    doc_session: Optional[str] = None,
 ):
     queue: asyncio.Queue = asyncio.Queue()
-    loop = asyncio.get_running_loop()
 
     if history is None and conversation_id:
         store = _history_from_store(conversation_id)
         history = store["history"]
         dosha_profile = dosha_profile or store["dosha_profile"]
 
-    cacheable = conversation_id is None
+    cacheable = conversation_id is None and not doc_session
     cache_key = (
         cache.LRUCache.key_for(query, dosha_profile) if cacheable else None
     )
@@ -298,6 +307,8 @@ async def _event_stream(
     state = {"query": query, "history": history or []}
     if dosha_profile:
         state["dosha_profile"] = dosha_profile
+    if doc_session:
+        state["doc_session"] = doc_session
 
     def run():
         merged = {}
@@ -356,7 +367,7 @@ async def _event_stream(
             latency = round((now - t0) * 1000)
             resp = build_response(payload, latency_ms=latency)
             if payload.get("final_answer"):
-                resp = _attach_summaries(resp, query, payload)
+                resp = _attach_summaries(resp, query, payload, lang=lang)
                 conv_id, conv_title = conversations.save_turn(
                     conversation_id, query, resp
                 )
@@ -391,10 +402,12 @@ def ask(req: AskRequest):
     state = {"query": req.query, "history": req.history or []}
     if req.dosha_profile:
         state["dosha_profile"] = req.dosha_profile
+    if req.doc_session:
+        state["doc_session"] = req.doc_session
 
     cache_key = (
         cache.LRUCache.key_for(req.query, req.dosha_profile)
-        if not req.history
+        if not req.history and not req.doc_session
         else None
     )
     if cache_key:
@@ -418,7 +431,7 @@ def ask(req: AskRequest):
     latency = round((time.time() - t0) * 1000)
     resp = build_response(result, latency_ms=latency)
     if result.get("final_answer"):
-        resp = _attach_summaries(resp, req.query, result)
+        resp = _attach_summaries(resp, req.query, result, lang=req.lang)
     resp["cache_hit"] = False
     if cache_key and result.get("final_answer") and not result.get("is_emergency"):
         _QUERY_CACHE.set(cache_key, resp)
@@ -437,7 +450,10 @@ def ask(req: AskRequest):
 @app.post("/ask/stream", dependencies=[Depends(guard_ask)])
 async def ask_stream(req: AskRequest):
     return StreamingResponse(
-        _event_stream(req.query, req.history, req.conversation_id, req.dosha_profile),
+        _event_stream(
+            req.query, req.history, req.conversation_id, req.dosha_profile,
+            lang=req.lang, doc_session=req.doc_session,
+        ),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
@@ -459,6 +475,37 @@ def get_conversation(conversation_id: str):
 @app.delete("/conversations/{conversation_id}")
 def delete_conversation(conversation_id: str):
     return {"ok": conversations.delete_conversation(conversation_id)}
+
+
+@app.post("/documents/upload")
+async def upload_document(session_id: str = Form(...), file: UploadFile = File(...)):
+    from app import documents
+
+    data = await file.read()
+    try:
+        result = documents.upload(session_id, file.filename or "document.txt", data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"ok": True, **result}
+
+
+@app.get("/documents/{session_id}")
+def list_documents(session_id: str):
+    from app import documents
+
+    return {"ok": True, "documents": documents.list_uploads(session_id)}
+
+
+@app.delete("/documents/{session_id}")
+def delete_documents(session_id: str):
+    from app import documents
+
+    return {"ok": True, "removed": documents.remove(session_id)}
+
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True, "app": "charaka-ai", "ts": int(time.time())}
 
 
 @app.get("/corpus/sthanas")
@@ -716,3 +763,29 @@ def herbs():
 
     catalog.sort(key=lambda h: h["name"])
     return {"herbs": catalog, "count": len(catalog), "covered": len(safety_list)}
+
+
+FRONTEND_DIST = BACKEND.parent / "frontend" / "dist"
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+def spa_fallback(full_path: str):
+    """Serve the built SPA on the same origin as the API (Wave D deployment).
+
+    Falls over to index.html for client-side routes; API routes registered
+    earlier always take precedence over this catch-all.
+    """
+    index = FRONTEND_DIST / "index.html"
+    if not index.is_file():
+        raise HTTPException(status_code=404, detail="frontend build not present")
+    try:
+        candidate = (FRONTEND_DIST / full_path).resolve()
+        candidate.relative_to(FRONTEND_DIST.resolve())
+    except (ValueError, OSError):
+        raise HTTPException(status_code=404, detail="not found")
+    if full_path and candidate.is_file():
+        ctype = (
+            mimetypes.guess_type(str(candidate))[0] or "application/octet-stream"
+        )
+        return FileResponse(candidate, media_type=ctype)
+    return FileResponse(index, media_type="text/html")

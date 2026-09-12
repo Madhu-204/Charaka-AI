@@ -1,0 +1,13 @@
+name: keep-charaka-awake
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    if: ${{ vars.CHARAKA_SPACE_URL != '' }}
+    steps:
+      - name: Ping space healthz
+        run: curl -fsS -o /dev/null "${{ vars.CHARAKA_SPACE_URL }}/healthz" || true

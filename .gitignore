@@ -17,6 +17,7 @@ backend/feedback_log.jsonl
 backend/conversations.jsonl
 backend/eval_results.json
 backend/traces/
+backend/user_chroma_db/
 
 # Frontend
 frontend/node_modules/
@@ -24,6 +25,9 @@ frontend/dist/
 
 # Documentation
 docs/
+
+# HF Space staging (built by scripts/prepare_deploy.py)
+deploy/
 
 # Editor / OS
 .vscode/

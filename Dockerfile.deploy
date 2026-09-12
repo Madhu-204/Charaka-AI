@@ -1,0 +1,30 @@
+# Stage 1 — build the frontend SPA (VITE_API_URL empty -> same-origin / relative fetches)
+FROM node:20-alpine AS fe
+WORKDIR /build
+ARG VITE_API_URL=""
+ENV VITE_API_URL=$VITE_API_URL
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
+
+# Stage 2 — backend + baked corpus + vector store + SPA statics
+FROM python:3.11-slim
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    TRANSFORMERS_CACHE=/root/.cache/torch/sentence_transformers
+
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt \
+    && python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+COPY backend/app backend/app
+COPY backend/scripts backend/scripts
+COPY backend/reference backend/reference
+COPY backend/processed backend/processed
+COPY backend/chroma_db backend/chroma_db
+COPY --from=fe /build/dist frontend/dist
+
+EXPOSE 7860
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]

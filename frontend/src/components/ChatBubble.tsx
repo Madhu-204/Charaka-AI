@@ -8,6 +8,7 @@ import {
   inlineCitations,
   stepsFromTrace,
   categoryLabel,
+  attributionLevel,
 } from "../lib/format";
 import {
   IconBook,
@@ -94,6 +95,11 @@ export function ChatBubble({
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [activeCite, setActiveCite] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [hindi, setHindi] = useState(() =>
+    typeof localStorage !== "undefined"
+      ? localStorage.getItem("charaka-lang") === "hin"
+      : false
+  );
   const [displayedChars, setDisplayedChars] = useState(() =>
     isNew ? 0 : message.content.length,
   );
@@ -253,18 +259,64 @@ export function ChatBubble({
       <div className="msg__bubble">
         {isTyped && message.summary && message.summary.title !== "" && (
           <div className="msg__summary chat-reveal" style={{ animationDelay: "0ms" }}>
-            <div className="msg__summary-title">{message.summary.title}</div>
-            {message.summary.takeaways.length > 0 && (
+            <div className="msg__summary-top">
+              <div className="msg__summary-title">
+                {hindi && message.summary.hindi
+                  ? message.summary.hindi.title
+                  : message.summary.title}
+              </div>
+              {message.summary.hindi && (
+                <div
+                  className="lang-toggle"
+                  role="group"
+                  aria-label="Summary language"
+                >
+                  <button
+                    type="button"
+                    className={!hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
+                    onClick={() => {
+                      setHindi(false);
+                      localStorage.setItem("charaka-lang", "en");
+                    }}
+                  >
+                    English
+                  </button>
+                  <button
+                    type="button"
+                    className={hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
+                    onClick={() => {
+                      setHindi(true);
+                      localStorage.setItem("charaka-lang", "hin");
+                    }}
+                  >
+                    हिंदी
+                  </button>
+                </div>
+              )}
+            </div>
+            {(hindi && message.summary.hindi
+              ? message.summary.hindi.takeaways
+              : message.summary.takeaways
+            ).length > 0 && (
               <ul className="msg__summary-takeaways">
-                {message.summary.takeaways.map((t, i) => (
+                {(hindi && message.summary.hindi
+                  ? message.summary.hindi.takeaways
+                  : message.summary.takeaways
+                ).map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
             )}
-            {message.summary.doctor_check.length > 0 && (
+            {(hindi && message.summary.hindi
+              ? message.summary.hindi.doctor_check
+              : message.summary.doctor_check
+            ).length > 0 && (
               <div className="msg__summary-doc">
                 <IconShield width={13} height={13} />
-                {message.summary.doctor_check.map((d, i) => (
+                {(hindi && message.summary.hindi
+                  ? message.summary.hindi.doctor_check
+                  : message.summary.doctor_check
+                ).map((d, i) => (
                   <span key={i}>{d}</span>
                 ))}
               </div>
@@ -325,8 +377,14 @@ export function ChatBubble({
               </span>
             </div>
           )}
-          {(message.dosha || message.confidence || message.chapter || gPct != null || latency) && (
+          {(message.dosha || message.confidence || message.chapter || gPct != null || latency || message.usedDocuments) && (
             <div className="msg__meta chat-reveal" style={{ animationDelay: "0ms" }}>
+              {message.usedDocuments && (
+                <span className="badge chip-doc">
+                  <IconBook width={13} height={13} />
+                  Used your uploaded document
+                </span>
+              )}
               {message.dosha && (
                 <span className="badge chip-dosha">
                   <IconLeaf width={13} height={13} />
@@ -451,6 +509,31 @@ export function ChatBubble({
                 ))
               ) : (
                 <div className="source-item__meta">No trace recorded.</div>
+              )}
+
+              {message.attribution && message.attribution.length > 0 && (
+                <div className="sentence-grounding chat-reveal" style={{ animationDelay: "0ms" }}>
+                  <div className="inline-reason__title">Sentence grounding</div>
+                  <div className="sentence-grounding__list">
+                    {message.attribution.map((seg, i) => {
+                      const lvl = attributionLevel(seg.score);
+                      return (
+                        <button
+                          type="button"
+                          key={i}
+                          className={`sentence-grounding__row sentence-grounding__row--${lvl.cls}`}
+                          onClick={() => handleCite(seg.verse_index)}
+                        >
+                          <span className="sentence-grounding__mark">
+                            <span className="cite-num">{seg.verse_index}</span>
+                            {lvl.label}
+                          </span>
+                          <span className="sentence-grounding__text">{seg.sentence}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
           )}

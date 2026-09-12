@@ -30,3 +30,8 @@ class AgentState(TypedDict, total=False):
     grounding_cited: List[int]
     is_clarification: bool
     clarification: Optional[str]
+    attribution: List[dict]
+    lang: Optional[str]
+    doc_session: Optional[str]
+    user_docs: List[dict]
+    used_documents: bool

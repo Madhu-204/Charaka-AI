@@ -358,6 +358,22 @@ def retrieve(state):
 
     q_emb = model.encode([query]).tolist()[0]
 
+    user_docs = []
+    doc_session = state.get("doc_session")
+    if doc_session:
+        try:
+            from app import documents
+
+            user_docs = documents.search(doc_session, q_emb, top=2)
+        except Exception as e:  # noqa: BLE001
+            print(f"[retriever] user-doc search failed: {e}")
+    used_documents = bool(user_docs)
+    if used_documents:
+        trace = trace + [
+            f"documents: {len(user_docs)} chunk(s) retrieved from your uploaded files "
+            f"(top score {user_docs[0]['score']:.3f})"
+        ]
+
     herb = _detect_herb(query)
     if herb:
         herb_result = _herb_retrieve(herb, query, q_emb)
@@ -368,7 +384,12 @@ def retrieve(state):
                 f"resolved {resolved['verse_id']} "
                 f"(score {herb_result['confidence_score']:.3f}, {herb_result['confidence']})"
             )
-            return {**herb_result, "trace": trace + [step]}
+            return {
+                **herb_result,
+                "user_docs": user_docs,
+                "used_documents": used_documents,
+                "trace": trace + [step],
+            }
 
     hybrid = _hybrid_pool(query, q_emb, where=state.get("metadata_filter"))
 
@@ -379,6 +400,8 @@ def retrieve(state):
             "resolved_chapter": None,
             "confidence": "low",
             "confidence_score": 0.0,
+            "user_docs": user_docs,
+            "used_documents": used_documents,
             "trace": trace + [step],
         }
 
@@ -427,5 +450,7 @@ def retrieve(state):
         "resolved_chapter": resolved,
         "confidence": confidence,
         "confidence_score": float(resolved["score"]),
+        "user_docs": user_docs,
+        "used_documents": used_documents,
         "trace": trace + [step],
     }

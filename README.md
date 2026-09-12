@@ -89,6 +89,7 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **8** | Agentic depth — multi-turn memory, conversations, tools | ✅ **Wave B done** (see `docs/roadmap.md`) |
 | **9** | Product completeness — corpus explorer, search, follow-ups, summaries, dosha | ✅ **Wave C 23–29 done** (see `docs/roadmap.md`) |
 | **10** | Observability & production — traces, stats, live eval, docker, rate limit, cache | ✅ **Wave C 30–36 done** (see `docs/roadmap.md`) |
+| **11** | Stretch polish — sentence attribution, bilingual, doc upload, voice, PWA, free deploy | ✅ **Wave D 37–41 done** (see `docs/roadmap.md`) |
 
 </div>
 
@@ -137,6 +138,12 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 🧪 **Live eval runner** | `POST /eval/run` (SSE) + `GET /eval/last`; "Regression Eval Runner" panel on the About page with per-question pass/fail | ✅ |
 | 🧩 **Corner-case corpus** | `reference/eval_corner_cases.json` — 12 adversarial/emergency/alias-gap items; 2 known gaps documented | ✅ |
 | 🐳 **Docker** | `docker compose up` — backend (uvicorn) + frontend (nginx), named volumes for `chroma_db` + `traces` | ✅ |
+| 🔍 **Sentence attribution** | `attribution` graph node aligns every answer sentence to its source verse by token overlap; "Sentence grounding" panel, click to open the source | ✅ |
+| 🇮🇳 **Bilingual replies** | `lang=en|hin`; Devanagari Hindi summary + English ⇄ हिंदी toggle on the summary card | ✅ |
+| 📄 **Bring your text** | Upload txt/md/pdf → session-scoped Chroma collection, used as clearly-labelled context alongside the corpus | ✅ |
+| 🎙️ **Voice input** | Web Speech API mic button in the composer (Chromium) | ✅ |
+| 📱 **Mobile PWA** | Manifest + maskable icon + offline app shell service worker | ✅ |
+| 🆓 **Free deploy kit** | `Dockerfile.deploy` + `scripts/prepare_deploy.py` + `/healthz` heartbeat for Hugging Face Spaces (free CPU-basic hardware) | ✅ |
 
 ### 📊 Corpus breakdown
 
@@ -266,6 +273,27 @@ docker compose up --build        # backend on :8000, frontend on :5173
 - Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.
 - Herb queries invoke the MCP `check_herb_safety` tool, falling back gracefully to a local JSON lookup if the MCP subprocess cannot start.
 - Citations are verse-traceable (`cs_<sthana>_<chapter>_<verse>`).
+
+### Free hosting on Hugging Face Spaces ($0/month)
+
+The app runs as a single origin: FastAPI serves the built SPA plus the API, so
+there is one HTTPS URL and no CORS. Free-tier account required (no credit card).
+
+```bash
+python scripts/prepare_deploy.py        # stages deploy/charaka-ai-space/
+pip install -U "huggingface_hub[cli]"
+hf space create <your-username>/charaka-ai --type docker
+hf upload <your-username>/charaka-ai deploy/charaka-ai-space --relative
+```
+
+Then in the Space settings add the secret `GROQ_API_KEY` (optional: `CHARAKA_API_KEY`).
+
+Free hardware sleeps after inactivity — the included
+`.github/workflows/heartbeat.yml` pings `/healthz` every 10 min (set the repo
+variable `CHARAKA_SPACE_URL` to your `https://<user>-charaka-ai.hf.space` URL).
+
+For a plain local run: `npm run build` in `frontend/` (builds to `frontend/dist`,
+which FastAPI serves automatically via the SPA fallback when present).
 
 ### Frontend (Phase 7)
 
