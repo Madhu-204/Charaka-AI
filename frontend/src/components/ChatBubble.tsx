@@ -13,9 +13,12 @@ import {
   IconBook,
   IconBookmark,
   IconBookmarkFilled,
+  IconCheck,
   IconChevronDown,
+  IconCopy,
   IconInfo,
   IconLeaf,
+  IconRefresh,
   IconShield,
   IconThumbDown,
   IconThumbUp,
@@ -26,6 +29,8 @@ interface ChatBubbleProps {
   onFeedback: (id: string, rating: FeedbackRating) => void;
   onToggleReasoning: (id: string) => void;
   onSave: (id: string) => void;
+  onSuggestion?: (text: string) => void;
+  onRegenerate?: (query: string) => void;
   isNew?: boolean;
   onContentChange?: () => void;
 }
@@ -81,11 +86,14 @@ export function ChatBubble({
   onFeedback,
   onToggleReasoning,
   onSave,
+  onSuggestion,
+  onRegenerate,
   isNew,
   onContentChange,
 }: ChatBubbleProps) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [activeCite, setActiveCite] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
   const [displayedChars, setDisplayedChars] = useState(() =>
     isNew ? 0 : message.content.length,
   );
@@ -185,6 +193,16 @@ export function ChatBubble({
     window.setTimeout(() => setActiveCite(null), 2400);
   }
 
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+
   function renderSourceItem(c: (typeof citations)[number], i: number) {
     const pct = c.score != null ? confidencePercent(c.score) : null;
     return (
@@ -233,6 +251,26 @@ export function ChatBubble({
       }`}
     >
       <div className="msg__bubble">
+        {isTyped && message.summary && message.summary.title !== "" && (
+          <div className="msg__summary chat-reveal" style={{ animationDelay: "0ms" }}>
+            <div className="msg__summary-title">{message.summary.title}</div>
+            {message.summary.takeaways.length > 0 && (
+              <ul className="msg__summary-takeaways">
+                {message.summary.takeaways.map((t, i) => (
+                  <li key={i}>{t}</li>
+                ))}
+              </ul>
+            )}
+            {message.summary.doctor_check.length > 0 && (
+              <div className="msg__summary-doc">
+                <IconShield width={13} height={13} />
+                {message.summary.doctor_check.map((d, i) => (
+                  <span key={i}>{d}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div className="md-body">
           <ReactMarkdown
             components={{
@@ -348,6 +386,27 @@ export function ChatBubble({
             </div>
           )}
 
+          {!isEmergency &&
+            (message.confidence === "low" ||
+              (gPct != null && gPct < 33) ||
+              (message.reasoning?.source_disagreements ?? []).length > 0) && (
+              <div className="safety-band chat-reveal" style={{ animationDelay: "90ms" }}>
+                <IconShield width={15} height={15} />
+                <div>
+                  <strong>Keep this in mind:</strong> the classical match here is
+                  uncertain — treat it as general wellness information and see a
+                  doctor if symptoms persist or worsen.
+                  {(message.reasoning?.source_disagreements ?? []).length > 0 && (
+                    <>
+                      <br />
+                      Sources flag cautions for herbs mentioned in this reply — check
+                      the reasoning trace.
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
           {!isEmergency && (
             <div className="msg__sources chat-reveal" style={{ animationDelay: "120ms" }}>
               <div className="sources-row">
@@ -427,6 +486,29 @@ export function ChatBubble({
                 )}
               </button>
 
+              <button
+                className={`icon-btn ${copied ? "icon-btn--active" : ""}`}
+                onClick={() => void handleCopy()}
+                title={copied ? "Copied!" : "Copy answer"}
+                aria-label="Copy answer"
+              >
+                {copied ? (
+                  <IconCheck width={16} height={16} />
+                ) : (
+                  <IconCopy width={16} height={16} />
+                )}
+              </button>
+
+              <button
+                className="icon-btn"
+                onClick={() => onRegenerate?.(message.query ?? "")}
+                title="Regenerate answer"
+                aria-label="Regenerate answer"
+                disabled={!message.query}
+              >
+                <IconRefresh width={16} height={16} />
+              </button>
+
               <label className="toggle">
                 <span>Show reasoning</span>
                 <button
@@ -438,6 +520,29 @@ export function ChatBubble({
               </label>
             </div>
           )}
+
+          {!isEmergency &&
+            message.suggestions &&
+            message.suggestions.length > 0 &&
+            onSuggestion && (
+              <div
+                className="msg__suggestions chat-reveal"
+                style={{ animationDelay: "300ms" }}
+              >
+                <span className="msg__suggestions-label">You could ask next</span>
+                <div className="msg__suggestions-list">
+                  {message.suggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      className="pill pill--suggestion"
+                      onClick={() => onSuggestion(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
         </>
       )}
     </div>

@@ -1456,6 +1456,283 @@
   color: var(--text-muted);
 }
 
+/* ---------- Answer summary card (Wave C) ---------- */
+
+.msg__summary {
+  border: 2px solid var(--olive);
+  border-radius: 12px;
+  background: var(--chip-green);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.msg__summary-title {
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--olive-deep);
+  margin-bottom: 6px;
+}
+
+.msg__summary-takeaways {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.msg__summary-takeaways li {
+  display: flex;
+  gap: 8px;
+}
+
+.msg__summary-takeaways li::before {
+  content: "✦";
+  color: var(--terracotta);
+  flex-shrink: 0;
+}
+
+.msg__summary-doc {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(92, 107, 71, 0.5);
+  flex-direction: column;
+  font-size: 12.5px;
+  color: #8a4b2a;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.msg__summary-doc svg {
+  color: var(--terracotta);
+  margin-bottom: -17px;
+}
+
+.msg__summary-doc span {
+  margin-left: 20px;
+  display: block;
+}
+
+/* Persistent "see a doctor" band */
+.safety-band {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: #FFF3E6;
+  border: 1.5px solid #E4B36A;
+  color: #7A4A16;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.safety-band svg {
+  flex-shrink: 0;
+  color: #C57B2A;
+  margin-top: 1px;
+}
+
+/* Suggested follow-ups */
+.msg__suggestions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.msg__suggestions-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.msg__suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.pill--suggestion {
+  max-width: 100%;
+  text-align: left;
+  line-height: 1.35;
+  font-size: 12.5px;
+  background: var(--chip-green);
+  border: 1.5px solid var(--olive);
+  color: var(--olive-deep);
+}
+
+/* ---------- Corpus explorer (Wave C) ---------- */
+
+.corpus-feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.corpus-hero {
+  border: 2px solid var(--olive);
+  border-radius: 14px;
+  background: var(--chip-green);
+  padding: 16px 18px;
+}
+
+.corpus-hero__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--olive-deep);
+}
+
+.corpus-hero p {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.corpus-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid var(--olive);
+  border-radius: 999px;
+  padding: 6px 8px 6px 14px;
+}
+
+.corpus-search svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.corpus-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13.5px;
+  color: var(--text);
+  min-width: 0;
+}
+
+.corpus-muted {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 4px 2px;
+}
+
+.corpus-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.corpus-sthana {
+  border: 1.5px solid rgba(92, 107, 71, 0.35);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.corpus-sthana__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+}
+
+.corpus-sthana__head:hover {
+  background: var(--chip-green);
+}
+
+.corpus-sthana__name {
+  font-weight: 700;
+  font-size: 13.5px;
+  flex: 1;
+}
+
+.corpus-sthana__count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.chev--up {
+  transform: rotate(180deg);
+}
+
+.corpus-chapters {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px dashed rgba(92, 107, 71, 0.35);
+}
+
+.corpus-chapter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 14px 9px 26px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(92, 107, 71, 0.15);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+}
+
+.corpus-chapter:last-child {
+  border-bottom: none;
+}
+
+.corpus-chapter:hover {
+  background: var(--chip-green);
+}
+
+.corpus-section-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--olive-deep);
+  margin: 4px 0 2px;
+}
+
+.corpus-results,
+.corpus-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.source-item__sanskrit {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
 /* ---------- Responsive tweaks ---------- */
 
 @media (max-width: 1000px) {

@@ -122,6 +122,14 @@ def synthesize(state):
     if conversation_block:
         context += f"\nCONVERSATION CONTEXT (prior turns):\n{conversation_block}\n"
 
+    dosha_profile = state.get("dosha_profile")
+    if dosha_profile:
+        context += (
+            "\nUSER'S INFERRED DOSHA PROFILE: "
+            f"this user has previously been assessed as a predominantly {dosha_profile} pattern. "
+            "Shape recommendations to be compatible with that balance, and say so explicitly.\n"
+        )
+
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=f"Context:\n{context}\n\nUser question: {state['query']}"),

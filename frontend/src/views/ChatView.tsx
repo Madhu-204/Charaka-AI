@@ -66,6 +66,8 @@ function mapStoredMessage(m: ConversationRecord["messages"][number]): ChatMessag
     streaming: false,
     stages: null,
     latencyMs: m.latency_ms ?? null,
+    summary: m.summary ?? null,
+    suggestions: m.suggestions ?? null,
   };
 }
 
@@ -181,6 +183,8 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
         saved: false,
         streaming: false,
         stages: null,
+        summary: res.summary ?? null,
+        suggestions: res.suggestions ?? null,
       };
       setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMsg : m)));
       onReasoning(reasoningFor(finalMsg));
@@ -220,7 +224,11 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
             );
           },
         },
-        { conversationId, timeoutMs: 180_000 }
+        {
+          conversationId,
+          doshaProfile: lastDosha,
+          timeoutMs: 180_000,
+        }
       );
     } catch (e) {
       setError(
@@ -268,9 +276,26 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, saved: true } : m)));
   }
 
+  function handleSuggestion(text: string) {
+    void handleSend(text);
+  }
+
+  function handleRegenerate(query: string) {
+    if (!query.trim() || loading) return;
+    void handleSend(query);
+  }
+
   const lastAssistantId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].role === "assistant") return messages[i].id;
+    }
+    return null;
+  }, [messages]);
+
+  const lastDosha = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const d = messages[i].dosha;
+      if (d) return d;
     }
     return null;
   }, [messages]);
@@ -305,6 +330,8 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
             onFeedback={handleFeedback}
             onToggleReasoning={handleToggleReasoning}
             onSave={handleSave}
+            onSuggestion={handleSuggestion}
+            onRegenerate={handleRegenerate}
           />
         ))}
       </div>

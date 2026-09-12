@@ -116,6 +116,15 @@ def save_turn(conversation_id, user_message, assistant_payload):
     assistant_msg = {"content": content}
     assistant_msg.update(assistant_payload)
     record = _upsert(conversation_id, title, user_msg, assistant_msg)
+    dosha = assistant_payload.get("dosha")
+    if dosha:
+        with _lock:
+            rows = _load()
+            for r in rows:
+                if r["id"] == conversation_id and r.get("dosha_profile") != dosha:
+                    r["dosha_profile"] = dosha
+                    _save(rows)
+                    break
     return record["id"], record["title"]
 
 

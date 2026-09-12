@@ -14,13 +14,28 @@ from dotenv import load_dotenv
 
 from app.graph import charaka_agent
 from app import conversations
+from app.nodes.summarize import build_summary
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
 REFERENCE = BACKEND / "reference"
+PROCESSED = BACKEND / "processed"
 
 load_dotenv()
 app = FastAPI()
+
+STHANA_ORDER = ["sutrasthana", "vimanasthana", "sharirasthana", "chikitsasthana"]
+STHANA_TITLES = {
+    "sutrasthana": "Sutra Sthana — General Principles",
+    "vimanasthana": "Vimana Sthana — Assessment & Physiology",
+    "sharirasthana": "Sharira Sthana — Body & Embryology",
+    "chikitsasthana": "Chikitsa Sthana — Therapeutics",
+}
+
+try:
+    _CORPUS = json.loads((PROCESSED / "charaka_structured.json").read_text(encoding="utf-8"))
+except Exception:  # noqa: BLE001
+    _CORPUS = []
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -49,6 +64,7 @@ class AskRequest(BaseModel):
     query: str
     history: Optional[List[dict]] = None
     conversation_id: Optional[str] = None
+    dosha_profile: Optional[str] = None
 
 
 class FeedbackRequest(BaseModel):
@@ -125,29 +141,71 @@ def _sse(event: str, data: dict) -> str:
 def _history_from_store(conversation_id):
     record = conversations.get_conversation(conversation_id)
     if not record:
-        return None
-    return [
-        {"role": m["role"], "content": m["content"]}
-        for m in record["messages"]
-        if m.get("content")
-    ]
+        return {"history": None, "dosha_profile": None}
+    return {
+        "history": [
+            {"role": m["role"], "content": m["content"]}
+            for m in record["messages"]
+            if m.get("content")
+        ],
+        "dosha_profile": record.get("dosha_profile"),
+    }
+
+
+def _suggest_questions(result) -> list:
+    if result.get("is_emergency") or result.get("is_clarification"):
+        return []
+    rc = result.get("resolved_chapter") or {}
+    meta = rc.get("meta", {}) or {}
+    condition = meta.get("traditional_condition") or meta.get("category_tag")
+    herbs = result.get("herbs_found", [])
+    dosha = result.get("dosha")
+
+    out = []
+    if herbs:
+        out.append(f"How should {herbs[0].title()} be taken — dose and preparation?")
+    if condition:
+        out.append(f"What diet and habits suit {condition}?")
+    if dosha:
+        out.append(f"Which foods should be avoided on a {dosha} pattern?")
+    if condition:
+        out.append(f"What are the classical causes of {condition}?")
+    out.append("What should I avoid while treating this?")
+    return list(dict.fromkeys(out))[:3]
+
+
+def _attach_summaries(resp, query, result):
+    resp["suggestions"] = _suggest_questions(result)
+    if result.get("final_answer") and not result["is_emergency"]:
+        try:
+            resp["summary"] = build_summary(query, resp["answer"], result)
+        except Exception as e:  # noqa: BLE001
+            print(f"[main] summary failed ({e})")
+    return resp
 
 
 async def _event_stream(
-    query: str, history: Optional[List[dict]], conversation_id: Optional[str]
+    query: str, history: Optional[List[dict]], conversation_id: Optional[str],
+    dosha_profile: Optional[str],
 ):
     queue: asyncio.Queue = asyncio.Queue()
     loop = asyncio.get_running_loop()
 
     if history is None and conversation_id:
-        history = _history_from_store(conversation_id)
+        store = _history_from_store(conversation_id)
+        history = store["history"]
+        dosha_profile = dosha_profile or store["dosha_profile"]
+
+    state = {"query": query, "history": history or []}
+    if dosha_profile:
+        state["dosha_profile"] = dosha_profile
 
     def run():
         merged = {}
         synthesize_seen = False
         try:
             for mode, payload in charaka_agent.stream(
-                {"query": query, "history": history or []},
+                state,
                 stream_mode=["updates", "messages"],
             ):
                 if mode == "updates":
@@ -194,6 +252,7 @@ async def _event_stream(
         elif kind == "done":
             resp = build_response(payload, latency_ms=round((now - t0) * 1000))
             if payload.get("final_answer"):
+                resp = _attach_summaries(resp, query, payload)
                 conv_id, conv_title = conversations.save_turn(
                     conversation_id, query, resp
                 )
@@ -205,14 +264,20 @@ async def _event_stream(
 
 @app.post("/ask")
 def ask(req: AskRequest):
-    result = charaka_agent.invoke({"query": req.query, "history": req.history or []})
-    return build_response(result)
+    state = {"query": req.query, "history": req.history or []}
+    if req.dosha_profile:
+        state["dosha_profile"] = req.dosha_profile
+    result = charaka_agent.invoke(state)
+    resp = build_response(result)
+    if result.get("final_answer"):
+        resp = _attach_summaries(resp, req.query, result)
+    return resp
 
 
 @app.post("/ask/stream")
 async def ask_stream(req: AskRequest):
     return StreamingResponse(
-        _event_stream(req.query, req.history, req.conversation_id),
+        _event_stream(req.query, req.history, req.conversation_id, req.dosha_profile),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
@@ -234,6 +299,74 @@ def get_conversation(conversation_id: str):
 @app.delete("/conversations/{conversation_id}")
 def delete_conversation(conversation_id: str):
     return {"ok": conversations.delete_conversation(conversation_id)}
+
+
+@app.get("/corpus/sthanas")
+def corpus_sthanas():
+    chapters_by_sthana = {}
+    for v in _CORPUS:
+        key = v["sthana"]
+        bucket = chapters_by_sthana.setdefault(
+            key, {}
+        )
+        ch = bucket.setdefault(
+            v["chapter"],
+            {
+                "chapter": v["chapter"],
+                "verse_count": 0,
+                "condition": v.get("traditional_condition"),
+                "category": v.get("category_tag"),
+            },
+        )
+        ch["verse_count"] += 1
+
+    sthanas = []
+    for sthana in STHANA_ORDER:
+        if sthana not in chapters_by_sthana:
+            continue
+        chapters = sorted(
+            chapters_by_sthana[sthana].values(), key=lambda c: c["chapter"]
+        )
+        sthanas.append(
+            {
+                "sthana": sthana,
+                "title": STHANA_TITLES.get(sthana, sthana),
+                "chapters": chapters,
+                "verse_count": sum(c["verse_count"] for c in chapters),
+            }
+        )
+    return {"sthanas": sthanas, "total_verses": len(_CORPUS)}
+
+
+@app.get("/corpus/{sthana}/{chapter}")
+def corpus_verses(sthana: str, chapter: int):
+    ch = int(chapter)
+    verses = [
+        {
+            "verse_id": v["verse_id"],
+            "text": v["text_english"],
+            "sanskrit": v.get("text_sanskrit"),
+            "condition": v.get("traditional_condition"),
+            "category": v.get("category_tag"),
+            "herbs": [],
+        }
+        for v in _CORPUS
+        if v["sthana"] == sthana and v["chapter"] == ch
+    ]
+    return {"ok": bool(verses), "sthana": sthana, "chapter": ch, "verses": verses}
+
+
+class CorpusSearchRequest(BaseModel):
+    query: str
+    limit: int = 8
+
+
+@app.post("/corpus/search")
+def corpus_search(req: CorpusSearchRequest):
+    from app.nodes.retriever import search_verses
+
+    limit = max(1, min(req.limit, 25))
+    return {"query": req.query, "results": search_verses(req.query, limit=limit)}
 
 
 @app.post("/feedback")

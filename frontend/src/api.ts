@@ -2,6 +2,9 @@ import type {
   AskResponse,
   ChatMessage,
   ConversationSummary,
+  CorpusSthana,
+  CorpusVerse,
+  CorpusSearchResult,
   FeedbackRating,
   HerbSummary,
   StreamStage,
@@ -85,6 +88,7 @@ function parseSse(part: string): SseEvent | null {
 export interface AskStreamOptions {
   conversationId?: string | null;
   history?: { role: string; content: string }[];
+  doshaProfile?: string | null;
   timeoutMs?: number;
 }
 
@@ -103,6 +107,7 @@ export async function askStream(
         query,
         history: opts.history ?? [],
         conversation_id: opts.conversationId ?? null,
+        dosha_profile: opts.doshaProfile ?? null,
       }),
       signal: controller.signal,
     });
@@ -178,6 +183,8 @@ export interface ConversationRecord {
     grounding?: AskResponse["grounding"];
     latency_ms?: number | null;
     timestamp?: string;
+    summary?: AskResponse["summary"];
+    suggestions?: string[];
   }[];
 }
 
@@ -208,6 +215,32 @@ export async function deleteConversation(id: string): Promise<boolean> {
     { method: "DELETE" }
   );
   return data.ok;
+}
+
+export async function fetchCorpusSthanas(): Promise<CorpusSthana[]> {
+  const data = await request<{ sthanas: CorpusSthana[] }>("/corpus/sthanas");
+  return data.sthanas;
+}
+
+export async function fetchChapterVerses(
+  sthana: string,
+  chapter: number
+): Promise<CorpusVerse[]> {
+  const data = await request<{ verses: CorpusVerse[] }>(
+    `/corpus/${encodeURIComponent(sthana)}/${chapter}`
+  );
+  return data.verses;
+}
+
+export async function searchCorpus(
+  query: string,
+  limit = 10
+): Promise<CorpusSearchResult[]> {
+  const data = await request<{ results: CorpusSearchResult[] }>("/corpus/search", {
+    method: "POST",
+    body: JSON.stringify({ query, limit }),
+  });
+  return data.results;
 }
 
 export async function submitFeedback(payload: {

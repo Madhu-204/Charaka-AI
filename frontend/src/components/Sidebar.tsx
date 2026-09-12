@@ -5,6 +5,7 @@ import { deleteConversation, fetchConversations } from "../api";
 import {
   IconBookmark,
   IconChat,
+  IconFolder,
   IconInfo,
   IconPlant,
   IconPlus,
@@ -23,6 +24,7 @@ interface SidebarProps {
 
 const NAV: { id: ViewName; label: string; icon: ComponentType }[] = [
   { id: "chat", label: "Chat", icon: IconChat },
+  { id: "explore", label: "Explore Corpus", icon: IconFolder },
   { id: "herbs", label: "Herb Library", icon: IconPlant },
   { id: "saved", label: "Saved Answers", icon: IconBookmark },
   { id: "about", label: "About This Tool", icon: IconInfo },

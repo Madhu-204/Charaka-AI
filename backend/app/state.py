@@ -5,6 +5,7 @@ class AgentState(TypedDict, total=False):
     query: str
     history: List[dict]
     followup_context: Optional[str]
+    dosha_profile: Optional[str]
     is_emergency: bool
     emergency_reason: Optional[str]
     dosha: Optional[str]

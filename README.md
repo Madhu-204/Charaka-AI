@@ -85,8 +85,9 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
 | **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
 | **6** | Safety & trust layer (source verification) | ✅ **Done** |
-| **7** | Interactive frontend — streaming RAG UI | 🔄 **Wave A done** (see `docs/roadmap.md`) |
-| **8** | Agentic depth — multi-turn memory, conversations, tools | 🔄 **Wave B done** (see `docs/roadmap.md`) |
+| **7** | Interactive frontend — streaming RAG UI | ✅ **Wave A done** (see `docs/roadmap.md`) |
+| **8** | Agentic depth — multi-turn memory, conversations, tools | ✅ **Wave B done** (see `docs/roadmap.md`) |
+| **9** | Product completeness — corpus explorer, search, follow-ups, summaries, dosha | 🔄 **Wave C 23–29 done** (see `docs/roadmap.md`) |
 
 </div>
 
@@ -121,6 +122,13 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 📝 **Inline citations** | Synthesis emits `[1]…[3]` markers bound to retrieved verses; frontend renders them as clickable chips that open & highlight the exact source card | ✅ |
 | 📖 **Verse text in sources** | Source dropdown + reasoning panel show the actual retrieved verse text with similarity bars & per-verse confidence, not just ids | ✅ |
 | 🛡️ **Grounding check** | `grounding` node verifies every `[n]` marker against retrieved verses → `grounding_score` + notes surfaced in chat & reasoning panel | ✅ |
+| 🌐 **Corpus explorer** | `GET /corpus/sthanas` + `GET /corpus/{sthana}/{chapter}` + "Explore Corpus" view browsing 2,490 verses by section | ✅ |
+| 🔎 **Full-corpus search** | `POST /corpus/search` reusing the hybrid retriever → ranked snippets in the Explore view | ✅ |
+| 🔁 **Suggested follow-ups** | `_suggest_questions` after each answer → clickable chips that send the follow-up | ✅ |
+| 📋 **Summary header** | Structured card atop each answer: title + key takeaways + "what to ask a doctor" bullets | ✅ |
+| 📤 **Copy / regenerate** | Answer action bar: copy markdown + regenerate with the same query | ✅ |
+| 🧬 **Dosha persistence** | Inferred dosha stored per conversation; sent back as `dosha_profile` on later turns to personalize synthesis | ✅ |
+| 🛡️ **Persistent safety callout** | "Keep this in mind" band when confidence is low / weakly grounded / source disagreements | ✅ |
 
 ### 📊 Corpus breakdown
 

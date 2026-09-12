@@ -1,4 +1,4 @@
-export type ViewName = "chat" | "herbs" | "saved" | "about";
+export type ViewName = "chat" | "herbs" | "saved" | "about" | "explore";
 
 export type Confidence = "high" | "medium" | "low";
 
@@ -35,6 +35,12 @@ export interface ReasoningTrace {
   grounding?: GroundingInfo | null;
 }
 
+export interface AnswerSummary {
+  title: string;
+  takeaways: string[];
+  doctor_check: string[];
+}
+
 export interface AskResponse {
   answer: string;
   is_emergency: boolean;
@@ -47,8 +53,45 @@ export interface AskResponse {
   latency_ms?: number | null;
   conversation_id?: string | null;
   conversation_title?: string | null;
+  suggestions?: string[];
+  summary?: AnswerSummary | null;
   grounding?: GroundingInfo | null;
   reasoning_trace?: ReasoningTrace;
+}
+
+export interface CorpusChapter {
+  chapter: number;
+  verse_count: number;
+  condition: string | null;
+  category: string | null;
+}
+
+export interface CorpusSthana {
+  sthana: string;
+  title: string;
+  chapters: CorpusChapter[];
+  verse_count: number;
+}
+
+export interface CorpusVerse {
+  verse_id: string;
+  text: string;
+  sanskrit?: string | null;
+  condition: string | null;
+  category: string | null;
+  herbs?: string[];
+  score?: number;
+  chapter?: string;
+  confidence?: string;
+}
+
+export interface CorpusSearchResult {
+  verse_id: string;
+  text: string;
+  score: number;
+  chapter: string;
+  condition: string | null;
+  category: string | null;
 }
 
 export interface ConversationSummary {
@@ -81,6 +124,8 @@ export interface ChatMessage {
   streaming?: boolean;
   stages?: StreamStage[] | null;
   latencyMs?: number | null;
+  summary?: AnswerSummary | null;
+  suggestions?: string[] | null;
 }
 
 export interface HerbSummary {

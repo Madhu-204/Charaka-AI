@@ -331,6 +331,27 @@ def _herb_retrieve(herb_name, expanded_query, query_embedding):
     }
 
 
+def search_verses(query, limit=8):
+    """Expose ranked hybrid results as plain text (used by the corpus search page)."""
+    q_emb = model.encode([query]).tolist()[0]
+    pool = _hybrid_pool(query, q_emb)
+    pool.sort(key=lambda c: c["_fused"], reverse=True)
+    out = []
+    for c in pool[:limit]:
+        meta = c["meta"]
+        out.append(
+            {
+                "verse_id": c["verse_id"],
+                "text": c["text"],
+                "score": round(float(c["_cos"]), 4),
+                "chapter": f"{meta['sthana']}/{meta['chapter']}",
+                "condition": meta.get("traditional_condition"),
+                "category": meta.get("category_tag"),
+            }
+        )
+    return out
+
+
 def retrieve(state):
     query = state.get("expanded_query", state.get("query", ""))
     trace = state.get("trace", [])
