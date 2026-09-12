@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { ReasoningContent } from "../components/ReasoningPanel";
+import { EvalPanel } from "../components/EvalPanel";
 import { IconCheck, IconDatabase, IconFlow, IconPeople, IconScroll, IconShield } from "../components/Icons";
 
 interface AboutViewProps {
@@ -188,6 +189,8 @@ export function AboutView({ onReasoning }: AboutViewProps) {
           </ul>
         </div>
       </section>
+
+      <EvalPanel />
     </div>
   );
 }

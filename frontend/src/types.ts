@@ -55,6 +55,7 @@ export interface AskResponse {
   conversation_title?: string | null;
   suggestions?: string[];
   summary?: AnswerSummary | null;
+  cache_hit?: boolean;
   grounding?: GroundingInfo | null;
   reasoning_trace?: ReasoningTrace;
 }
@@ -92,6 +93,49 @@ export interface CorpusSearchResult {
   chapter: string;
   condition: string | null;
   category: string | null;
+}
+
+export interface EvalRow {
+  eval_id: string;
+  corner: boolean;
+  known_gap: boolean;
+  question: string;
+  expected: string;
+  resolved: string;
+  confidence: Confidence | null;
+  resolved_hit: boolean;
+  top_n_hit: boolean;
+  emergency: boolean;
+  herbs_found: number;
+  safety_flags: number;
+}
+
+export interface EvalBucket {
+  total: number;
+  resolved: number;
+  resolved_pct: number;
+  top_n: number;
+  top_n_pct: number;
+}
+
+export interface EvalSummary {
+  total: number;
+  resolved: number;
+  resolved_pct: number;
+  top_n: number;
+  top_n_pct: number;
+  emergency_false_positives: number;
+  known_gaps: number;
+  known_gaps_admitted: number;
+  herb_queries: number;
+  safety_covered: number;
+  core: EvalBucket;
+  corner: EvalBucket;
+}
+
+export interface EvalResult {
+  summary: EvalSummary;
+  rows: EvalRow[];
 }
 
 export interface ConversationSummary {

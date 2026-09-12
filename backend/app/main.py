@@ -1,28 +1,59 @@
 import asyncio
 import json
+import os
 import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Literal, Optional
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from app.graph import charaka_agent
-from app import conversations
+from app import cache, conversations, ratelimit, stats, trace
 from app.nodes.summarize import build_summary
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
 REFERENCE = BACKEND / "reference"
 PROCESSED = BACKEND / "processed"
+TRACES_DIR = BACKEND / "traces"
+EVAL_RESULTS = BACKEND / "eval_results.json"
 
 load_dotenv()
 app = FastAPI()
+
+API_KEY = os.getenv("CHARAKA_API_KEY")
+_QUERY_CACHE = cache.LRUCache(
+    capacity=int(os.getenv("CHARAKA_CACHE_SIZE", "64")),
+    ttl=int(os.getenv("CHARAKA_CACHE_TTL", "3600")),
+)
+_LIMITER = ratelimit.RateLimiter(
+    per_minute=int(os.getenv("CHARAKA_RATE_LIMIT", "30")),
+    burst=int(os.getenv("CHARAKA_RATE_BURST", "60")),
+)
+_FEEDBACK_STATS = stats.FeedbackStats(FEEDBACK_LOG)
+
+
+def guard_ask(
+    request: Request, x_api_key: Optional[str] = Header(default=None)
+) -> None:
+    if API_KEY and x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="invalid or missing API key")
+    client_id = x_api_key or (
+        request.client.host if request.client else "local"
+    )
+    if not _LIMITER.allow(client_id):
+        raise HTTPException(
+            status_code=429,
+            detail="rate limit exceeded — slow down and retry shortly",
+            headers={"Retry-After": "5"},
+        )
+
 
 STHANA_ORDER = ["sutrasthana", "vimanasthana", "sharirasthana", "chikitsasthana"]
 STHANA_TITLES = {
@@ -74,6 +105,8 @@ class FeedbackRequest(BaseModel):
     answer: Optional[str] = None
     trace: Optional[List[str]] = None
     dosha: Optional[str] = None
+    category_tag: Optional[str] = None
+    chapter: Optional[str] = None
 
 
 def _confidence_band(score) -> str:
@@ -184,6 +217,45 @@ def _attach_summaries(resp, query, result):
     return resp
 
 
+def _resolved_label(result) -> Optional[str]:
+    rc = result.get("resolved_chapter") or {}
+    meta = rc.get("meta")
+    if not meta:
+        return None
+    return f"{meta.get('sthana')}/{meta.get('chapter')}"
+
+
+def _chunks(text: str, size: int = 60):
+    for i in range(0, len(text), size):
+        yield text[i : i + size]
+
+
+def _run_graph_collect(state):
+    """Drive the graph via its stream so we can capture per-node latency + tokens."""
+    merged = {}
+    node_times = []
+    token_count = 0
+    prev = time.time()
+    for mode, payload in charaka_agent.stream(
+        state, stream_mode=["updates", "messages"]
+    ):
+        if mode == "updates":
+            node = next(iter(payload))
+            merged.update(payload[node])
+            now = time.time()
+            node_times.append([node, round((now - prev) * 1000), 0])
+            prev = now
+        else:
+            chunk, meta = payload
+            if meta.get("langgraph_node") == "synthesize":
+                text = getattr(chunk, "content", "")
+                if isinstance(text, str) and text:
+                    token_count += len(text.split())
+    if node_times:
+        node_times[-1][2] = token_count
+    return merged, node_times, token_count
+
+
 async def _event_stream(
     query: str, history: Optional[List[dict]], conversation_id: Optional[str],
     dosha_profile: Optional[str],
@@ -195,6 +267,33 @@ async def _event_stream(
         store = _history_from_store(conversation_id)
         history = store["history"]
         dosha_profile = dosha_profile or store["dosha_profile"]
+
+    cacheable = conversation_id is None
+    cache_key = (
+        cache.LRUCache.key_for(query, dosha_profile) if cacheable else None
+    )
+    if cache_key:
+        cached = _QUERY_CACHE.get(cache_key)
+        if cached:
+            trace.write_trace(
+                TRACES_DIR,
+                query,
+                [("cache", 0, 0)],
+                0,
+                0,
+                cache_hit=True,
+                dosha=dosha_profile,
+            )
+            yield _sse(
+                "stage",
+                {"node": "cache", "label": "Serving cached answer", "ms": 0},
+            )
+            for part in _chunks(cached.get("answer", "")):
+                yield _sse("token", {"delta": part})
+            hit = dict(cached)
+            hit["cache_hit"] = True
+            yield _sse("done", hit)
+            return
 
     state = {"query": query, "history": history or []}
     if dosha_profile:
@@ -230,12 +329,15 @@ async def _event_stream(
 
     t0 = time.time()
     prev = t0
+    node_times = []
+    token_count = 0
     while True:
         kind, payload = await queue.get()
         now = time.time()
         if kind == "stage":
             ms = round((now - prev) * 1000)
             prev = now
+            node_times.append((payload, ms, 0))
             yield _sse(
                 "stage",
                 {
@@ -245,12 +347,14 @@ async def _event_stream(
                 },
             )
         elif kind == "token":
+            token_count += len(payload.split())
             yield _sse("token", {"delta": payload})
         elif kind == "error":
             yield _sse("error", {"message": payload})
             break
         elif kind == "done":
-            resp = build_response(payload, latency_ms=round((now - t0) * 1000))
+            latency = round((now - t0) * 1000)
+            resp = build_response(payload, latency_ms=latency)
             if payload.get("final_answer"):
                 resp = _attach_summaries(resp, query, payload)
                 conv_id, conv_title = conversations.save_turn(
@@ -258,23 +362,79 @@ async def _event_stream(
                 )
                 resp["conversation_id"] = conv_id
                 resp["conversation_title"] = conv_title
+            resp["cache_hit"] = False
+            if node_times:
+                node_times[-1] = (
+                    node_times[-1][0],
+                    node_times[-1][1],
+                    token_count,
+                )
+            trace.write_trace(
+                TRACES_DIR,
+                query,
+                node_times,
+                token_count,
+                latency,
+                dosha=payload.get("dosha"),
+                resolved_chapter=_resolved_label(payload),
+            )
+            if cache_key and payload.get("final_answer") and not payload.get(
+                "is_emergency"
+            ):
+                _QUERY_CACHE.set(cache_key, resp)
             yield _sse("done", resp)
             break
 
 
-@app.post("/ask")
+@app.post("/ask", dependencies=[Depends(guard_ask)])
 def ask(req: AskRequest):
     state = {"query": req.query, "history": req.history or []}
     if req.dosha_profile:
         state["dosha_profile"] = req.dosha_profile
-    result = charaka_agent.invoke(state)
-    resp = build_response(result)
+
+    cache_key = (
+        cache.LRUCache.key_for(req.query, req.dosha_profile)
+        if not req.history
+        else None
+    )
+    if cache_key:
+        cached = _QUERY_CACHE.get(cache_key)
+        if cached:
+            resp = dict(cached)
+            resp["cache_hit"] = True
+            trace.write_trace(
+                TRACES_DIR,
+                req.query,
+                [("cache", 0, 0)],
+                0,
+                0,
+                cache_hit=True,
+                dosha=req.dosha_profile,
+            )
+            return resp
+
+    t0 = time.time()
+    result, node_times, token_count = _run_graph_collect(state)
+    latency = round((time.time() - t0) * 1000)
+    resp = build_response(result, latency_ms=latency)
     if result.get("final_answer"):
         resp = _attach_summaries(resp, req.query, result)
+    resp["cache_hit"] = False
+    if cache_key and result.get("final_answer") and not result.get("is_emergency"):
+        _QUERY_CACHE.set(cache_key, resp)
+    trace.write_trace(
+        TRACES_DIR,
+        req.query,
+        node_times,
+        token_count,
+        latency,
+        dosha=result.get("dosha"),
+        resolved_chapter=_resolved_label(result),
+    )
     return resp
 
 
-@app.post("/ask/stream")
+@app.post("/ask/stream", dependencies=[Depends(guard_ask)])
 async def ask_stream(req: AskRequest):
     return StreamingResponse(
         _event_stream(req.query, req.history, req.conversation_id, req.dosha_profile),
@@ -378,12 +538,124 @@ def feedback(req: FeedbackRequest):
         "query": req.query,
         "rating": req.rating,
         "dosha": req.dosha,
+        "category_tag": req.category_tag,
+        "chapter": req.chapter,
         "answer": req.answer,
         "trace": req.trace,
     }
     with FEEDBACK_LOG.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     return {"ok": True}
+
+
+@app.get("/stats")
+def get_stats():
+    data = _FEEDBACK_STATS.snapshot()
+    data["cache"] = _QUERY_CACHE.stats()
+    return data
+
+
+@app.get("/traces")
+def list_traces(limit: int = 50):
+    limit = max(1, min(limit, 200))
+    return {"traces": trace.list_traces(TRACES_DIR, limit)}
+
+
+@app.get("/traces/{run_id}")
+def get_trace(run_id: str):
+    record = trace.get_trace(TRACES_DIR, run_id)
+    if record is None:
+        return {"ok": False, "error": "not_found"}
+    return {"ok": True, "trace": record}
+
+
+class EvalRunRequest(BaseModel):
+    corner: bool = True
+    mode: Literal["retrieval", "full"] = "retrieval"
+
+
+def _public_eval_row(row: dict) -> dict:
+    return {
+        "eval_id": row["eval_id"],
+        "corner": row["corner"],
+        "known_gap": row["known_gap"],
+        "question": row["question"],
+        "expected": row["expected"],
+        "resolved": row["resolved"],
+        "confidence": row["confidence"],
+        "resolved_hit": row["resolved_hit"],
+        "top_n_hit": row["top_n_hit"],
+        "emergency": row["emergency"],
+        "herbs_found": len(row["herbs_found"]),
+        "safety_flags": len(row["safety_flags"]),
+    }
+
+
+async def _eval_event_stream(corner: bool, mode: str):
+    from app.eval_suite import load_eval_items, run_question, summarize
+
+    queue: asyncio.Queue = asyncio.Queue()
+    items = load_eval_items(corner=corner)
+
+    def run():
+        rows = []
+        try:
+            for i, item in enumerate(items):
+                row = run_question(item, mode=mode)
+                rows.append(row)
+                queue.put_nowait(
+                    (
+                        "item",
+                        {
+                            "index": i + 1,
+                            "total": len(items),
+                            **_public_eval_row(row),
+                        },
+                    )
+                )
+                time.sleep(0.05)
+            summary = summarize(rows)
+            payload = {
+                "summary": summary,
+                "rows": [_public_eval_row(r) for r in rows],
+            }
+            try:
+                EVAL_RESULTS.write_text(
+                    json.dumps(payload, ensure_ascii=False),
+                    encoding="utf-8",
+                )
+            except OSError:
+                pass
+            queue.put_nowait(("done", payload))
+        except Exception as e:  # noqa: BLE001
+            queue.put_nowait(("error", str(e)))
+
+    threading.Thread(target=run, daemon=True).start()
+
+    while True:
+        kind, payload = await queue.get()
+        yield _sse(kind, payload)
+        if kind in ("done", "error"):
+            break
+
+
+@app.post("/eval/run")
+async def eval_run(req: EvalRunRequest):
+    return StreamingResponse(
+        _eval_event_stream(req.corner, req.mode),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@app.get("/eval/last")
+def eval_last():
+    if not EVAL_RESULTS.exists():
+        return {"ok": False, "error": "no_runs"}
+    try:
+        return {"ok": True, **json.loads(EVAL_RESULTS.read_text(encoding="utf-8"))}
+    except (OSError, json.JSONDecodeError):
+        return {"ok": False, "error": "unreadable"}
 
 
 def _load_reference(name: str):

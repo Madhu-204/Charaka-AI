@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    image: charaka-ai-backend:latest
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      CHARAKA_CACHE_SIZE: "64"
+      CHARAKA_CACHE_TTL: "3600"
+      CHARAKA_RATE_LIMIT: "30"
+      CHARAKA_RATE_BURST: "60"
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_db:/app/chroma_db
+      - traces:/app/traces
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    image: charaka-ai-frontend:latest
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  chroma_db:
+  traces:

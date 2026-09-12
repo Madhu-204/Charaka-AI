@@ -87,7 +87,8 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **6** | Safety & trust layer (source verification) | ✅ **Done** |
 | **7** | Interactive frontend — streaming RAG UI | ✅ **Wave A done** (see `docs/roadmap.md`) |
 | **8** | Agentic depth — multi-turn memory, conversations, tools | ✅ **Wave B done** (see `docs/roadmap.md`) |
-| **9** | Product completeness — corpus explorer, search, follow-ups, summaries, dosha | 🔄 **Wave C 23–29 done** (see `docs/roadmap.md`) |
+| **9** | Product completeness — corpus explorer, search, follow-ups, summaries, dosha | ✅ **Wave C 23–29 done** (see `docs/roadmap.md`) |
+| **10** | Observability & production — traces, stats, live eval, docker, rate limit, cache | ✅ **Wave C 30–36 done** (see `docs/roadmap.md`) |
 
 </div>
 
@@ -129,6 +130,13 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 📤 **Copy / regenerate** | Answer action bar: copy markdown + regenerate with the same query | ✅ |
 | 🧬 **Dosha persistence** | Inferred dosha stored per conversation; sent back as `dosha_profile` on later turns to personalize synthesis | ✅ |
 | 🛡️ **Persistent safety callout** | "Keep this in mind" band when confidence is low / weakly grounded / source disagreements | ✅ |
+| ⚡ **Query cache** | LRU cache (`backend/app/cache.py`) keyed by normalized query + dosha — identical asks are served in milliseconds; hit rates exposed via `GET /stats` | ✅ |
+| 🛡️ **Rate limiting & auth** | Per-client token bucket (default 30/min) + optional `X-API-Key` via `CHARAKA_API_KEY` on `/ask` endpoints | ✅ |
+| 📊 **Feedback analytics** | `GET /stats` — up/down ratio, per-category & per-dosha win-rates from `feedback_log.jsonl` | ✅ |
+| 🕵️ **LLM tracing** | Every agent run records per-node latency + token counts to `backend/traces/`; `GET /traces` + `GET /traces/{run_id}` | ✅ |
+| 🧪 **Live eval runner** | `POST /eval/run` (SSE) + `GET /eval/last`; "Regression Eval Runner" panel on the About page with per-question pass/fail | ✅ |
+| 🧩 **Corner-case corpus** | `reference/eval_corner_cases.json` — 12 adversarial/emergency/alias-gap items; 2 known gaps documented | ✅ |
+| 🐳 **Docker** | `docker compose up` — backend (uvicorn) + frontend (nginx), named volumes for `chroma_db` + `traces` | ✅ |
 
 ### 📊 Corpus breakdown
 
@@ -241,7 +249,18 @@ curl -X POST http://localhost:8000/ask \
 ```bash
 python scripts/eval_run.py --mode retrieval   # free — retrieval/disambiguation only (28 Qs)
 python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end answers
+python scripts/eval_run.py --mode retrieval --corner   # + 12 corner cases (40 Qs)
 ```
+
+### Docker (optional)
+
+```bash
+docker compose up --build        # backend on :8000, frontend on :5173
+```
+
+- The frontend build embeds `VITE_API_URL` (default `http://localhost:8000`).
+- Named volumes persist `chroma_db` (embeddings) and `traces` across restarts.
+- Configure `backend/.env`, incl. `CHARAKA_API_KEY`, `CHARAKA_RATE_LIMIT`, `CHARAKA_CACHE_SIZE`.
 
 - Emergency phrases short-circuit before any retrieval or LLM call.
 - Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.

@@ -5,6 +5,8 @@ import type {
   CorpusSthana,
   CorpusVerse,
   CorpusSearchResult,
+  EvalResult,
+  EvalRow,
   FeedbackRating,
   HerbSummary,
   StreamStage,
@@ -162,6 +164,73 @@ export async function fetchHerbs(): Promise<HerbSummary[]> {
   return data.herbs;
 }
 
+export async function fetchLastEval(): Promise<EvalResult | null> {
+  const data = await request<{ ok: boolean } & Partial<EvalResult>>("/eval/last");
+  if (!data.ok || !data.summary) return null;
+  return { summary: data.summary, rows: data.rows ?? [] };
+}
+
+export interface EvalHandlers {
+  onItem?: (row: EvalRow & { index: number; total: number }) => void;
+  onDone?: (result: EvalResult) => void;
+  onError?: (err: Error) => void;
+}
+
+export async function runEvalStream(
+  corner: boolean,
+  mode: "retrieval" | "full",
+  handlers: EvalHandlers,
+): Promise<void> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 900_000);
+  try {
+    const res = await fetch(`${API_URL}/eval/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ corner, mode }),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new ApiError(res.status, `Request failed (${res.status})`);
+    if (!res.body) throw new ApiError(-1, "No response stream from backend.");
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const parts = buf.split("\n\n");
+      buf = parts.pop() ?? "";
+      for (const part of parts) {
+        const ev = parseSse(part);
+        if (!ev) continue;
+        if (ev.type === "item") {
+          handlers.onItem?.(
+            JSON.parse(ev.data) as EvalRow & { index: number; total: number },
+          );
+        } else if (ev.type === "done") {
+          handlers.onDone?.(JSON.parse(ev.data) as EvalResult);
+        } else if (ev.type === "error") {
+          const parsed = JSON.parse(ev.data) as { message?: string };
+          throw new ApiError(500, parsed.message ?? "Eval error");
+        }
+      }
+    }
+  } catch (e) {
+    if (controller.signal.aborted) {
+      const err = new ApiError(408, "The eval run took too long — timed out.");
+      handlers.onError?.(err);
+      throw err;
+    }
+    const err = e instanceof Error ? e : new Error(String(e));
+    handlers.onError?.(err);
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface ConversationRecord {
   id: string;
   title: string;
@@ -264,6 +333,8 @@ export function feedbackPayload(msg: ChatMessage): {
   answer: string | null;
   trace: string[] | null;
   dosha: string | null;
+  category_tag: string | null;
+  chapter: string | null;
 } {
   return {
     query: msg.query ?? "",
@@ -272,5 +343,7 @@ export function feedbackPayload(msg: ChatMessage): {
     answer: msg.content,
     trace: msg.reasoning?.steps ?? null,
     dosha: msg.dosha ?? null,
+    category_tag: msg.categoryTag ?? null,
+    chapter: msg.chapter != null ? String(msg.chapter) : null,
   };
 }

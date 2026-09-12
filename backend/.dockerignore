@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+.env
+conversations.jsonl
+feedback_log.jsonl
+eval_results.json
+traces
+charaka_data
