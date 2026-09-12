@@ -227,3 +227,24 @@ export function IconAlert(props: IconProps) {
     </svg>
   );
 }
+
+export function IconPlus(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </svg>
+  );
+}
+
+export function IconTrash(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+      <path d="M6 6v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+    </svg>
+  );
+}

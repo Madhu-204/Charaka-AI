@@ -11,6 +11,8 @@ class AgentState(TypedDict, total=False):
     dosha_scores: Optional[dict]
     expanded_query: str
     canonical_term: Optional[str]
+    metadata_filter: Optional[dict]
+    tool_decision: Optional[str]
     retrieved: List[dict]
     resolved_chapter: Optional[dict]
     herbs_found: List[str]
@@ -25,3 +27,5 @@ class AgentState(TypedDict, total=False):
     grounding_score: Optional[float]
     grounding_notes: List[str]
     grounding_cited: List[int]
+    is_clarification: bool
+    clarification: Optional[str]

@@ -35,6 +35,7 @@ Rules you must always follow:
 - CITE SOURCES INLINE: the PRIMARY CONTEXT is source [1]. The ADDITIONAL CONTEXT blocks are [2], [3], ... in the order they appear. Place the matching marker (e.g. [1], [2]) immediately after each claim that comes from that verse — every factual statement that is grounded in a verse must carry the marker of the verse it came from. Use a marker only when the claim is actually in that verse.
 - If confidence is marked "low", say explicitly that the match is uncertain. If it is marked "medium", note that the match is related but not exact, and frame the answer accordingly.
 - Always end with a line encouraging the user to consult a doctor if symptoms persist or worsen.
+- If a CONVERSATION CONTEXT is provided, use it to resolve references like "that", "it", "the same herb", or "instead" in the current question. Keep the answer self-contained (the user may have forgotten the earlier turn), but never invent details that aren't also in the current context.
 - If any safety flags are provided, state them clearly before any remedy suggestion.
 - When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user.
 - If a SPECIES/IDENTITY DISCLOSURE is provided for an herb, state it explicitly and prominently BEFORE giving any remedy or safety detail for that herb — never bury it. If a disclosure says an herb's profile is based on a different (closest-match) species, or that one species must not be confused with another, repeat that clearly so the user cannot mistake one plant for another.
@@ -56,6 +57,20 @@ def _format_block(rc):
         f"Verse: {rc['verse_id']}\n"
         f"Text: {rc['text']}"
     )
+
+
+def _format_history(history):
+    if not history:
+        return None
+    lines = []
+    for m in history[-6:]:
+        role = m.get("role", "user")
+        content = (m.get("content") or "").strip()
+        if content:
+            lines.append(f"{role}: {content[:1200]}")
+    if not lines:
+        return None
+    return "\n".join(lines)
 
 
 def _herb_alias_block(herbs_found):
@@ -102,6 +117,10 @@ def synthesize(state):
             "\nSOURCE DISAGREEMENTS (practitioner-review cautions — state verbatim):\n"
             + "\n".join(f"- {d}" for d in source_disagreements)
         )
+
+    conversation_block = _format_history(state.get("history"))
+    if conversation_block:
+        context += f"\nCONVERSATION CONTEXT (prior turns):\n{conversation_block}\n"
 
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),

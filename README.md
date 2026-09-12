@@ -86,6 +86,7 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
 | **6** | Safety & trust layer (source verification) | ✅ **Done** |
 | **7** | Interactive frontend — streaming RAG UI | 🔄 **Wave A done** (see `docs/roadmap.md`) |
+| **8** | Agentic depth — multi-turn memory, conversations, tools | 🔄 **Wave B done** (see `docs/roadmap.md`) |
 
 </div>
 

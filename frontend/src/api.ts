@@ -1,6 +1,7 @@
 import type {
   AskResponse,
   ChatMessage,
+  ConversationSummary,
   FeedbackRating,
   HerbSummary,
   StreamStage,
@@ -81,18 +82,28 @@ function parseSse(part: string): SseEvent | null {
   return { type, data: dataParts.join("\n") };
 }
 
+export interface AskStreamOptions {
+  conversationId?: string | null;
+  history?: { role: string; content: string }[];
+  timeoutMs?: number;
+}
+
 export async function askStream(
   query: string,
   handlers: StreamHandlers,
-  timeoutMs = 180_000
+  opts: AskStreamOptions = {}
 ): Promise<void> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? 180_000);
   try {
     const res = await fetch(`${API_URL}/ask/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        query,
+        history: opts.history ?? [],
+        conversation_id: opts.conversationId ?? null,
+      }),
       signal: controller.signal,
     });
     if (!res.ok) {
@@ -144,6 +155,59 @@ export async function askStream(
 export async function fetchHerbs(): Promise<HerbSummary[]> {
   const data = await request<{ herbs: HerbSummary[] }>("/herbs");
   return data.herbs;
+}
+
+export interface ConversationRecord {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  messages: {
+    id: string;
+    role: string;
+    content: string;
+    query?: string;
+    isEmergency?: boolean;
+    is_clarification?: boolean;
+    confidence?: string | null;
+    chapter?: string | number | null;
+    category_tag?: string | null;
+    dosha?: string | null;
+    safety_flags?: string[];
+    reasoning_trace?: AskResponse["reasoning_trace"];
+    grounding?: AskResponse["grounding"];
+    latency_ms?: number | null;
+    timestamp?: string;
+  }[];
+}
+
+interface ConversationsResponse {
+  conversations: ConversationSummary[];
+}
+
+export async function fetchConversations(): Promise<ConversationSummary[]> {
+  const data = await request<ConversationsResponse>("/conversations");
+  return data.conversations;
+}
+
+export async function fetchConversation(id: string): Promise<ConversationRecord> {
+  const data = await request<{ ok: boolean; conversation: ConversationRecord }>(
+    `/conversations/${encodeURIComponent(id)}`
+  );
+  if (!data.ok) {
+    const err = new ApiError(404, "Conversation not found.");
+    err.status = 404;
+    throw err;
+  }
+  return data.conversation;
+}
+
+export async function deleteConversation(id: string): Promise<boolean> {
+  const data = await request<{ ok: boolean }>(
+    `/conversations/${encodeURIComponent(id)}`,
+    { method: "DELETE" }
+  );
+  return data.ok;
 }
 
 export async function submitFeedback(payload: {

@@ -14,6 +14,7 @@ import {
   IconBookmark,
   IconBookmarkFilled,
   IconChevronDown,
+  IconInfo,
   IconLeaf,
   IconShield,
   IconThumbDown,
@@ -278,6 +279,14 @@ export function ChatBubble({
 
       {message.role === "assistant" && isTyped && (
         <>
+          {message.isClarification && (
+            <div className="msg__meta chat-reveal" style={{ animationDelay: "0ms" }}>
+              <span className="badge badge--ai">
+                <IconInfo width={14} height={14} />
+                Need a bit more detail
+              </span>
+            </div>
+          )}
           {(message.dosha || message.confidence || message.chapter || gPct != null || latency) && (
             <div className="msg__meta chat-reveal" style={{ animationDelay: "0ms" }}>
               {message.dosha && (

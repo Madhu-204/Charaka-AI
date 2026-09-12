@@ -38,14 +38,25 @@ export interface ReasoningTrace {
 export interface AskResponse {
   answer: string;
   is_emergency: boolean;
+  is_clarification?: boolean;
   confidence: Confidence | null;
   chapter: string | number | null;
   category_tag: string | null;
   safety_flags: string[];
   dosha: string | null;
   latency_ms?: number | null;
+  conversation_id?: string | null;
+  conversation_title?: string | null;
   grounding?: GroundingInfo | null;
   reasoning_trace?: ReasoningTrace;
+}
+
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
 }
 
 export type FeedbackRating = "up" | "down";
@@ -57,6 +68,7 @@ export interface ChatMessage {
   createdAt: number;
   query?: string;
   isEmergency?: boolean;
+  isClarification?: boolean;
   confidence?: Confidence | null;
   chapter?: string | number | null;
   categoryTag?: string | null;

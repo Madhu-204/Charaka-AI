@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from app.graph import charaka_agent
+from app import conversations
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
@@ -35,7 +36,9 @@ STAGE_LABELS = {
     "check_emergency": "Checking for red flags",
     "tag_dosha": "Analyzing dosha pattern",
     "expand_query": "Expanding query",
+    "route_tools": "Choosing retrieval strategy",
     "retrieve": "Searching 2,490 verses",
+    "clarify": "Asking to disambiguate",
     "check_safety": "Checking herb safety",
     "synthesize": "Grounding answer in classical texts",
     "grounding": "Verifying citations",
@@ -45,6 +48,7 @@ STAGE_LABELS = {
 class AskRequest(BaseModel):
     query: str
     history: Optional[List[dict]] = None
+    conversation_id: Optional[str] = None
 
 
 class FeedbackRequest(BaseModel):
@@ -81,6 +85,7 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     response = {
         "answer": result["final_answer"],
         "is_emergency": is_emergency,
+        "is_clarification": bool(result.get("is_clarification")),
         "confidence": result.get("confidence"),
         "chapter": rc.get("meta", {}).get("chapter") if not is_emergency else None,
         "category_tag": rc.get("meta", {}).get("category_tag") if not is_emergency else None,
@@ -117,9 +122,25 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-async def _event_stream(query: str, history: Optional[List[dict]]):
+def _history_from_store(conversation_id):
+    record = conversations.get_conversation(conversation_id)
+    if not record:
+        return None
+    return [
+        {"role": m["role"], "content": m["content"]}
+        for m in record["messages"]
+        if m.get("content")
+    ]
+
+
+async def _event_stream(
+    query: str, history: Optional[List[dict]], conversation_id: Optional[str]
+):
     queue: asyncio.Queue = asyncio.Queue()
     loop = asyncio.get_running_loop()
+
+    if history is None and conversation_id:
+        history = _history_from_store(conversation_id)
 
     def run():
         merged = {}
@@ -171,10 +192,14 @@ async def _event_stream(query: str, history: Optional[List[dict]]):
             yield _sse("error", {"message": payload})
             break
         elif kind == "done":
-            yield _sse(
-                "done",
-                build_response(payload, latency_ms=round((now - t0) * 1000)),
-            )
+            resp = build_response(payload, latency_ms=round((now - t0) * 1000))
+            if payload.get("final_answer"):
+                conv_id, conv_title = conversations.save_turn(
+                    conversation_id, query, resp
+                )
+                resp["conversation_id"] = conv_id
+                resp["conversation_title"] = conv_title
+            yield _sse("done", resp)
             break
 
 
@@ -187,10 +212,28 @@ def ask(req: AskRequest):
 @app.post("/ask/stream")
 async def ask_stream(req: AskRequest):
     return StreamingResponse(
-        _event_stream(req.query, req.history),
+        _event_stream(req.query, req.history, req.conversation_id),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+@app.get("/conversations")
+def list_conversations():
+    return {"conversations": conversations.list_conversations()}
+
+
+@app.get("/conversations/{conversation_id}")
+def get_conversation(conversation_id: str):
+    record = conversations.get_conversation(conversation_id)
+    if record is None:
+        return {"ok": False, "error": "not_found"}
+    return {"ok": True, "conversation": record}
+
+
+@app.delete("/conversations/{conversation_id}")
+def delete_conversation(conversation_id: str):
+    return {"ok": conversations.delete_conversation(conversation_id)}
 
 
 @app.post("/feedback")

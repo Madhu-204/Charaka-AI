@@ -15,6 +15,8 @@ export default function App() {
   const [reasoning, setReasoning] = useState<ReasoningContent | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversationRefresh, setConversationRefresh] = useState(0);
 
   const onNavigate = useCallback((v: ViewName) => {
     setView(v);
@@ -25,6 +27,24 @@ export default function App() {
     setReasoning(content);
   }, []);
 
+  const onConversationChange = useCallback((id: string | null) => {
+    setConversationId(id);
+    setConversationRefresh((n) => n + 1);
+  }, []);
+
+  const onSelectConversation = useCallback((id: string) => {
+    setConversationId(id);
+    setView("chat");
+    setPanelOpen(false);
+  }, []);
+
+  const onNewConversation = useCallback(() => {
+    setConversationId(null);
+    setView("chat");
+    setReasoning(null);
+    setPanelOpen(false);
+  }, []);
+
   return (
     <ErrorBoundary>
       <div
@@ -32,7 +52,15 @@ export default function App() {
           view === "chat" ? "" : "app--no-panel"
         }`}
       >
-        <Sidebar view={view} onNavigate={onNavigate} onClose={() => setMenuOpen(false)} />
+        <Sidebar
+          view={view}
+          onNavigate={onNavigate}
+          onClose={() => setMenuOpen(false)}
+          activeConversationId={conversationId}
+          conversationRefresh={conversationRefresh}
+          onSelectConversation={onSelectConversation}
+          onNewConversation={onNewConversation}
+        />
 
         <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>
           <div
@@ -52,7 +80,13 @@ export default function App() {
           </div>
 
           <ErrorBoundary>
-            {view === "chat" && <ChatView onReasoning={onReasoning} />}
+            {view === "chat" && (
+              <ChatView
+                onReasoning={onReasoning}
+                conversationId={conversationId}
+                onConversationChange={onConversationChange}
+              />
+            )}
             {view === "herbs" && <HerbLibraryView onReasoning={onReasoning} />}
             {view === "saved" && <SavedAnswersView onReasoning={onReasoning} />}
             {view === "about" && <AboutView onReasoning={onReasoning} />}

@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { askStream, ApiError, feedbackPayload, submitFeedback } from "../api";
+import {
+  askStream,
+  ApiError,
+  feedbackPayload,
+  fetchConversation,
+  submitFeedback,
+} from "../api";
+import type { ConversationRecord } from "../api";
 import { buildChatCitations, herbCardsFromTrace, primarySourceFromTrace, stepsFromTrace, traceChecksFromTrace, savedFromMessage } from "../lib/format";
 import { addSaved } from "../lib/saved";
-import type { AskResponse, ChatMessage, FeedbackRating, StreamStage } from "../types";
+import type { AskResponse, ChatMessage, Confidence, FeedbackRating, StreamStage } from "../types";
 import type { ReasoningContent } from "../components/ReasoningPanel";
 import { ChatBubble } from "../components/ChatBubble";
 import { IconChat, IconSend } from "../components/Icons";
 
 interface ChatViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
+  conversationId: string | null;
+  onConversationChange: (id: string | null) => void;
 }
 
 const SUGGESTIONS = [
@@ -35,13 +44,39 @@ function reasoningFor(msg: ChatMessage): ReasoningContent {
   };
 }
 
-export function ChatView({ onReasoning }: ChatViewProps) {
+function mapStoredMessage(m: ConversationRecord["messages"][number]): ChatMessage {
+  const parsed = m.timestamp ? Date.parse(m.timestamp) : NaN;
+  return {
+    id: m.id,
+    role: m.role === "assistant" ? "assistant" : "user",
+    content: m.content,
+    createdAt: Number.isNaN(parsed) ? Date.now() : parsed,
+    query: m.query,
+    isEmergency: m.isEmergency,
+    isClarification: m.is_clarification,
+    confidence: (m.confidence as Confidence) ?? null,
+    chapter: m.chapter ?? null,
+    categoryTag: m.category_tag ?? null,
+    dosha: m.dosha ?? null,
+    safetyFlags: m.safety_flags ?? [],
+    reasoning: m.reasoning_trace ?? null,
+    feedback: null,
+    showReasoning: false,
+    saved: false,
+    streaming: false,
+    stages: null,
+    latencyMs: m.latency_ms ?? null,
+  };
+}
+
+export function ChatView({ onReasoning, conversationId, onConversationChange }: ChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const loadedRef = useRef<string | null>(null);
 
   const scrollToBottom = useCallback(() => {
     feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight, behavior: "smooth" });
@@ -59,6 +94,34 @@ export function ChatView({ onReasoning }: ChatViewProps) {
     onReasoning(null);
     textareaRef.current?.focus();
   }, [onReasoning]);
+
+  useEffect(() => {
+    onReasoning(null);
+    setError(null);
+    if (!conversationId) {
+      loadedRef.current = null;
+      setMessages([]);
+      return;
+    }
+    if (loadedRef.current === conversationId) return;
+    loadedRef.current = conversationId;
+    let cancelled = false;
+    setLoading(true);
+    fetchConversation(conversationId)
+      .then((rec) => {
+        if (cancelled) return;
+        setMessages(rec.messages.map(mapStoredMessage));
+      })
+      .catch(() => {
+        if (!cancelled) setError("Could not load that conversation.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationId, onReasoning]);
 
   async function handleSend(text?: string) {
     const query = (text ?? input).trim();
@@ -105,6 +168,7 @@ export function ChatView({ onReasoning }: ChatViewProps) {
         query,
         createdAt: Date.now(),
         isEmergency: res.is_emergency,
+        isClarification: res.is_clarification,
         confidence: res.confidence,
         chapter: res.chapter,
         categoryTag: res.category_tag,
@@ -120,36 +184,44 @@ export function ChatView({ onReasoning }: ChatViewProps) {
       };
       setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMsg : m)));
       onReasoning(reasoningFor(finalMsg));
+      if (res.conversation_id && res.conversation_id !== conversationId) {
+        loadedRef.current = res.conversation_id;
+        onConversationChange(res.conversation_id);
+      }
     };
 
     try {
-      await askStream(query, {
-        onStage: (stage: StreamStage) => {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId ? { ...m, stages: [...(m.stages ?? []), stage] } : m
-            )
-          );
-        },
-        onToken: appendDelta,
-        onDone: finalize,
-        onError: (e) => {
-          if (e instanceof ApiError && e.status === 408) {
-            setError(e.message);
-          } else {
-            setError(
-              e instanceof Error && "status" in e
-                ? "The backend could not answer just now. Make sure the server is running on port 8000."
-                : "Something went wrong. Please try again."
+      await askStream(
+        query,
+        {
+          onStage: (stage: StreamStage) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, stages: [...(m.stages ?? []), stage] } : m
+              )
             );
-          }
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId ? { ...m, streaming: false, stages: null } : m
-            )
-          );
+          },
+          onToken: appendDelta,
+          onDone: finalize,
+          onError: (e) => {
+            if (e instanceof ApiError && e.status === 408) {
+              setError(e.message);
+            } else {
+              setError(
+                e instanceof Error && "status" in e
+                  ? "The backend could not answer just now. Make sure the server is running on port 8000."
+                  : "Something went wrong. Please try again."
+              );
+            }
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId ? { ...m, streaming: false, stages: null } : m
+              )
+            );
+          },
         },
-      });
+        { conversationId, timeoutMs: 180_000 }
+      );
     } catch (e) {
       setError(
         e instanceof ApiError && e.status === 408

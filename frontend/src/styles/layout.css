@@ -104,6 +104,139 @@
   gap: 10px;
 }
 
+.sidebar__threads {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.sidebar__threads-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--olive);
+  padding: 0 6px;
+}
+
+.thread-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--brown-tint);
+  background: #fff;
+  color: var(--olive);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.thread-new:hover {
+  background: var(--chip-green);
+  color: var(--olive);
+}
+
+.sidebar__threads-empty {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  padding: 0 6px;
+}
+
+.thread-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding-right: 2px;
+}
+
+.thread-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.thread-item {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.thread-item:hover {
+  background: var(--chip-green);
+}
+
+.thread-item--active {
+  background: var(--chip-green);
+  border: 1px solid var(--brown-tint);
+}
+
+.thread-item svg {
+  flex-shrink: 0;
+  color: var(--olive);
+}
+
+.thread-item__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thread-item__count {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.thread-item__delete {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.thread-row:hover .thread-item__delete {
+  opacity: 1;
+}
+
+.thread-item__delete:hover {
+  color: var(--terracotta);
+  background: rgba(160, 70, 48, 0.1);
+}
+
 .sidebar__art {
   color: var(--olive);
   opacity: 0.55;
