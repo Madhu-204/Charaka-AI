@@ -1,10 +1,14 @@
+import asyncio
 import json
+import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Literal, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -23,9 +27,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+HIGH_SCORE = 0.60
+MEDIUM_SCORE = 0.45
+VERSE_TEXT_CHARS = 280
+
+STAGE_LABELS = {
+    "check_emergency": "Checking for red flags",
+    "tag_dosha": "Analyzing dosha pattern",
+    "expand_query": "Expanding query",
+    "retrieve": "Searching 2,490 verses",
+    "check_safety": "Checking herb safety",
+    "synthesize": "Grounding answer in classical texts",
+    "grounding": "Verifying citations",
+}
+
 
 class AskRequest(BaseModel):
     query: str
+    history: Optional[List[dict]] = None
 
 
 class FeedbackRequest(BaseModel):
@@ -37,39 +56,141 @@ class FeedbackRequest(BaseModel):
     dosha: Optional[str] = None
 
 
-@app.post("/ask")
-def ask(req: AskRequest):
-    result = charaka_agent.invoke({"query": req.query})
+def _confidence_band(score) -> str:
+    if score > HIGH_SCORE:
+        return "high"
+    if score > MEDIUM_SCORE:
+        return "medium"
+    return "low"
+
+
+def _verse_summary(candidate: dict) -> dict:
+    score = float(candidate["score"])
+    return {
+        "verse_id": candidate["verse_id"],
+        "chapter": f"{candidate['meta']['sthana']}/{candidate['meta']['chapter']}",
+        "score": round(score, 4),
+        "text": candidate.get("text", "")[:VERSE_TEXT_CHARS],
+        "confidence": _confidence_band(score),
+    }
+
+
+def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     rc = result.get("resolved_chapter") or {}
+    is_emergency = result["is_emergency"]
     response = {
         "answer": result["final_answer"],
-        "is_emergency": result["is_emergency"],
+        "is_emergency": is_emergency,
         "confidence": result.get("confidence"),
-        "chapter": rc.get("meta", {}).get("chapter") if not result["is_emergency"] else None,
-        "category_tag": rc.get("meta", {}).get("category_tag") if not result["is_emergency"] else None,
+        "chapter": rc.get("meta", {}).get("chapter") if not is_emergency else None,
+        "category_tag": rc.get("meta", {}).get("category_tag") if not is_emergency else None,
         "safety_flags": result.get("safety_flags", []),
-        "dosha": result.get("dosha") if not result["is_emergency"] else None,
+        "dosha": result.get("dosha") if not is_emergency else None,
+        "latency_ms": latency_ms,
     }
-    if not result["is_emergency"]:
+    if not is_emergency:
         response["reasoning_trace"] = {
             "steps": result.get("trace", []),
             "canonical_term": result.get("canonical_term"),
-            "retrieved_verses": [
-                {
-                    "verse_id": c["verse_id"],
-                    "chapter": f"{c['meta']['sthana']}/{c['meta']['chapter']}",
-                    "score": round(float(c["score"]), 4),
-                }
-                for c in result.get("retrieved", [])
-            ],
+            "retrieved_verses": [_verse_summary(c) for c in result.get("retrieved", [])],
             "confidence_score": result.get("confidence_score"),
             "herbs_found": result.get("herbs_found", []),
             "dosha_scores": result.get("dosha_scores"),
             "safety_sources": result.get("safety_sources"),
             "verification_notes": result.get("verification_notes", []),
             "source_disagreements": result.get("source_disagreements", []),
+            "grounding": {
+                "score": result.get("grounding_score"),
+                "cited": result.get("grounding_cited", []),
+                "notes": result.get("grounding_notes", []),
+            },
+        }
+        response["grounding"] = {
+            "score": result.get("grounding_score"),
+            "cited": result.get("grounding_cited", []),
+            "notes": result.get("grounding_notes", []),
         }
     return response
+
+
+def _sse(event: str, data: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
+async def _event_stream(query: str, history: Optional[List[dict]]):
+    queue: asyncio.Queue = asyncio.Queue()
+    loop = asyncio.get_running_loop()
+
+    def run():
+        merged = {}
+        synthesize_seen = False
+        try:
+            for mode, payload in charaka_agent.stream(
+                {"query": query, "history": history or []},
+                stream_mode=["updates", "messages"],
+            ):
+                if mode == "updates":
+                    node = next(iter(payload))
+                    merged.update(payload[node])
+                    queue.put_nowait(("stage", node))
+                else:
+                    chunk, meta = payload
+                    if meta.get("langgraph_node") == "synthesize":
+                        if not synthesize_seen:
+                            synthesize_seen = True
+                            queue.put_nowait(("stage", "synthesize"))
+                        text = getattr(chunk, "content", "")
+                        if isinstance(text, str) and text:
+                            queue.put_nowait(("token", text))
+        except Exception as e:  # noqa: BLE001
+            queue.put_nowait(("error", str(e)))
+        finally:
+            queue.put_nowait(("done", merged))
+
+    threading.Thread(target=run, daemon=True).start()
+
+    t0 = time.time()
+    prev = t0
+    while True:
+        kind, payload = await queue.get()
+        now = time.time()
+        if kind == "stage":
+            ms = round((now - prev) * 1000)
+            prev = now
+            yield _sse(
+                "stage",
+                {
+                    "node": payload,
+                    "label": STAGE_LABELS.get(payload, payload.replace("_", " ")),
+                    "ms": ms,
+                },
+            )
+        elif kind == "token":
+            yield _sse("token", {"delta": payload})
+        elif kind == "error":
+            yield _sse("error", {"message": payload})
+            break
+        elif kind == "done":
+            yield _sse(
+                "done",
+                build_response(payload, latency_ms=round((now - t0) * 1000)),
+            )
+            break
+
+
+@app.post("/ask")
+def ask(req: AskRequest):
+    result = charaka_agent.invoke({"query": req.query, "history": req.history or []})
+    return build_response(result)
+
+
+@app.post("/ask/stream")
+async def ask_stream(req: AskRequest):
+    return StreamingResponse(
+        _event_stream(req.query, req.history),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.post("/feedback")

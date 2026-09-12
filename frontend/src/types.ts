@@ -6,6 +6,20 @@ export interface RetrievedVerse {
   verse_id: string;
   chapter: string;
   score: number;
+  text?: string;
+  confidence?: string;
+}
+
+export interface StreamStage {
+  node: string;
+  label: string;
+  ms: number;
+}
+
+export interface GroundingInfo {
+  score: number | null;
+  cited: number[];
+  notes: string[];
 }
 
 export interface ReasoningTrace {
@@ -18,6 +32,7 @@ export interface ReasoningTrace {
   safety_sources: Record<string, string> | null;
   verification_notes: string[];
   source_disagreements: string[];
+  grounding?: GroundingInfo | null;
 }
 
 export interface AskResponse {
@@ -28,6 +43,8 @@ export interface AskResponse {
   category_tag: string | null;
   safety_flags: string[];
   dosha: string | null;
+  latency_ms?: number | null;
+  grounding?: GroundingInfo | null;
   reasoning_trace?: ReasoningTrace;
 }
 
@@ -49,6 +66,9 @@ export interface ChatMessage {
   feedback?: FeedbackRating | null;
   showReasoning?: boolean;
   saved?: boolean;
+  streaming?: boolean;
+  stages?: StreamStage[] | null;
+  latencyMs?: number | null;
 }
 
 export interface HerbSummary {
@@ -85,6 +105,10 @@ export interface Citation {
   detail: string;
   badge?: CitationBadge;
   badgeText?: string;
+  verseId?: string;
+  verseText?: string;
+  score?: number;
+  citeIndex?: number;
 }
 
 export type TraceCheckKind = "emergency" | "pattern" | "source" | "safety";

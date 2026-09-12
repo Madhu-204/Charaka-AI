@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { ChatMessage, FeedbackRating } from "../types";
-import { buildChatCitations, chapterLabel, stepsFromTrace, categoryLabel } from "../lib/format";
+import {
+  buildChatCitations,
+  chapterLabel,
+  confidencePercent,
+  inlineCitations,
+  stepsFromTrace,
+  categoryLabel,
+} from "../lib/format";
 import {
   IconBook,
   IconBookmark,
@@ -22,6 +29,52 @@ interface ChatBubbleProps {
   onContentChange?: () => void;
 }
 
+function CiteLink({
+  href,
+  children,
+  onCite,
+}: {
+  href?: string;
+  children: React.ReactNode;
+  onCite: (n: number) => void;
+}) {
+  const match = /^#cite-(\d+)$/.exec(href ?? "");
+  if (match) {
+    const n = parseInt(match[1], 10);
+    return (
+      <button
+        type="button"
+        className="cite-chip"
+        title={`View source ${n}`}
+        aria-label={`View source ${n}`}
+        onClick={() => onCite(n)}
+      >
+        <span className="cite-chip__num">{n}</span>
+      </button>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  );
+}
+
+function confidenceWidth(msg: ChatMessage): number {
+  const score = msg.reasoning?.confidence_score;
+  if (score != null) return confidencePercent(score) ?? 30;
+  switch (msg.confidence) {
+    case "high":
+      return 85;
+    case "medium":
+      return 58;
+    case "low":
+      return 30;
+    default:
+      return 30;
+  }
+}
+
 export function ChatBubble({
   message,
   onFeedback,
@@ -31,18 +84,24 @@ export function ChatBubble({
   onContentChange,
 }: ChatBubbleProps) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  const [displayedChars, setDisplayedChars] = useState(
+  const [activeCite, setActiveCite] = useState<number | null>(null);
+  const [displayedChars, setDisplayedChars] = useState(() =>
     isNew ? 0 : message.content.length,
   );
-
-  const isTyping = displayedChars < message.content.length;
-  const isTyped = displayedChars >= message.content.length;
-
+  const sourcesBodyRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Typewriter — mount-only, reveals content at ~200 chars/sec
+  const streaming = message.streaming === true;
+  const visibleContent = streaming
+    ? message.content
+    : message.content.slice(0, displayedChars);
+  const isTyping = !streaming && displayedChars < message.content.length;
+  const isTyped = !streaming && displayedChars >= message.content.length;
+
+  // Typewriter — mount-only, reveals content at ~200 chars/sec. Skipped for
+  // streaming messages: tokens arrive from the SSE stream live instead.
   useEffect(() => {
-    if (!isNew) return;
+    if (!isNew || streaming) return;
     const target = message.content.length;
     if (target === 0) return;
 
@@ -79,23 +138,92 @@ export function ChatBubble({
     }
   }, [isNew, displayedChars, message.content.length]);
 
-  // When typing completes, let metadata settle before scrolling to bottom
+  // When a streaming message finishes, settle the typewriter state instantly
+  const wasStreamingRef = useRef<boolean>(streaming);
+  useEffect(() => {
+    if (wasStreamingRef.current && !streaming) {
+      setDisplayedChars(message.content.length);
+      wasStreamingRef.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streaming]);
+
+  // When typing/streaming completes, let metadata settle before scrolling
   const completedRef = useRef(false);
   useEffect(() => {
     if (!isNew) return;
-    if (isTyped && !completedRef.current) {
+    if ((isTyped || !streaming) && !completedRef.current) {
       completedRef.current = true;
       const t = setTimeout(() => {
         onContentChange?.();
       }, 80);
       return () => clearTimeout(t);
     }
-  }, [isTyped, isNew, onContentChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTyped, isNew, streaming, onContentChange]);
 
   const citations = buildChatCitations(message);
   const rt = message.reasoning;
   const steps = stepsFromTrace(rt?.steps);
   const isEmergency = message.isEmergency === true;
+
+  const g = message.reasoning?.grounding;
+  const gPct = confidencePercent(g?.score);
+  const latency = message.latencyMs ?? null;
+  const stages = message.stages ?? [];
+
+  function handleCite(n: number) {
+    setSourcesOpen(true);
+    setActiveCite(n);
+    requestAnimationFrame(() => {
+      const el = sourcesBodyRef.current?.querySelector(
+        `[data-cite-index="${CSS.escape(String(n))}"]`,
+      );
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+    window.setTimeout(() => setActiveCite(null), 2400);
+  }
+
+  function renderSourceItem(c: (typeof citations)[number], i: number) {
+    const pct = c.score != null ? confidencePercent(c.score) : null;
+    return (
+      <div
+        className={`source-item chat-reveal ${
+          activeCite === c.citeIndex ? "source-item--active" : ""
+        }`}
+        key={i}
+        data-cite-index={c.citeIndex}
+        style={{ animationDelay: `${i * 50}ms` }}
+      >
+        <div className="source-item__top">
+          <span className="source-item__title">
+            {c.citeIndex != null && <span className="cite-num">{c.citeIndex}</span>}
+            {c.title}
+          </span>
+          {c.badge && (
+            <span className={`badge ${c.badge === "ai" ? "badge--ai" : "badge--neutral"}`}>
+              {c.badgeText}
+            </span>
+          )}
+        </div>
+        <div className="source-item__meta">{c.detail}</div>
+        {c.verseText && (
+          <p className="verse-text">
+            <span className="verse-text__label">Verse</span>
+            {c.verseText}
+          </p>
+        )}
+        {pct != null && (
+          <div className="similarity-bar" title={`Similarity ${pct}%`}>
+            <div
+              className="similarity-bar__fill"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -105,27 +233,53 @@ export function ChatBubble({
     >
       <div className="msg__bubble">
         <div className="md-body">
-          <ReactMarkdown>{message.content.slice(0, displayedChars)}</ReactMarkdown>
-          {isTyping && <span className="chat-cursor">|</span>}
+          <ReactMarkdown
+            components={{
+              a: (props) => (
+                <CiteLink href={props.href} onCite={handleCite}>
+                  {props.children}
+                </CiteLink>
+              ),
+            }}
+          >
+            {inlineCitations(visibleContent)}
+          </ReactMarkdown>
+          {(isTyping || streaming) && <span className="chat-cursor">|</span>}
         </div>
       </div>
 
-      {message.role === "assistant" && isTyping && (
+      {streaming && stages.length > 0 && (
+        <div className="chat-stages chat-reveal">
+          {stages.map((s, i) => (
+            <span
+              key={i}
+              className={`chat-stage ${
+                i === stages.length - 1 && streaming
+                  ? "chat-stage--live"
+                  : "chat-stage--done"
+              }`}
+            >
+              <span className="chat-stage__dot" />
+              {s.label}
+              {s.ms > 0 && <span className="chat-stage__ms">{s.ms}ms</span>}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {message.role === "assistant" && (isTyping || streaming) && (
         <div className="chat-generating">
           <span className="chat-generating__dot" />
           <span className="chat-generating__dot" />
           <span className="chat-generating__dot" />
-          <span>Generating…</span>
+          <span>{streaming ? "Retrieving & generating…" : "Generating…"}</span>
         </div>
       )}
 
       {message.role === "assistant" && isTyped && (
         <>
-          {(message.dosha || message.confidence || message.chapter) && (
-            <div
-              className="msg__meta chat-reveal"
-              style={{ animationDelay: "0ms" }}
-            >
+          {(message.dosha || message.confidence || message.chapter || gPct != null || latency) && (
+            <div className="msg__meta chat-reveal" style={{ animationDelay: "0ms" }}>
               {message.dosha && (
                 <span className="badge chip-dosha">
                   <IconLeaf width={13} height={13} />
@@ -133,40 +287,46 @@ export function ChatBubble({
                 </span>
               )}
               {message.confidence && (
-                <span className="badge chip-confidence">
-                  Confidence: {message.confidence}
+                <span className="badge chip-confidence" title={`Similarity ${gPct ?? "n/a"}%`}>
+                  <span>Confidence</span>
+                  <span className="confidence-gauge">
+                    <span
+                      className="confidence-gauge__fill"
+                      style={{ width: `${confidenceWidth(message)}%` }}
+                    />
+                  </span>
+                  <span>{message.confidence}</span>
+                </span>
+              )}
+              {gPct != null && (
+                <span className="badge chip-grounding" title={g?.notes.join(" · ")}>
+                  {gPct >= 66 ? "Grounded" : gPct >= 33 ? "Partially grounded" : "Weakly grounded"}
+                  · {gPct}%
                 </span>
               )}
               {message.chapter && (
-                <span className="badge chip-confidence">
-                  {chapterLabel(message.chapter)}
-                </span>
+                <span className="badge chip-confidence">{chapterLabel(message.chapter)}</span>
+              )}
+              {latency != null && (
+                <span className="badge chip-latency">{latency}ms</span>
               )}
             </div>
           )}
 
           {isEmergency && (
-            <div
-              className="msg__meta chat-reveal"
-              style={{ animationDelay: "0ms" }}
-            >
+            <div className="msg__meta chat-reveal" style={{ animationDelay: "0ms" }}>
               <span className="badge badge--ai">
                 <IconShield width={13} height={13} />
                 Emergency redirect
               </span>
               {message.categoryTag && (
-                <span className="badge chip-confidence">
-                  {categoryLabel(message.categoryTag)}
-                </span>
+                <span className="badge chip-confidence">{categoryLabel(message.categoryTag)}</span>
               )}
             </div>
           )}
 
           {!isEmergency && message.safetyFlags && message.safetyFlags.length > 0 && (
-            <div
-              className="safety-note chat-reveal"
-              style={{ animationDelay: "60ms" }}
-            >
+            <div className="safety-note chat-reveal" style={{ animationDelay: "60ms" }}>
               <div className="safety-note__heading">
                 <IconShield width={15} height={15} />
                 Safety note
@@ -180,10 +340,7 @@ export function ChatBubble({
           )}
 
           {!isEmergency && (
-            <div
-              className="msg__sources chat-reveal"
-              style={{ animationDelay: "120ms" }}
-            >
+            <div className="msg__sources chat-reveal" style={{ animationDelay: "120ms" }}>
               <div className="sources-row">
                 <button
                   className="sources-row__trigger"
@@ -194,38 +351,17 @@ export function ChatBubble({
                   <span>Sources ({citations.length})</span>
                   <IconChevronDown className="chev" width={15} height={15} />
                 </button>
-                {sourcesOpen && citations.length > 0 && (
-                  <div className="sources-row__body">
-                    {citations.map((c, i) => (
-                      <div
-                        className="source-item chat-reveal"
-                        key={i}
-                        style={{ animationDelay: `${i * 50}ms` }}
-                      >
-                        <div className="source-item__title">
-                          {c.title}
-                          {c.badge && (
-                            <span
-                              className={`badge ${
-                                c.badge === "ai" ? "badge--ai" : "badge--neutral"
-                              }`}
-                            >
-                              {c.badgeText}
-                            </span>
-                          )}
+                {sourcesOpen && (
+                  <div className="sources-row__body" ref={sourcesBodyRef}>
+                    {citations.length === 0 ? (
+                      <div className="source-item">
+                        <div className="source-item__meta">
+                          No verse-level sources available for this reply.
                         </div>
-                        <div className="source-item__meta">{c.detail}</div>
                       </div>
-                    ))}
-                  </div>
-                )}
-                {sourcesOpen && citations.length === 0 && (
-                  <div className="sources-row__body">
-                    <div className="source-item">
-                      <div className="source-item__meta">
-                        No verse-level sources available for this reply.
-                      </div>
-                    </div>
+                    ) : (
+                      citations.map(renderSourceItem)
+                    )}
                   </div>
                 )}
               </div>
@@ -233,10 +369,7 @@ export function ChatBubble({
           )}
 
           {!isEmergency && message.showReasoning && (
-            <div
-              className="inline-reason chat-reveal"
-              style={{ animationDelay: "0ms" }}
-            >
+            <div className="inline-reason chat-reveal" style={{ animationDelay: "0ms" }}>
               <div className="inline-reason__title">Reasoning trace</div>
               {steps.length > 0 ? (
                 steps.map((s, i) => (
@@ -255,14 +388,9 @@ export function ChatBubble({
           )}
 
           {!isEmergency && (
-            <div
-              className="msg__actions chat-reveal"
-              style={{ animationDelay: "180ms" }}
-            >
+            <div className="msg__actions chat-reveal" style={{ animationDelay: "180ms" }}>
               <button
-                className={`icon-btn ${
-                  message.feedback === "up" ? "icon-btn--active" : ""
-                }`}
+                className={`icon-btn ${message.feedback === "up" ? "icon-btn--active" : ""}`}
                 onClick={() => onFeedback(message.id, "up")}
                 title="Helpful"
                 aria-label="Mark helpful"
@@ -270,9 +398,7 @@ export function ChatBubble({
                 <IconThumbUp width={16} height={16} />
               </button>
               <button
-                className={`icon-btn ${
-                  message.feedback === "down" ? "icon-btn--active" : ""
-                }`}
+                className={`icon-btn ${message.feedback === "down" ? "icon-btn--active" : ""}`}
                 onClick={() => onFeedback(message.id, "down")}
                 title="Not helpful"
                 aria-label="Mark not helpful"

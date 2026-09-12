@@ -1264,6 +1264,198 @@
   margin: 4px 0;
 }
 
+/* ---------- Wave A: streaming, citations, grounding ---------- */
+
+/* Pipeline stage pills shown while an answer streams */
+.chat-stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chat-stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--sand);
+  border: 1.5px solid rgba(92, 107, 71, 0.45);
+  border-radius: 999px;
+  padding: 4px 11px;
+}
+
+.chat-stage__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--olive);
+  flex: none;
+}
+
+.chat-stage--done .chat-stage__dot {
+  background: var(--terracotta);
+}
+
+.chat-stage--done {
+  color: var(--olive-deep);
+  border-color: rgba(92, 107, 71, 0.7);
+}
+
+.chat-stage--live .chat-stage__dot {
+  animation: pulse 1.1s ease-in-out infinite;
+}
+
+.chat-stage__ms {
+  font-size: 10.5px;
+  opacity: 0.6;
+  color: var(--text-faint);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Inline citation chips inside answers ([1], [2], …) */
+.cite-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  margin: 0 2px;
+  border-radius: 999px;
+  border: 1.5px solid var(--olive);
+  background: var(--chip-green);
+  color: var(--olive-deep);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: super;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.06s ease;
+}
+
+.cite-chip:hover {
+  background: var(--olive);
+  color: #fff;
+}
+
+.cite-chip:active {
+  transform: translateY(1px);
+}
+
+.cite-chip__num {
+  pointer-events: none;
+}
+
+/* Numbered marker on source cards aligned with inline citations */
+.cite-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--olive);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.source-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.source-item--active {
+  background: var(--amber);
+  border-radius: 6px;
+  padding: 8px;
+  margin: -2px;
+  animation: cite-flash 2.4s ease;
+}
+
+@keyframes cite-flash {
+  0% { background: var(--terracotta); color: #fff; }
+  18% { background: var(--amber); }
+  100% { background: var(--amber); }
+}
+
+/* Verbatted verse text inside a source card */
+.verse-text {
+  margin: 6px 0 0;
+  padding: 7px 10px;
+  border-left: 3px solid var(--olive);
+  background: var(--chip-green);
+  border-radius: 0 6px 6px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.verse-text__label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--olive);
+  margin-bottom: 2px;
+}
+
+/* Similarity bar under retrieved sources */
+.similarity-bar {
+  margin-top: 7px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(92, 107, 71, 0.18);
+  overflow: hidden;
+}
+
+.similarity-bar__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--terracotta), var(--olive));
+  transition: width 0.4s ease;
+}
+
+/* Confidence gauge inside the chip */
+.confidence-gauge {
+  display: inline-flex;
+  align-items: center;
+  width: 54px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(92, 107, 71, 0.2);
+  overflow: hidden;
+}
+
+.confidence-gauge__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--terracotta), var(--olive));
+}
+
+.chip-grounding {
+  background: var(--chip-green);
+  border: 1.5px solid var(--olive);
+  color: var(--olive-deep);
+}
+
+.chip-latency {
+  background: var(--sand);
+  border: 1px dashed rgba(92, 107, 71, 0.6);
+  color: var(--text-muted);
+}
+
 /* ---------- Responsive tweaks ---------- */
 
 @media (max-width: 1000px) {

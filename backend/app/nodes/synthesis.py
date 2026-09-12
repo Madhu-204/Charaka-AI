@@ -32,6 +32,7 @@ Rules you must always follow:
 - You may use the ADDITIONAL CONTEXT only when it directly supports the question and clearly relates; always cite the specific chapter you draw from.
 - Frame findings as "classical texts describe this pattern as..." — never claim a clinical medical diagnosis.
 - Always cite the source chapter provided in the context.
+- CITE SOURCES INLINE: the PRIMARY CONTEXT is source [1]. The ADDITIONAL CONTEXT blocks are [2], [3], ... in the order they appear. Place the matching marker (e.g. [1], [2]) immediately after each claim that comes from that verse — every factual statement that is grounded in a verse must carry the marker of the verse it came from. Use a marker only when the claim is actually in that verse.
 - If confidence is marked "low", say explicitly that the match is uncertain. If it is marked "medium", note that the match is related but not exact, and frame the answer accordingly.
 - Always end with a line encouraging the user to consult a doctor if symptoms persist or worsen.
 - If any safety flags are provided, state them clearly before any remedy suggestion.
@@ -107,8 +108,10 @@ def synthesize(state):
         HumanMessage(content=f"Context:\n{context}\n\nUser question: {state['query']}"),
     ]
     try:
-        response = llm.invoke(messages)
-        return {"final_answer": response.content}
+        chunks = []
+        for chunk in llm.stream(messages):
+            chunks.append(chunk.content)
+        return {"final_answer": "".join(chunks)}
     except Exception as e:
         print(f"[synthesis] Groq call failed: {e}")
         return {"final_answer": FALLBACK_ANSWER}

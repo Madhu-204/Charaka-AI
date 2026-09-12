@@ -85,7 +85,7 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
 | **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
 | **6** | Safety & trust layer (source verification) | ✅ **Done** |
-| **7** | Interactive frontend | 🔄 **In progress** |
+| **7** | Interactive frontend — streaming RAG UI | 🔄 **Wave A done** (see `docs/roadmap.md`) |
 
 </div>
 
@@ -116,6 +116,10 @@ Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** —
 | 🗣️ **Alias-aware synthesis** | Prompt includes herb Sanskrit/Latin/English aliases so answers explain alternate names | ✅ |
 | 🔍 **Safety DB** | `herb_safety.json` — **92 entries** w/ contraindications, interactions, pregnancy flag, dosha caution. File coverage **93/93** herbs, but **runtime-reachable ≈ 70/92** (a herb is reachable only if an ingested verse mentions it) — remaining 22 are alias-gap or corpus-scope gaps tracked by `audit_safety_coverage.py` | ✅ (data) · 🔄 (reachability) |
 | 📊 **Phase 5 eval** | 28 Qs (8 new herb-focused) · Resolved **24/28 (85%)** · Top-3 **25/28 (89%)** · **0** false positives · **10/10** herb queries safety-covered | ✅ |
+| 📡 **SSE streaming** | `POST /ask/stream` — live pipeline stages (red-flag → dosha → expansion → retrieval → safety → grounding) + Groq token streaming; keeps `POST /ask` for backwards compat | ✅ |
+| 📝 **Inline citations** | Synthesis emits `[1]…[3]` markers bound to retrieved verses; frontend renders them as clickable chips that open & highlight the exact source card | ✅ |
+| 📖 **Verse text in sources** | Source dropdown + reasoning panel show the actual retrieved verse text with similarity bars & per-verse confidence, not just ids | ✅ |
+| 🛡️ **Grounding check** | `grounding` node verifies every `[n]` marker against retrieved verses → `grounding_score` + notes surfaced in chat & reasoning panel | ✅ |
 
 ### 📊 Corpus breakdown
 

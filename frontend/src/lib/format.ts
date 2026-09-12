@@ -60,6 +60,30 @@ export function confidenceText(score: number | null): string {
   return "low";
 }
 
+export function confidencePercent(score: number | null | undefined): number | null {
+  if (score === null || score === undefined) return null;
+  return Math.round(Math.min(Math.max(score, 0), 1) * 100);
+}
+
+const CITE_LINK_RE = /(\[(\d{1,2})\])(?!\()/g;
+
+/**
+ * Converts bare inline citation markers like [1] into markdown links
+ * ([1](#cite-1)) so react-markdown renders them as anchors we can style as
+ * citation chips and hook into with a custom `a` renderer.
+ */
+export function inlineCitations(markdown: string): string {
+  return markdown.replace(CITE_LINK_RE, (_m, _bracket, num: string) => `[${num}](#cite-${num})`);
+}
+
+export function verseSnippet(text: string | null | undefined, max = 180): string {
+  const clean = (text ?? "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : max)}…`;
+}
+
 export function badgeForSafetySource(source: string | undefined): {
   badge?: Citation["badge"];
   badgeText?: string;
@@ -91,9 +115,13 @@ export function buildChatCitations(msg: {
     seen.add(v.verse_id);
     citations.push({
       title: chapterLabel(v.chapter),
-      detail: `${verseLabel(v.verse_id)} — confidence: ${confidenceText(v.score)}`,
+      detail: `${verseLabel(v.verse_id)}`,
+      verseId: v.verse_id,
+      verseText: verseSnippet(v.text),
+      score: v.score,
+      citeIndex: citations.length + 1,
       badge: "neutral",
-      badgeText: "Retrieved",
+      badgeText: `Retrieved (${confidenceText(v.score)})`,
     });
   }
 
@@ -123,6 +151,15 @@ export function buildChatCitations(msg: {
       detail: d,
       badge: "safety",
       badgeText: "Practitioner caution",
+    });
+  }
+
+  for (const note of rt.grounding?.notes ?? []) {
+    citations.push({
+      title: "Grounding check",
+      detail: note,
+      badge: "ai",
+      badgeText: "Verification",
     });
   }
 
@@ -184,6 +221,9 @@ export function primarySourceFromTrace(
   return {
     title: chapterLabel(v.chapter),
     detail: `${verseLabel(v.verse_id)} — confidence: ${confidenceText(v.score)}`,
+    verseId: v.verse_id,
+    verseText: verseSnippet(v.text),
+    score: v.score,
     badge: "neutral",
     badgeText: "Retrieved",
   };

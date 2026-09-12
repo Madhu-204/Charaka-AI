@@ -7,6 +7,7 @@ from app.nodes.query_expansion import expand_query
 from app.nodes.retriever import retrieve
 from app.nodes.safety import check_safety
 from app.nodes.synthesis import synthesize
+from app.nodes.grounding import grounding
 
 
 def route_after_emergency(state):
@@ -20,6 +21,7 @@ graph.add_node("expand_query", expand_query)
 graph.add_node("retrieve", retrieve)
 graph.add_node("check_safety", check_safety)
 graph.add_node("synthesize", synthesize)
+graph.add_node("grounding", grounding)
 
 graph.set_entry_point("check_emergency")
 graph.add_conditional_edges(
@@ -31,6 +33,7 @@ graph.add_edge("tag_dosha", "expand_query")
 graph.add_edge("expand_query", "retrieve")
 graph.add_edge("retrieve", "check_safety")
 graph.add_edge("check_safety", "synthesize")
-graph.add_edge("synthesize", END)
+graph.add_edge("synthesize", "grounding")
+graph.add_edge("grounding", END)
 
 charaka_agent = graph.compile()

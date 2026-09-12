@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ask, ApiError, feedbackPayload, submitFeedback } from "../api";
+import { askStream, ApiError, feedbackPayload, submitFeedback } from "../api";
 import { buildChatCitations, herbCardsFromTrace, primarySourceFromTrace, stepsFromTrace, traceChecksFromTrace, savedFromMessage } from "../lib/format";
 import { addSaved } from "../lib/saved";
-import type { ChatMessage, FeedbackRating } from "../types";
+import type { AskResponse, ChatMessage, FeedbackRating, StreamStage } from "../types";
 import type { ReasoningContent } from "../components/ReasoningPanel";
 import { ChatBubble } from "../components/ChatBubble";
 import { IconChat, IconSend } from "../components/Icons";
@@ -70,15 +70,36 @@ export function ChatView({ onReasoning }: ChatViewProps) {
       content: query,
       createdAt: Date.now(),
     };
-    setMessages((prev) => [...prev, userMsg]);
+    const assistantId = newId();
+    const assistantMsg: ChatMessage = {
+      id: assistantId,
+      role: "assistant",
+      content: "",
+      query,
+      createdAt: Date.now(),
+      isEmergency: false,
+      streaming: true,
+      stages: [],
+      feedback: null,
+      showReasoning: false,
+      saved: false,
+    };
+    setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setInput("");
     setError(null);
     setLoading(true);
 
-    try {
-      const res = await ask(query);
-      const assistantMsg: ChatMessage = {
-        id: newId(),
+    const buffer = { text: "" };
+    const appendDelta = (delta: string) => {
+      buffer.text += delta;
+      setMessages((prev) =>
+        prev.map((m) => (m.id === assistantId ? { ...m, content: buffer.text } : m))
+      );
+    };
+
+    const finalize = (res: AskResponse) => {
+      const finalMsg: ChatMessage = {
+        id: assistantId,
         role: "assistant",
         content: res.answer,
         query,
@@ -90,12 +111,45 @@ export function ChatView({ onReasoning }: ChatViewProps) {
         dosha: res.dosha,
         safetyFlags: res.safety_flags,
         reasoning: res.reasoning_trace ?? null,
+        latencyMs: res.latency_ms ?? null,
         feedback: null,
         showReasoning: false,
         saved: false,
+        streaming: false,
+        stages: null,
       };
-      setMessages((prev) => [...prev, assistantMsg]);
-      onReasoning(reasoningFor(assistantMsg));
+      setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMsg : m)));
+      onReasoning(reasoningFor(finalMsg));
+    };
+
+    try {
+      await askStream(query, {
+        onStage: (stage: StreamStage) => {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, stages: [...(m.stages ?? []), stage] } : m
+            )
+          );
+        },
+        onToken: appendDelta,
+        onDone: finalize,
+        onError: (e) => {
+          if (e instanceof ApiError && e.status === 408) {
+            setError(e.message);
+          } else {
+            setError(
+              e instanceof Error && "status" in e
+                ? "The backend could not answer just now. Make sure the server is running on port 8000."
+                : "Something went wrong. Please try again."
+            );
+          }
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, streaming: false, stages: null } : m
+            )
+          );
+        },
+      });
     } catch (e) {
       setError(
         e instanceof ApiError && e.status === 408
@@ -181,18 +235,6 @@ export function ChatView({ onReasoning }: ChatViewProps) {
             onSave={handleSave}
           />
         ))}
-
-        {loading && (
-          <div className="msg msg--assistant">
-            <div className="msg__bubble">
-              <div className="typing">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {error && <div className="chat-error">{error}</div>}

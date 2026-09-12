@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Citation, TraceCheck, TraceCheckKind } from "../types";
+import { confidencePercent } from "../lib/format";
 import { IconAlert, IconCheck, IconScroll, IconSearch, IconShield } from "./Icons";
 
 export interface ReasoningContent {
@@ -56,6 +57,25 @@ function badgeClass(badge?: Citation["badge"]): string {
 
 function stagger(i: number, base = 80): React.CSSProperties {
   return { animationDelay: `${i * base}ms` } as React.CSSProperties;
+}
+
+function SourceExtras({ c }: { c: Citation }) {
+  const pct = c.score != null ? confidencePercent(c.score) : null;
+  return (
+    <>
+      {c.verseText && (
+        <p className="verse-text">
+          <span className="verse-text__label">Verse</span>
+          {c.verseText}
+        </p>
+      )}
+      {pct != null && (
+        <div className="similarity-bar" title={`Similarity ${pct}%`}>
+          <div className="similarity-bar__fill" style={{ width: `${pct}%` }} />
+        </div>
+      )}
+    </>
+  );
 }
 
 export function ReasoningPanel({ content, onClose }: ReasoningPanelProps) {
@@ -123,6 +143,7 @@ export function ReasoningPanel({ content, onClose }: ReasoningPanelProps) {
                         {badgeSpan(content.primarySource.badge, content.primarySource.badgeText)}
                       </div>
                       <div className="source-item__meta">{content.primarySource.detail}</div>
+                      <SourceExtras c={content.primarySource} />
                     </div>
                   ) : (
                     <div className="reason-box__empty">No source returned for this reply.</div>
@@ -192,6 +213,7 @@ export function ReasoningPanel({ content, onClose }: ReasoningPanelProps) {
                     {badgeSpan(c.badge, c.badgeText)}
                   </div>
                   <div className="citation-card__detail">{c.detail}</div>
+                  <SourceExtras c={c} />
                 </div>
               ))}
             </div>
