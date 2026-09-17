@@ -63,7 +63,7 @@ Built in **11 phases**, from raw text to a polished, deployable product:
 | **7** | Interactive frontend — streaming chat UI | ✅ |
 | **8** | Agentic depth — memory, conversations & multi-turn reasoning | ✅ |
 | **9** | Product polish — corpus explorer, search, summaries, dosha awareness | ✅ |
-| **10** | Observability & production — tracing, analytics, caching, rate limits, Docker | ✅ |
+| **10** | Observability & production — tracing, analytics, caching, rate limits, Docker **→ deployed live** | ✅ |
 | **11** | Stretch — sentence-level attribution, bilingual (English ⇄ हिंदी), document upload, voice input, offline PWA, free hosting kit | ✅ |
 
 Each phase was regression-tested as it landed; the agent scores **~85%** on its evaluation set, with **zero** false emergency positives.
@@ -91,6 +91,12 @@ Each phase was regression-tested as it landed; the agent scores **~85%** on its 
 ---
 
 ## 🚀 Try it
+
+### 🌐 Live demo
+
+**https://charaka-ai-ygln.onrender.com**
+
+> Free Render tier spins down after ~15 min idle — first load after a gap can take ~1 min to wake up. A heartbeat keeps it as warm as free hosting allows.
 
 <details open>
 <summary><b>💻 Run locally</b> — click to expand</summary>
@@ -124,7 +130,7 @@ docker compose up --build
 
 ### 🆓 Free hosting
 
-The same Docker image deploys **free on Render** (no credit card) via the included `render.yaml` blueprint — or as a Hugging Face Space if you have a paid HF plan. See the deploy notes in the repo for details.
+The same Docker image deploys **free on Render** (no credit card) via the included `render.yaml` blueprint — or as a Hugging Face Space if you have a paid HF plan. See the deploy notes in the repo for details. Live instance: **https://charaka-ai-ygln.onrender.com**.
 
 ---
 
