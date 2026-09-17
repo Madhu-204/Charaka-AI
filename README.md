@@ -283,7 +283,7 @@ there is one HTTPS URL and no CORS. Free-tier account required (no credit card).
 python scripts/prepare_deploy.py        # stages deploy/charaka-ai-space/
 pip install -U "huggingface_hub[cli]"
 hf space create <your-username>/charaka-ai --type docker
-hf upload <your-username>/charaka-ai deploy/charaka-ai-space --relative
+hf upload <your-username>/charaka-ai deploy/charaka-ai-space .
 ```
 
 Then in the Space settings add the secret `GROQ_API_KEY` (optional: `CHARAKA_API_KEY`).

@@ -8,7 +8,7 @@ Usage:
     python scripts/prepare_deploy.py
     # then, with the `hf` CLI (pip install -U "huggingface_hub[cli]"):
     #   hf space create <username>/charaka-ai --type docker
-    #   hf upload <username>/charaka-ai deploy/charaka-ai-space --relative
+    #   hf upload <username>/charaka-ai deploy/charaka-ai-space .
     #   -> set GROQ_API_KEY (and optionally CHARAKA_API_KEY) as Space secrets.
 """
 
@@ -92,7 +92,7 @@ def main():
     size = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file())
     print(f"Space staged at {OUT} ({size / 1e6:.1f} MB)")
     print("Next: `hf space create <user>/charaka-ai --type docker`")
-    print("Then:  `hf upload <user>/charaka-ai deploy/charaka-ai-space --relative`")
+    print("Then:  `hf upload <user>/charaka-ai deploy/charaka-ai-space .`")
 
 
 if __name__ == "__main__":
