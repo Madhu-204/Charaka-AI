@@ -1,0 +1,36 @@
+.git
+.venv
+backend/.venv
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+
+# Generated at image build time (see Dockerfile.deploy)
+backend/chroma_db
+backend/processed
+
+# Runtime data / secrets
+backend/traces
+backend/feedback_log.jsonl
+backend/conversations.jsonl
+backend/user_chroma_db
+
+# Frontend deps + build output (rebuilt in the image)
+node_modules
+frontend/node_modules
+frontend/dist
+dist
+
+# Local generated / staging
+docs
+deploy
+render.yaml
+docker-compose.yml
+
+# IDE
+.vscode
+.idea
+.DS_Store
+Thumbs.db

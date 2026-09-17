@@ -23,12 +23,21 @@ RUN pip install --no-cache-dir torch==2.13.0 --index-url https://download.pytorc
 COPY backend/app backend/app
 COPY backend/scripts backend/scripts
 COPY backend/reference backend/reference
-COPY backend/processed backend/processed
-COPY backend/chroma_db backend/chroma_db
+COPY backend/charaka_data backend/charaka_data
+# processed/ and chroma_db/ are git-ignored, so regenerate them in-image from
+# the committed raw corpus — this is what makes the deploy build from a clean
+# checkout (Render/CI). audit_ids.py exits non-zero on any integrity failure.
+RUN python backend/scripts/transform.py \
+    && python backend/scripts/audit_ids.py \
+    && python backend/scripts/build_vector_store.py
 COPY --from=fe /build/dist frontend/dist
 
 # Run from backend/ so the `app` package is importable and the SPA resolves at
 # ../frontend/dist (see FRONTEND_DIST in app/main.py).
 WORKDIR /app/backend
+# All models are baked into the image at build time; never dial out to the Hub
+# at runtime (avoids DNS retry stalls on startup — important for cold starts).
+ENV HF_HUB_OFFLINE=1 \
+    TRANSFORMERS_OFFLINE=1
 EXPOSE 7860
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
