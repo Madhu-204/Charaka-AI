@@ -7,7 +7,14 @@ on:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    if: ${{ vars.CHARAKA_SPACE_URL != '' }}
+    # Ping whatever free host the app currently lives on. Render free (web
+    # services) and old-style HF Spaces both spin down after inactivity.
+    #   Render:   set CHARAKA_APP_URL   = https://<name>.onrender.com
+    #   HF Space: set CHARAKA_SPACE_URL = https://<user>-charaka-ai.hf.space
     steps:
-      - name: Ping space healthz
+      - name: Ping Render / HF healthz
+        if: ${{ vars.CHARAKA_APP_URL != '' }}
+        run: curl -fsS -o /dev/null "${{ vars.CHARAKA_APP_URL }}/healthz" || true
+      - name: Ping HF Space healthz
+        if: ${{ vars.CHARAKA_SPACE_URL != '' }}
         run: curl -fsS -o /dev/null "${{ vars.CHARAKA_SPACE_URL }}/healthz" || true

@@ -91,7 +91,10 @@ def main():
             print(f"WARN: missing {p} — regenerate with scripts/transform.py")
     size = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file())
     print(f"Space staged at {OUT} ({size / 1e6:.1f} MB)")
-    print("Next: `hf space create <user>/charaka-ai --type docker`")
+    print("NOTE: free HF accounts can no longer create Docker/Gradio Spaces (402,")
+    print("      PRO is required since mid-2026). For a $0 deploy, use render.yaml")
+    print("      (Render free web service) — same Dockerfile, no credit card.")
+    print("HF (paid plan only): `hf space create <user>/charaka-ai --type docker`")
     print("Then:  `hf upload <user>/charaka-ai deploy/charaka-ai-space .`")
 
 

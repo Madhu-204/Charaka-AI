@@ -1,0 +1,35 @@
+# Charaka AI — completely free deployment blueprint (Render)
+#
+# Hugging Face Spaces stopped allowing free Docker/Gradio Spaces (PRO required
+# since mid-2026), so the free path is Render: the same Dockerfile.deploy image
+# runs as a Free web service (0.1 CPU / 512 MB RAM, no credit card).
+#
+# To deploy (one click):
+#   1. dashboard.render.com -> New + -> Blueprint -> select this GitHub repo
+#   2. Render reads this file, builds Dockerfile.deploy and creates the service
+#   3. Add the GROQ_API_KEY secret (and optionally CHARAKA_API_KEY) on the
+#      service's "Environment" tab
+#   4. Set the repo variable CHARAKA_APP_URL = https://<name>.onrender.com
+#      so .github/workflows/heartbeat.yml keeps the free instance warm.
+#
+# Notes:
+#   - Free instances spin down after 15 min idle and take ~1 min to wake.
+#   - The container listens on ${PORT} (Render sets 10000).
+#   - Writes to the filesystem (feedback log, traces, uploaded docs) are
+#     ephemeral and reset on redeploy/spin-down — expected on the free plan.
+services:
+  - type: web
+    name: charaka-ai
+    runtime: docker
+    dockerfilePath: ./Dockerfile.deploy
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CHARAKA_API_KEY
+        sync: false
+      - key: CHARAKA_RATE_LIMIT
+        value: "30"
+      - key: CHARAKA_RATE_BURST
+        value: "60"

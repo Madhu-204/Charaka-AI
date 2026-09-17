@@ -1,8 +1,13 @@
+# Single-origin free-deployment image — same one the free Render deploy uses.
+# `Dockerfile.deploy` builds the frontend SPA and serves it + the API from one
+# FastAPI process on :7860 (no CORS, no nginx). Perfect for testing exactly
+# what runs free in production.
 services:
-  backend:
+  charaka-ai:
     build:
-      context: ./backend
-    image: charaka-ai-backend:latest
+      context: .
+      dockerfile: Dockerfile.deploy
+    image: charaka-ai:latest
     env_file:
       - path: ./backend/.env
         required: false
@@ -12,24 +17,5 @@ services:
       CHARAKA_RATE_LIMIT: "30"
       CHARAKA_RATE_BURST: "60"
     ports:
-      - "8000:8000"
-    volumes:
-      - chroma_db:/app/chroma_db
-      - traces:/app/traces
+      - "7860:7860"
     restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:8000
-    image: charaka-ai-frontend:latest
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
-
-volumes:
-  chroma_db:
-  traces:

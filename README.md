@@ -4,335 +4,134 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/status-Phase%207%20%E2%80%94%20Interactive%20Frontend-f59e0b)
-![Corpus](https://img.shields.io/badge/Corpus-20%20Chapters%20%E2%80%A2%202%2C490%20Verses-3b82f6)
+![Status](https://img.shields.io/badge/status-Complete-grey)
+![Corpus](https://img.shields.io/badge/Corpus-2%2C490%20Verses%20%E2%80%A2%2020%20Chapters-3b82f6)
 ![License](https://img.shields.io/badge/license-Custom-gray)
-![AI](https://img.shields.io/badge/AI-Agentic%20RAG-f59e0b)
+![Stack](https://img.shields.io/badge/Python-LangGraph%20%7C%20FastAPI%20%7C%20React-4ea94b)
 
 </div>
 
 ---
 
-## 🧭 Overview
+## ✨ What is it?
 
-**Charaka AI** is an **Agentic Retrieval-Augmented Generation (Agentic RAG)** system that answers general-wellness questions using classical Ayurvedic texts as its grounded knowledge source.
+Charaka AI is an **Ayurvedic wellness assistant** that answers general health and lifestyle questions — not from an LLM's guesswork, but from **2,490 real verses of the Charaka Samhita**, a classical Ayurvedic text.
 
-It is **not** a chatbot that "knows Ayurveda" from an LLM's training data. Every answer is:
+Every answer is:
 
-- 🔎 **Retrieved** from real, curated texts
-- 📚 **Cited** — traceable back to a specific chapter & verse
-- 🛡️ **Safety-checked** before it reaches the user
-- 🎯 **Clearly scoped** to what a piece of software can responsibly offer
+- 🔎 **Retrieved** — pulled from curated, real verses
+- 📚 **Cited** — traceable to a specific chapter & verse
+- 🛡️ **Safety-checked** — before it ever reaches you
+- 🎯 **Clearly scoped** — honest about what software can and cannot responsibly say
 
-### ⚠️ What it is *not*
-
-A diagnostic tool, a doctor replacement, or a system that handles emergencies, chronic conditions, pediatrics, mental health, or anything surgical.
+> ⚠️ **What it is NOT:** A doctor, a diagnostic tool, or an emergency service. It never handles emergencies, chronic conditions, pregnancy, pediatrics, or mental-health diagnoses.
 
 ---
 
-## 🎯 Problem It Solves
+## 🎯 Why it exists
 
-Ayurvedic knowledge today is **scattered, inconsistent, and hard to search** — people rely on unsourced blogs or videos for remedy advice, with:
-
-- ❌ No citation
-- ❌ No safety checking
-- ❌ No way to verify a claim traces back to an actual text
-
-**Charaka AI** replaces confident-sounding guesses with **grounded, cited, safety-checked answers** — every claim verifiable against a real source.
+Ayurvedic advice online is scattered, unsourced, and often wrong or contradictory. Charaka AI replaces confident-sounding guesses with **grounded, cited answers** — every claim verifiable against an actual text.
 
 ---
 
-## 📦 Scope — What the Agent Covers
+## ❓ What you can ask
 
-### ✅ In scope *(Kayachikitsa / Rasayana — internal medicine & general wellness)*
-
-| Area | Examples |
-|------|----------|
-| 🍽️ **Digestive health** | Bloating, acidity, mild indigestion, appetite, occasional constipation |
-| 😴 **Sleep quality** | Insomnia tendencies, sleep hygiene & routines |
-| ⚡ **Energy & immunity** | General vitality, immunity support |
-| 🧘 **Everyday stress** | Stress & restlessness *(not clinical mental health)* |
-| 💆 **Skin & hair** | Minor, non-pathological concerns |
-| 🤧 **Seasonal ailments** | Common cold, mild congestion/cough |
-| 🦴 **Joint & muscle** | Minor stiffness *(non-injury, non-chronic)* |
-| ⚖️ **Metabolism & lifestyle** | General weight/lifestyle guidance |
-| 🌸 **Menstrual support** | General discomfort / PMS lifestyle support |
-| 📅 **Seasonal routine** | *Ritucharya* guidance |
-| 👁️ **ENT / eyes** | Mild eye strain, general ENT lifestyle tips |
-
-### ❌ Out of scope *(hardcoded exclusions — always redirected to a doctor)*
-
-- 🚨 **Any emergency symptom** — chest pain, breathing difficulty, severe bleeding, stroke signs, loss of consciousness, suicidal ideation
-- 🩺 **Chronic or diagnosed conditions** already under medical treatment
-- 👶 **Pediatrics, pregnancy-specific care, reproductive health conditions**
-- 🧠 **Mental health diagnoses** — anxiety, depression, etc.
-- 🔪 **Anything surgical (*Shalya Tantra*)** — excluded from the corpus entirely
-- ⚠️ **Worsening or persistent symptoms** — redirected regardless of category
-
-> These exclusions are **hardcoded** — the agent cannot be talked into answering them.
-
----
-
-## 🚧 Project Progress
-
-<div align="center">
-
-| Phase | What it does | Status |
-|-------|--------------|--------|
-| **1** | Data collection — raw text curation | ✅ **Done** |
-| **2** | Data processing & structuring | ✅ **Done** |
-| **3** | Retrieval & RAG pipeline | ✅ **Done** |
-| **4** | Agentic reasoning & safety guardrails | ✅ **Done** |
-| **5** | MCP tool integration & herb-safety layer | ✅ **Done** |
-| **6** | Safety & trust layer (source verification) | ✅ **Done** |
-| **7** | Interactive frontend — streaming RAG UI | ✅ **Wave A done** (see `docs/roadmap.md`) |
-| **8** | Agentic depth — multi-turn memory, conversations, tools | ✅ **Wave B done** (see `docs/roadmap.md`) |
-| **9** | Product completeness — corpus explorer, search, follow-ups, summaries, dosha | ✅ **Wave C 23–29 done** (see `docs/roadmap.md`) |
-| **10** | Observability & production — traces, stats, live eval, docker, rate limit, cache | ✅ **Wave C 30–36 done** (see `docs/roadmap.md`) |
-| **11** | Stretch polish — sentence attribution, bilingual, doc upload, voice, PWA, free deploy | ✅ **Wave D 37–41 done** (see `docs/roadmap.md`) |
-
-</div>
-
-### ✅ What's complete today
-
-| Component | Detail | Status |
-|-----------|--------|--------|
-| 📖 **Corpus** | **20 chapters across 4 Sthanas** of the Charaka Samhita | ✅ |
-| 🗂️ **Manifest** | `manifest.json` tracks every chapter, parts & verse counts | ✅ |
-| 🧹 **Cleaning pipeline** | `scripts/transform.py` — strips HTML, fixes OCR typos, removes labels | ✅ |
-| 🧬 **Herb extraction** | 100+ herb entries w/ aliases matched per verse → `herb_mentions.json` | ✅ |
-| 🏷️ **Tagging** | Every verse tagged with `traditional_condition` + `category_tag` | ✅ |
-| 🔎 **ID normalization** | Stable `cs_<sthana>_<chapter>_<verse>` IDs w/ dedup | ✅ |
-| ✅ **Audit** | `scripts/audit_ids.py` — verifies 1:1 verse↔record mapping | ✅ |
-| 🎯 **Reference sets** | `eval_set.json`, `herbs.json`, `mappings.json`, `typo_fixes.json` | ✅ |
-| 🔎 **Vector store** | 2,490 verse embeddings (`all-MiniLM-L6-v2`) → `chroma_db` | ✅ |
-| 📊 **Eval baseline** | Phase 3: Top-1 **16/20 (80%)** · Top-3 **17/20 (85%)** · naive keyword hybrid rejected (13/20) | ✅ |
-| 🤖 **Agent pipeline** | LangGraph: emergency gate → query expansion → top-3 retrieval + `mappings.json` disambiguation → safety check → cited synthesis | ✅ |
-| 🧠 **LLM synthesis** | Groq `openai/gpt-oss-120b`, citation-forcing prompt, verse-level citations, honesty on low confidence | ✅ |
-| 🛡️ **Safety** | `herb_mentions.json` direct lookup + contraindication flags before remedies | ✅ |
-| 🚨 **Emergency gate** | Hardcoded, non-LLM RED_FLAGS w/ informational-query downgrade (cannot be talked into answering) | ✅ |
-| 🔌 **API** | `POST /ask` FastAPI endpoint w/ CORS | ✅ |
-| 📊 **Phase 4 eval** | Resolved **17/20 (85%)** · Top-3 **17/20 (85%)** · **0** false emergency positives | ✅ |
-| 🧩 **MCP server** | FastMCP `charaka-herb-safety` over stdio — `check_herb_safety(herb_name)` tool | ✅ |
-| 🔗 **MCP wiring** | LangGraph safety check spawns MCP subprocess via `langchain-mcp-adapters` w/ crash-respawn & 3-tier fallback (`mcp` → `json_fallback` → `legacy`) | ✅ |
-| 🌿 **Herb-aware retrieval** | Herb/alias detection skips generic vector search → direct herb-mention index lookup, ranked by similarity, `confidence: high` | ✅ |
-| 🧬 **Herb-first expansion** | `canonical_term` resolves to the herb name so downstream is herb-aware | ✅ |
-| 🗣️ **Alias-aware synthesis** | Prompt includes herb Sanskrit/Latin/English aliases so answers explain alternate names | ✅ |
-| 🔍 **Safety DB** | `herb_safety.json` — **92 entries** w/ contraindications, interactions, pregnancy flag, dosha caution. File coverage **93/93** herbs, but **runtime-reachable ≈ 70/92** (a herb is reachable only if an ingested verse mentions it) — remaining 22 are alias-gap or corpus-scope gaps tracked by `audit_safety_coverage.py` | ✅ (data) · 🔄 (reachability) |
-| 📊 **Phase 5 eval** | 28 Qs (8 new herb-focused) · Resolved **24/28 (85%)** · Top-3 **25/28 (89%)** · **0** false positives · **10/10** herb queries safety-covered | ✅ |
-| 📡 **SSE streaming** | `POST /ask/stream` — live pipeline stages (red-flag → dosha → expansion → retrieval → safety → grounding) + Groq token streaming; keeps `POST /ask` for backwards compat | ✅ |
-| 📝 **Inline citations** | Synthesis emits `[1]…[3]` markers bound to retrieved verses; frontend renders them as clickable chips that open & highlight the exact source card | ✅ |
-| 📖 **Verse text in sources** | Source dropdown + reasoning panel show the actual retrieved verse text with similarity bars & per-verse confidence, not just ids | ✅ |
-| 🛡️ **Grounding check** | `grounding` node verifies every `[n]` marker against retrieved verses → `grounding_score` + notes surfaced in chat & reasoning panel | ✅ |
-| 🌐 **Corpus explorer** | `GET /corpus/sthanas` + `GET /corpus/{sthana}/{chapter}` + "Explore Corpus" view browsing 2,490 verses by section | ✅ |
-| 🔎 **Full-corpus search** | `POST /corpus/search` reusing the hybrid retriever → ranked snippets in the Explore view | ✅ |
-| 🔁 **Suggested follow-ups** | `_suggest_questions` after each answer → clickable chips that send the follow-up | ✅ |
-| 📋 **Summary header** | Structured card atop each answer: title + key takeaways + "what to ask a doctor" bullets | ✅ |
-| 📤 **Copy / regenerate** | Answer action bar: copy markdown + regenerate with the same query | ✅ |
-| 🧬 **Dosha persistence** | Inferred dosha stored per conversation; sent back as `dosha_profile` on later turns to personalize synthesis | ✅ |
-| 🛡️ **Persistent safety callout** | "Keep this in mind" band when confidence is low / weakly grounded / source disagreements | ✅ |
-| ⚡ **Query cache** | LRU cache (`backend/app/cache.py`) keyed by normalized query + dosha — identical asks are served in milliseconds; hit rates exposed via `GET /stats` | ✅ |
-| 🛡️ **Rate limiting & auth** | Per-client token bucket (default 30/min) + optional `X-API-Key` via `CHARAKA_API_KEY` on `/ask` endpoints | ✅ |
-| 📊 **Feedback analytics** | `GET /stats` — up/down ratio, per-category & per-dosha win-rates from `feedback_log.jsonl` | ✅ |
-| 🕵️ **LLM tracing** | Every agent run records per-node latency + token counts to `backend/traces/`; `GET /traces` + `GET /traces/{run_id}` | ✅ |
-| 🧪 **Live eval runner** | `POST /eval/run` (SSE) + `GET /eval/last`; "Regression Eval Runner" panel on the About page with per-question pass/fail | ✅ |
-| 🧩 **Corner-case corpus** | `reference/eval_corner_cases.json` — 12 adversarial/emergency/alias-gap items; 2 known gaps documented | ✅ |
-| 🐳 **Docker** | `docker compose up` — backend (uvicorn) + frontend (nginx), named volumes for `chroma_db` + `traces` | ✅ |
-| 🔍 **Sentence attribution** | `attribution` graph node aligns every answer sentence to its source verse by token overlap; "Sentence grounding" panel, click to open the source | ✅ |
-| 🇮🇳 **Bilingual replies** | `lang=en|hin`; Devanagari Hindi summary + English ⇄ हिंदी toggle on the summary card | ✅ |
-| 📄 **Bring your text** | Upload txt/md/pdf → session-scoped Chroma collection, used as clearly-labelled context alongside the corpus | ✅ |
-| 🎙️ **Voice input** | Web Speech API mic button in the composer (Chromium) | ✅ |
-| 📱 **Mobile PWA** | Manifest + maskable icon + offline app shell service worker | ✅ |
-| 🆓 **Free deploy kit** | `Dockerfile.deploy` + `scripts/prepare_deploy.py` + `/healthz` heartbeat for Hugging Face Spaces (free CPU-basic hardware) | ✅ |
-
-### 📊 Corpus breakdown
+Common things it supports: bloating, digestion, sleep habits, everyday stress, minor skin, seasonal colds, mild stiffness, weight/lifestyle, seasonal routines, and general onboarding to Ayurvedic ideas.
 
 <details>
-<summary><b>2,490 verses · 20 chapters · 4 Sthanas</b> — click to expand</summary>
+<summary><b>📋 Full scope (in / out)</b> — click to expand</summary>
 
-**Sutra Sthana** — general principles, daily & seasonal routine *(984 verses / 10 chapters)*
-- ch.1 Deerghanjiviteeya • ch.4 Shadvirechanashatashritiya • ch.5 Matrashiteeya • ch.6 Tasyashiteeya • ch.7 Naveganadharaniya • ch.12 Vatakalakaliya • ch.20 Maharoga • ch.25 Yajjahpurushiya • ch.26 Atreyabhadrakapyiya • ch.27 Annapanavidhi
+**✅ In scope** — general wellness & lifestyle: digestive health, sleep, energy & immunity, everyday stress, minor skin & hair, seasonal ailments, mild joint stiffness, metabolism, menstrual comfort (lifestyle level), seasonal (*ritucharya*) routines, mild eye/ENT tips.
 
-**Vimana Sthana** — diagnosis & measurement *(348 verses / 2 chapters)*
-- ch.1 Rasa Vimana • ch.8 Rogabhishagjitiya
-
-**Sharira Sthana** — body constitution *(115 verses / 1 chapter)*
-- ch.8 Jatisutriya
-
-**Chikitsa Sthana** — therapeutics *(1,043 verses / 7 chapters)*
-- ch.3 Jwara (fever) • ch.6 Prameha (metabolic disorders) • ch.7 Kushtha (skin) • ch.15 Grahani (digestion) • ch.17 Hikka-Shwasa (respiratory) • ch.18 Kasa (cough) • ch.28 Vatavyadhi (vata disorders)
+**❌ Out of scope** — always redirected to a doctor:
+emergencies, chronic or diagnosed conditions, pregnancy & children, mental-health diagnoses, anything surgical, or worsening/persistent symptoms. These rules are **hardcoded** — there is no way to talk the agent into answering them.
 
 </details>
 
 ---
 
-## 🏗️ Architecture
+## 🗺️ How it was built — the journey
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         User Query                          │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-                    ┌───────▼────────┐
-                    │  Safety Gate   │◄── emergency / OOS → doctor redirect
-                    └───────┬────────┘
-                            │
-                    ┌───────▼────────┐      ┌───────────────────────┐
-                    │     Agent      │──────►  Retrieval (RAG)      │
-                    │   reasoning    │      │  └─ verse store        │
-                    └───────┬────────┘      │  └─ herb index         │
-                            │               └───────────────────────┘
-                    ┌───────▼────────┐
-                    │  Citation +    │
-                    │  Scoped reply  │
-                    └────────────────┘
-```
+Built in **11 phases**, from raw text to a polished, deployable product:
 
-**Backend layout**
+| Phase | What happened | Status |
+|-------|---------------|--------|
+| **1–2** | Curated & structured the corpus (raw texts → clean, tagged verses) | ✅ |
+| **3** | Retrieval pipeline — turned 2,490 verses into a searchable knowledge store | ✅ |
+| **4** | Agentic reasoning + safety guardrails | ✅ |
+| **5–6** | Herb-safety layer & trust (source verification, confidence, reasoning trace) | ✅ |
+| **7** | Interactive frontend — streaming chat UI | ✅ |
+| **8** | Agentic depth — memory, conversations & multi-turn reasoning | ✅ |
+| **9** | Product polish — corpus explorer, search, summaries, dosha awareness | ✅ |
+| **10** | Observability & production — tracing, analytics, caching, rate limits, Docker | ✅ |
+| **11** | Stretch — sentence-level attribution, bilingual (English ⇄ हिंदी), document upload, voice input, offline PWA, free hosting kit | ✅ |
 
-```
-backend/
-├── app/                  # Agent — LangGraph + FastAPI
-│   ├── state.py          #   AgentState TypedDict (+ safety_sources trace)
-│   ├── nodes/            #   emergency · query_expansion · retriever · safety · synthesis
-│   ├── graph.py          #   StateGraph wiring
-│   ├── mcp_server.py     #   FastMCP charaka-herb-safety server (stdio)
-│   └── main.py           #   POST /ask FastAPI endpoint
-├── charaka_data/          # curated source corpus (JSON per chapter)
-│   ├── 01_sutra_sthana/
-│   ├── 02_vimana_sthana/
-│   ├── 03_sharira_sthana/
-│   ├── 04_chikitsa_sthana/
-│   └── manifest.json
-├── reference/             # herbs, mappings, typo fixes, eval set, herb_safety.json
-├── scripts/               # transform.py · audit_ids.py · eval_run.py
-├── processed/             # regenerable structured output (git-ignored)
-├── chroma_db/             # regenerable vector store (git-ignored)
-└── .env                   # GROQ_API_KEY (git-ignored)
-```
+Each phase was regression-tested as it landed; the agent scores **~85%** on its evaluation set, with **zero** false emergency positives.
 
 ---
 
-## 🛠️ Tech Stack
+## ⚙️ How it works (in simple terms)
 
-`Python` · `JSON` · `LangGraph` · `ChromaDB` · `SentenceTransformers` · `Groq` · `FastAPI` · `MCP` · `langchain-mcp-adapters` · `React` · `TypeScript` · `Vite`
+1. Your question passes through a **safety gate** (emergencies are immediately redirected).
+2. The **retriever** finds the most relevant verses + herb references.
+3. The **agent** synthesizes a cited answer, grounded in those exact verses.
+4. A **grounding & attribution pass** links every sentence back to its source.
+
+<details>
+<summary><b>🔬 Tech deep-dive</b> — click to expand</summary>
+
+**Backend** — Python · LangGraph agent · FastAPI · ChromaDB vector store · sentence-transformers · Groq (LLM inference) · MCP herb-safety tool.
+
+**Frontend** — React · TypeScript · Vite · PWA (offline shell) · Web Speech voice input.
+
+**Deployment** — Self-contained Docker image (FastAPI serves both the API and the built UI on one origin). Free hosting via Render with a keep-awake heartbeat.
+
+</details>
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Try it
 
-### Prerequisites
-- Python 3.10+
+<details open>
+<summary><b>💻 Run locally</b> — click to expand</summary>
 
-### Data pipeline
-
-```bash
-cd backend
-python scripts/transform.py      # raw corpus → processed/ structured JSON
-python scripts/audit_ids.py      # verify 1:1 verse↔record integrity
-```
-
-### Run the agent
+**Backend**
 
 ```bash
 cd backend
 python -m venv .venv                     # once
 # Windows: .venv\Scripts\activate · macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt          # once  (includes mcp + langchain-mcp-adapters)
-copy .env.example .env                   # then set GROQ_API_KEY (never commit)
+pip install -r requirements.txt          # once
+copy .env.example .env                   # add GROQ_API_KEY (free tier), never commit
 uvicorn app.main:app --reload
 ```
 
-Try it:
-
-```bash
-curl -X POST http://localhost:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"query": "I have bloating and poor appetite"}'
-```
-
-### Regression eval
-
-```bash
-python scripts/eval_run.py --mode retrieval   # free — retrieval/disambiguation only (28 Qs)
-python scripts/eval_run.py --mode full        # 28 Groq calls — end-to-end answers
-python scripts/eval_run.py --mode retrieval --corner   # + 12 corner cases (40 Qs)
-```
-
-### Docker (optional)
-
-```bash
-docker compose up --build        # backend on :8000, frontend on :5173
-```
-
-- The frontend build embeds `VITE_API_URL` (default `http://localhost:8000`).
-- Named volumes persist `chroma_db` (embeddings) and `traces` across restarts.
-- Configure `backend/.env`, incl. `CHARAKA_API_KEY`, `CHARAKA_RATE_LIMIT`, `CHARAKA_CACHE_SIZE`.
-
-- Emergency phrases short-circuit before any retrieval or LLM call.
-- Safety flags surface before remedies; herbs resolved by direct `verse_id` lookup.
-- Herb queries invoke the MCP `check_herb_safety` tool, falling back gracefully to a local JSON lookup if the MCP subprocess cannot start.
-- Citations are verse-traceable (`cs_<sthana>_<chapter>_<verse>`).
-
-### Free hosting on Hugging Face Spaces ($0/month)
-
-The app runs as a single origin: FastAPI serves the built SPA plus the API, so
-there is one HTTPS URL and no CORS. Free-tier account required (no credit card).
-
-```bash
-python scripts/prepare_deploy.py        # stages deploy/charaka-ai-space/
-pip install -U "huggingface_hub[cli]"
-hf space create <your-username>/charaka-ai --type docker
-hf upload <your-username>/charaka-ai deploy/charaka-ai-space .
-```
-
-Then in the Space settings add the secret `GROQ_API_KEY` (optional: `CHARAKA_API_KEY`).
-
-Free hardware sleeps after inactivity — the included
-`.github/workflows/heartbeat.yml` pings `/healthz` every 10 min (set the repo
-variable `CHARAKA_SPACE_URL` to your `https://<user>-charaka-ai.hf.space` URL).
-
-For a plain local run: `npm run build` in `frontend/` (builds to `frontend/dist`,
-which FastAPI serves automatically via the SPA fallback when present).
-
-### Frontend (Phase 7)
+**Frontend** *(optional, browser dev mode)*
 
 ```bash
 cd frontend
-npm install                          # once
-npm run dev                          # Vite dev server → http://localhost:5173
+npm install
+npm run dev                              # → http://localhost:5173
 ```
 
-- Points at `http://localhost:8000` by default; override with `VITE_API_URL` in `frontend/.env` if needed.
-- Backend must be running for chat, herb library, and feedback to work:
-  - `POST /ask` (chat + dosha badge + reasoning trace)
-  - `GET /herbs` (real herb catalogue from `herbs.json` + `herb_safety.json`)
-  - `POST /feedback` (thumbs up/down → `backend/feedback_log.jsonl`)
-- Saved answers persist in the browser (`localStorage`).
+Or the whole stack in one command with Docker:
 
----
+```bash
+docker compose up --build
+```
 
-### Outputs (`backend/processed/` — regenerable, git-ignored)
-- `charaka_structured.json` — full corpus, one record per verse
-- `<sthana>.json` — per-Sthana slices
-- `herb_mentions.json` — herb → verse → condition lookup table
+</details>
 
----
+### 🆓 Free hosting
 
-## 🗺️ Roadmap
-
-- [x] **Phase 1** — Data collection & curation
-- [x] **Phase 2** — Processing, structuring & integrity audit
-- [x] **Phase 3** — Retrieval pipeline & verse embeddings
-- [x] **Phase 4** — Agentic reasoning, tool use & safety guardrails
-- [x] **Phase 5** — MCP tool integration & herb-safety layer
-- [x] **Phase 6** — Safety & trust layer (2nd-source verification, numeric confidence, reasoning trace)
-- [ ] **Phase 7** — Interactive frontend ("show reasoning" toggle)
+The same Docker image deploys **free on Render** (no credit card) via the included `render.yaml` blueprint — or as a Hugging Face Space if you have a paid HF plan. See the deploy notes in the repo for details.
 
 ---
 
 ## 🤝 Disclaimer
 
 **Charaka AI is for educational and general-wellness purposes only.** It is not a medical device and does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for any health concern — especially for emergencies, chronic conditions, pregnancy, or children.
+
 ---
-_Last updated 2026-09-02._
+
+<p align="center">🌿 Built with patience, verses, and a strong safety guardrail.</p>
