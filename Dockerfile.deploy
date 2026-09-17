@@ -27,5 +27,8 @@ COPY backend/processed backend/processed
 COPY backend/chroma_db backend/chroma_db
 COPY --from=fe /build/dist frontend/dist
 
+# Run from backend/ so the `app` package is importable and the SPA resolves at
+# ../frontend/dist (see FRONTEND_DIST in app/main.py).
+WORKDIR /app/backend
 EXPOSE 7860
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
