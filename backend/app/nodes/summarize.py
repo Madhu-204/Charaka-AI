@@ -96,26 +96,29 @@ def build_summary(query, answer, result, lang: str = "en"):
         f"CITED VERSES:\n{verse_block or 'none'}"
     )
     parsed = _summarize_en(human, query, answer, result)
-    if lang == "hin":
-        try:
-            out = _summ_llm.invoke(
-                [
-                    SystemMessage(content=HINDI_SYSTEM_PROMPT),
-                    HumanMessage(content=human),
-                ]
-            ).content
-            hindi = json.loads(out)
-            parsed["hindi"] = {
-                "title": str(hindi.get("title") or "").strip()[:80],
-                "takeaways": _clean(hindi.get("takeaways"))[:3],
-                "doctor_check": _clean(hindi.get("doctor_check"))[:2],
-            }
-        except Exception as e:  # noqa: BLE001
-            print(f"[summarize] Hindi Groq call failed ({e}) → no Hindi summary")
-            parsed["hindi"] = None
-    else:
-        parsed["hindi"] = None
+    # Hindi summary is generated for every answer (not just lang=hin requests)
+    # so the English ⇄ हिंदी summary toggle always has something to switch to.
+    parsed["hindi"] = _summarize_hindi(human)
     return parsed
+
+
+def _summarize_hindi(human: str) -> dict | None:
+    try:
+        out = _summ_llm.invoke(
+            [
+                SystemMessage(content=HINDI_SYSTEM_PROMPT),
+                HumanMessage(content=human),
+            ]
+        ).content
+        hindi = json.loads(out)
+        return {
+            "title": str(hindi.get("title") or "").strip()[:80],
+            "takeaways": _clean(hindi.get("takeaways"))[:3],
+            "doctor_check": _clean(hindi.get("doctor_check"))[:2],
+        }
+    except Exception as e:  # noqa: BLE001
+        print(f"[summarize] Hindi summary unavailable ({e}) → English-only card")
+        return None
 
 
 def _summarize_en(human: str, query: str, answer: str, result: dict) -> dict:
