@@ -15,7 +15,7 @@ Usage:
 import shutil
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "deploy" / "charaka-ai-space"
 
 COPY_TREES = [
@@ -28,7 +28,7 @@ COPY_TREES = [
 ]
 
 IGNORE_IN_FRONTEND = shutil.ignore_patterns(
-    "node_modules", "dist", "src", "public", "*.map"
+    "node_modules", "dist", "*.map"
 )
 IGNORE_ALWAYS = shutil.ignore_patterns(
     "__pycache__",
@@ -70,6 +70,7 @@ def main():
     OUT.mkdir(parents=True)
 
     shutil.copy2(ROOT / "Dockerfile.deploy", OUT / "Dockerfile")
+    (OUT / "backend").mkdir(parents=True, exist_ok=True)
     shutil.copy2(ROOT / "backend" / "requirements.txt", OUT / "backend" / "requirements.txt")
     (OUT / "README.md").write_text(SPACE_README, encoding="utf-8")
     (OUT / ".dockerignore").write_text(
