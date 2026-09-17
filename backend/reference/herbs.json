@@ -20,7 +20,7 @@
     { "name": "cumin", "aliases": ["cumin", "cumin seed", "jeera", "jira"] },
     { "name": "fennel", "aliases": ["fennel", "saunf", "misreya"] },
     { "name": "turmeric", "aliases": ["turmeric", "haridra", "haldi", "curcuma"] },
-    { "name": "ashwagandha", "aliases": ["ashwagandha", "aswagandha", "winter cherry"] },
+    { "name": "ashwagandha", "aliases": ["ashwagandha", "aswagandha", "winter cherry", "indian ginseng", "withania somnifera"] },
     { "name": "shatavari", "aliases": ["shatavari", "satawari", "asparagus"] },
     { "name": "brahmi", "aliases": ["brahmi", "gotu kola", "gotu-kola", "mandukaparni"] },
     { "name": "bhringaraj", "aliases": ["bhringaraj", "bhringraj", "eclipta", "false daisy"] },

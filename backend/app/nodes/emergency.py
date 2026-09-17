@@ -14,6 +14,20 @@ RED_FLAGS = [
     "severe abdominal pain",
     "coughing blood",
     "high fever with confusion",
+    # Stroke / TIA phrasing (symptoms may not include the literal word "stroke")
+    "face droop",
+    "facial droop",
+    "slurred speech",
+    "slurring",
+    "can't speak",
+    "cannot speak",
+    "can't talk",
+    "numbness on one side",
+    "weakness on one side",
+    "one side of my body",
+    "one side of my face",
+    "loss of vision",
+    "can't see",
 ]
 
 EMERGENCY_MESSAGE = (
