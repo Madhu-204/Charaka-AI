@@ -131,6 +131,11 @@
   font-weight: 600;
   color: var(--olive-dark);
   text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.sources-row__trigger > span {
+  min-width: 0;
 }
 
 .sources-row__trigger svg {
@@ -172,11 +177,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .source-item__meta {
   color: var(--text-muted);
   font-size: 12.5px;
+  overflow-wrap: anywhere;
 }
 
 /* Safety note box */
@@ -191,6 +199,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-wrap: anywhere;
 }
 
 .safety-note__heading {
@@ -214,6 +223,7 @@
 .msg__actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
   margin-top: 10px;
 }
@@ -294,6 +304,8 @@
   border-radius: 6px;
   background: var(--cream);
   padding: 10px 13px;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .inline-reason__title {
@@ -1406,6 +1418,7 @@
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 
 .verse-text__label {
@@ -1478,6 +1491,8 @@
   font-size: 14.5px;
   color: var(--olive-deep);
   margin-bottom: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .msg__summary-takeaways {
@@ -1495,6 +1510,8 @@
 .msg__summary-takeaways li {
   display: flex;
   gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .msg__summary-takeaways li::before {
@@ -1525,6 +1542,7 @@
 .msg__summary-doc span {
   margin-left: 20px;
   display: block;
+  overflow-wrap: anywhere;
 }
 
 /* Persistent "see a doctor" band */
@@ -1540,6 +1558,11 @@
   color: #7A4A16;
   font-size: 12.5px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.safety-band > div {
+  min-width: 0;
 }
 
 .safety-band svg {
@@ -1917,6 +1940,7 @@
 .msg__summary-top {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

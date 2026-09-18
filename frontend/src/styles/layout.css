@@ -397,6 +397,7 @@
   font-size: 13px;
   color: var(--text);
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .timeline__step::before {
@@ -617,6 +618,10 @@
     gap: 0;
     padding: 8px;
     overflow: hidden;
+  }
+
+  .main-col--chat {
+    background-image: none;
   }
 
   .disclaimer-banner {
