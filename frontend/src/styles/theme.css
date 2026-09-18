@@ -47,6 +47,7 @@ body {
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.55;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -199,6 +200,12 @@ a {
 }
 
 /* Markdown body rendered inside assistant cards */
+.md-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .md-body > *:first-child {
   margin-top: 0;
 }
@@ -228,4 +235,26 @@ a {
 .md-body h1, .md-body h2, .md-body h3, .md-body h4 {
   margin: 0.7em 0 0.3em;
   color: var(--olive-dark);
+}
+
+.md-body pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: var(--sand);
+  border: 1px solid rgba(92, 107, 71, 0.25);
+  font-size: 12.5px;
+}
+
+.md-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.md-body table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
 }

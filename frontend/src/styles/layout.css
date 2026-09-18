@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--reasoning-w);
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--olive-bg);
   gap: 14px;
@@ -288,6 +289,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.disclaimer-banner > span {
+  min-width: 0;
 }
 
 /* Banner shown only in chat; strip its chrome in other views (menu toggle stays for mobile) */
