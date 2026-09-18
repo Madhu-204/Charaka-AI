@@ -521,6 +521,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 18px;
+  overflow-x: auto;
 }
 
 .herb-grid--slide-left {
@@ -553,11 +554,10 @@
   }
 }
 
-/* Herb library: a page of cards shown in one view without scrolling; pagination advances */
+/* Herb library: cards laid out naturally; the view scrolls when content overflows */
 .herb-view {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   min-height: 0;
 }
 
@@ -570,15 +570,12 @@
 }
 
 .herb-view .herb-grid {
-  flex: 1;
-  min-height: 0;
   align-content: start;
 }
 
 .herb-view .pagination {
   flex-shrink: 0;
-  margin-top: auto;
-  padding-top: 12px;
+  margin-top: 22px;
 }
 
 .herb-card {
@@ -2110,11 +2107,13 @@
 
 /* ---------- Responsive tweaks ---------- */
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .herb-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
   }
+}
 
+@media (max-width: 1000px) {
   .saved-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2132,14 +2131,35 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .herb-view {
-    overflow-y: auto;
+@media (max-width: 748px) {
+  .herb-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+
+  .herb-card__media {
+    height: 140px;
+  }
+
+  .herb-card__media .herb-card__img-art svg {
+    width: 92px;
+    height: 92px;
+  }
+
+  .herb-card__body {
+    padding: 0 12px 12px;
+  }
+
+  .herb-card__name {
+    font-size: 15px;
   }
 }
 
 @media (max-width: 560px) {
-  .herb-grid,
+  .herb-grid {
+    grid-template-columns: 1fr;
+  }
+
   .saved-grid {
     grid-template-columns: 1fr;
   }

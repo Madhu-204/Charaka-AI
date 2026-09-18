@@ -14,7 +14,12 @@ interface HerbLibraryViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
 }
 
-const PAGE_SIZE = 5;
+function adaptivePageSize(): number {
+  if (typeof window === "undefined") return 5;
+  if (window.innerWidth <= 560) return 3;
+  if (window.innerWidth <= 1000) return 4;
+  return 5;
+}
 
 const ART_COLORS = ["#C1663D", "#5C6B47", "#8a9a63", "#b98a3e", "#7d5a4b", "#4e7b6c"];
 
@@ -141,6 +146,7 @@ function reasoningFor(h: HerbSummary): ReasoningContent {
 }
 
 export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
+  const pageSize = adaptivePageSize();
   const [herbs, setHerbs] = useState<HerbSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -207,9 +213,9 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
       .sort((a, b) => weight(a) - weight(b) || a.name.localeCompare(b.name));
   }, [herbs, search, doshaFilter, verifyFilter]);
 
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, pages - 1);
-  const visible = filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+  const visible = filtered.slice(safePage * pageSize, safePage * pageSize + pageSize);
 
   function toggleSelect(h: HerbSummary) {
     if (selected?.name === h.name) {
