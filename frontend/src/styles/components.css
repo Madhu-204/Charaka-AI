@@ -2152,3 +2152,120 @@
     padding: 16px 12px 6px;
   }
 }
+
+/* ---------- Phone: reduce chrome so content gets the space ---------- */
+
+@media (max-width: 480px) {
+  .app {
+    padding: 6px;
+  }
+
+  .chat-feed {
+    padding: 12px 10px 6px;
+    gap: 14px;
+  }
+
+  .chat-input-bar {
+    padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .chat-input {
+    padding: 4px 4px 4px 14px;
+  }
+
+  .msg,
+  .msg--user,
+  .msg--assistant {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .msg__bubble {
+    padding: 11px 13px;
+    font-size: 14px;
+    border-radius: 14px;
+  }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mic-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .chat-error {
+    margin: 0 10px 8px;
+  }
+
+  .herb-toolbar {
+    align-items: stretch;
+  }
+
+  .search-field {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .filter-drop {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .herb-card__media {
+    height: 150px;
+  }
+
+  .verify-popup__row {
+    flex-wrap: wrap;
+  }
+
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .herb-modal {
+    max-height: 92vh;
+  }
+
+  .herb-modal__stage {
+    height: 200px;
+  }
+
+  .herb-modal__content {
+    padding: 16px 14px 14px;
+  }
+
+  .sentence-grounding__mark {
+    min-width: 0;
+  }
+
+  .sentence-grounding__row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .about-table-wrap {
+    overflow-x: auto;
+  }
+
+  .about-table {
+    min-width: 500px;
+  }
+
+  .corpus-feed,
+  .view-scroll {
+    padding: 14px 12px 24px;
+  }
+
+  .eval-row__q {
+    white-space: normal;
+  }
+
+  .msg__summary-title,
+  .about-section h2 {
+    font-size: 16px;
+  }
+}

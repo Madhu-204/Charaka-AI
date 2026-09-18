@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ViewName } from "./types";
 import type { ReasoningContent } from "./components/ReasoningPanel";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -44,6 +44,17 @@ export default function App() {
     setView("chat");
     setReasoning(null);
     setPanelOpen(false);
+  }, []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        setPanelOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   return (
@@ -95,7 +106,13 @@ export default function App() {
           </ErrorBoundary>
         </main>
 
-        <div className="app__backdrop" onClick={() => setPanelOpen(false)} />
+        <div
+          className="app__backdrop"
+          onClick={() => {
+            setPanelOpen(false);
+            setMenuOpen(false);
+          }}
+        />
 
         {view === "chat" && (
           <button className="panel-toggle" onClick={() => setPanelOpen((o) => !o)}>
