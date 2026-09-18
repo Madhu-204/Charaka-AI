@@ -14,11 +14,12 @@ interface HerbLibraryViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
 }
 
-function adaptivePageSize(): number {
-  if (typeof window === "undefined") return 5;
-  if (window.innerWidth <= 560) return 3;
-  if (window.innerWidth <= 1000) return 4;
-  return 5;
+/* Below this width the app shell switches to collapsible drawers (see layout.css);
+   the herb catalogue drops pagination and renders everything as a scrollable feed. */
+const MOBILE_FEED_BREAKPOINT = 900;
+
+function isMobileViewport(): boolean {
+  return typeof window !== "undefined" && window.innerWidth <= MOBILE_FEED_BREAKPOINT;
 }
 
 const ART_COLORS = ["#C1663D", "#5C6B47", "#8a9a63", "#b98a3e", "#7d5a4b", "#4e7b6c"];
@@ -146,7 +147,8 @@ function reasoningFor(h: HerbSummary): ReasoningContent {
 }
 
 export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
-  const pageSize = adaptivePageSize();
+  const mobileFeed = isMobileViewport();
+  const pageSize = 5;
   const [herbs, setHerbs] = useState<HerbSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -213,9 +215,11 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
       .sort((a, b) => weight(a) - weight(b) || a.name.localeCompare(b.name));
   }, [herbs, search, doshaFilter, verifyFilter]);
 
-  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const safePage = Math.min(page, pages - 1);
-  const visible = filtered.slice(safePage * pageSize, safePage * pageSize + pageSize);
+  const pages = mobileFeed ? 1 : Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = mobileFeed ? 0 : Math.min(page, pages - 1);
+  const visible = mobileFeed
+    ? filtered
+    : filtered.slice(safePage * pageSize, safePage * pageSize + pageSize);
 
   function toggleSelect(h: HerbSummary) {
     if (selected?.name === h.name) {
@@ -322,12 +326,18 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
       {!loading && herbs.length > 0 && (
         <>
           <div className="count-label">
-            Showing {visible.length} of {filtered.length} herbs
+            {mobileFeed
+              ? `${filtered.length} herbs`
+              : `Showing ${visible.length} of ${filtered.length} herbs`}
           </div>
           <div
             key={safePage}
             className={`herb-grid ${
-              slideDir === "next" ? "herb-grid--slide-left" : "herb-grid--slide-right"
+              !mobileFeed
+                ? slideDir === "next"
+                  ? "herb-grid--slide-left"
+                  : "herb-grid--slide-right"
+                : ""
             }`}
           >
             {visible.map((h) => {
@@ -493,33 +503,35 @@ export function HerbLibraryView({ onReasoning }: HerbLibraryViewProps) {
             </div>
           )}
 
-          <div className="pagination">
-            <button
-              disabled={safePage === 0}
-              onClick={() => {
-                setSlideDir("prev");
-                setPage(safePage - 1);
-              }}
-              aria-label="Previous page"
-            >
-              <IconChevronLeft width={16} height={16} />
-            </button>
-            <div className="pagination__dots">
-              {Array.from({ length: pages }).map((_, i) => (
-                <span key={i} className={i === safePage ? "active" : ""} />
-              ))}
+          {!mobileFeed && (
+            <div className="pagination">
+              <button
+                disabled={safePage === 0}
+                onClick={() => {
+                  setSlideDir("prev");
+                  setPage(safePage - 1);
+                }}
+                aria-label="Previous page"
+              >
+                <IconChevronLeft width={16} height={16} />
+              </button>
+              <div className="pagination__dots">
+                {Array.from({ length: pages }).map((_, i) => (
+                  <span key={i} className={i === safePage ? "active" : ""} />
+                ))}
+              </div>
+              <button
+                disabled={safePage >= pages - 1}
+                onClick={() => {
+                  setSlideDir("next");
+                  setPage(safePage + 1);
+                }}
+                aria-label="Next page"
+              >
+                <IconChevronRight width={16} height={16} />
+              </button>
             </div>
-            <button
-              disabled={safePage >= pages - 1}
-              onClick={() => {
-                setSlideDir("next");
-                setPage(safePage + 1);
-              }}
-              aria-label="Next page"
-            >
-              <IconChevronRight width={16} height={16} />
-            </button>
-          </div>
+          )}
         </>
       )}
     </div>

@@ -305,7 +305,9 @@
 
 .view-scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 22px 24px 40px;
 }
 
