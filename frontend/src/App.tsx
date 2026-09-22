@@ -5,7 +5,6 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Sidebar } from "./components/Sidebar";
 import { ReasoningPanel } from "./components/ReasoningPanel";
 import { ChatView } from "./views/ChatView";
-import { CorpusView } from "./views/CorpusView";
 import { HerbLibraryView } from "./views/HerbLibraryView";
 import { SavedAnswersView } from "./views/SavedAnswersView";
 import { AboutView } from "./views/AboutView";
@@ -100,7 +99,6 @@ export default function App() {
               />
             )}
             {view === "herbs" && <HerbLibraryView onReasoning={onReasoning} />}
-            {view === "explore" && <CorpusView />}
             {view === "saved" && <SavedAnswersView onReasoning={onReasoning} />}
             {view === "about" && <AboutView onReasoning={onReasoning} />}
           </ErrorBoundary>

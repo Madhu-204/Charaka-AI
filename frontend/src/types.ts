@@ -1,4 +1,4 @@
-export type ViewName = "chat" | "herbs" | "saved" | "about" | "explore";
+export type ViewName = "chat" | "herbs" | "saved" | "about";
 
 export type Confidence = "high" | "medium" | "low";
 
