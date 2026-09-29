@@ -85,6 +85,15 @@ def _template_summary(query, answer, result):
 
 
 def build_summary(query, answer, result, lang: str = "en"):
+    """Build the summary card.
+
+    The Hindi block is produced only when the user is actually reading in
+    Hindi. It used to be generated for every single answer so the EN/HI toggle
+    always had content waiting, which cost ~2.8K tokens on questions that were
+    never translated. It is now generated on first toggle via
+    /summary/hindi instead, so the same content is available on demand for a
+    fraction of the spend.
+    """
     if result.get("is_emergency") or result.get("is_clarification"):
         return {"title": "", "takeaways": [], "doctor_check": [], "hindi": None}
     rc = result.get("resolved_chapter") or {}
@@ -96,10 +105,29 @@ def build_summary(query, answer, result, lang: str = "en"):
         f"CITED VERSES:\n{verse_block or 'none'}"
     )
     parsed = _summarize_en(human, query, answer, result)
-    # Hindi summary is generated for every answer (not just lang=hin requests)
-    # so the English ⇄ हिंदी summary toggle always has something to switch to.
-    parsed["hindi"] = _summarize_hindi(human)
+    if lang == "hin":
+        parsed["hindi"] = _summarize_hindi(human)
+    else:
+        parsed["hindi"] = None
     return parsed
+
+
+def build_hindi_summary(query, answer, result) -> dict | None:
+    """On-demand Hindi summary, served to the frontend's EN/HI toggle.
+
+    Separate from build_summary so the first toggle costs one call rather than
+    the whole card being regenerated.
+    """
+    if result.get("is_emergency") or result.get("is_clarification"):
+        return None
+    verse_block = "\n".join(
+        f"- {(c.get('text') or '')[:300]}" for c in result.get("retrieved", [])[:3]
+    )
+    human = (
+        f"QUESTION: {query}\n\nANSWER:\n{answer[:2200]}\n\n"
+        f"CITED VERSES:\n{verse_block or 'none'}"
+    )
+    return _summarize_hindi(human)
 
 
 def _summarize_hindi(human: str) -> dict | None:

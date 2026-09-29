@@ -96,6 +96,26 @@ function langSetting(): "en" | "hin" {
     : "en";
 }
 
+/**
+ * The backend caps concurrent LLM work (see ConcurrencyGate) and returns 503
+ * when the queue is full. That is a "try again shortly", not a broken server,
+ * so it gets its own message instead of the generic connection error.
+ */
+function errorMessage(e: unknown): string {
+  if (e instanceof ApiError) {
+    if (e.status === 408) return e.message;
+    if (e.status === 503) {
+      return "Charaka is answering a few other questions right now. Please try again in a moment.";
+    }
+    if (e.status === 401 || e.status === 403) {
+      return "This session is not authorised. Set VITE_CHARAKA_API_KEY and reload.";
+    }
+  }
+  return e instanceof Error && "status" in e
+    ? "The backend could not answer just now. Make sure the server is running on port 8000."
+    : "Something went wrong. Please try again.";
+}
+
 export function ChatView({ onReasoning, conversationId, onConversationChange }: ChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -173,7 +193,16 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
     fetchConversation(conversationId)
       .then((rec) => {
         if (cancelled) return;
-        setMessages(rec.messages.map(mapStoredMessage));
+        const loaded = rec.messages.map(mapStoredMessage);
+        setMessages(loaded);
+        let lastAssistant: ChatMessage | null = null;
+        for (let i = loaded.length - 1; i >= 0; i--) {
+          if (loaded[i].role === "assistant") {
+            lastAssistant = loaded[i];
+            break;
+          }
+        }
+        onReasoning(lastAssistant ? reasoningFor(lastAssistant) : null);
       })
       .catch(() => {
         if (!cancelled) setError("Could not load that conversation.");
@@ -245,6 +274,8 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
         streaming: false,
         stages: null,
         summary: res.summary ?? null,
+        summaryPending:
+          !res.is_emergency && !res.is_clarification && !res.summary,
         suggestions: res.suggestions ?? null,
         attribution: res.attribution ?? null,
         usedDocuments: res.used_documents,
@@ -270,19 +301,22 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
           },
           onToken: appendDelta,
           onDone: finalize,
-          onError: (e) => {
-            if (e instanceof ApiError && e.status === 408) {
-              setError(e.message);
-            } else {
-              setError(
-                e instanceof Error && "status" in e
-                  ? "The backend could not answer just now. Make sure the server is running on port 8000."
-                  : "Something went wrong. Please try again."
-              );
-            }
+          onSummary: (summary) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === assistantId ? { ...m, streaming: false, stages: null } : m
+                m.id === assistantId
+                  ? { ...m, summary, summaryPending: false }
+                  : m
+              )
+            );
+          },
+          onError: (e) => {
+            setError(errorMessage(e));
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, streaming: false, stages: null, summaryPending: false }
+                  : m
               )
             );
           },
@@ -296,14 +330,18 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
         }
       );
     } catch (e) {
-      setError(
-        e instanceof ApiError && e.status === 408
-          ? e.message
-          : e instanceof Error && "status" in e
-            ? "The backend could not answer just now. Make sure the server is running on port 8000."
-            : "Something went wrong. Please try again."
-      );
+      setError(errorMessage(e));
     } finally {
+      // The summary is best-effort: the backend skips it when the concurrency
+      // gate is saturated, so a stream can end with the card still pending.
+      // Clearing it here prevents a skeleton that never resolves.
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId && m.summaryPending && !m.summary
+            ? { ...m, summaryPending: false }
+            : m
+        )
+      );
       setLoading(false);
     }
   }

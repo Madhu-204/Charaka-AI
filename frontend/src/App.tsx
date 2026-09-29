@@ -45,6 +45,17 @@ export default function App() {
     setPanelOpen(false);
   }, []);
 
+  const onDeleteConversation = useCallback(
+    (id: string) => {
+      if (id === conversationId) {
+        setConversationId(null);
+        setReasoning(null);
+        setPanelOpen(false);
+      }
+    },
+    [conversationId]
+  );
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -71,6 +82,7 @@ export default function App() {
           conversationRefresh={conversationRefresh}
           onSelectConversation={onSelectConversation}
           onNewConversation={onNewConversation}
+          onDeleteConversation={onDeleteConversation}
         />
 
         <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>

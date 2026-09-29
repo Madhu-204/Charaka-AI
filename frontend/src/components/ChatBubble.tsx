@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { fetchHindiSummary } from "../api";
 import type { ChatMessage, FeedbackRating } from "../types";
 import {
   buildChatCitations,
@@ -100,6 +101,19 @@ export function ChatBubble({
       ? localStorage.getItem("charaka-lang") === "hin"
       : false
   );
+  // The Hindi block is generated on demand rather than bundled with every
+  // answer, so the first toggle needs a fetch. Cached per message id so
+  // toggling back and forth is instant.
+  const [hindiBlock, setHindiBlock] = useState(message.summary?.hindi ?? null);
+  const [hindiLoading, setHindiLoading] = useState(false);
+  const hindiRequested = useRef(false);
+  // The summary card is generated after the answer finishes streaming, so it
+  // shows a skeleton until the `summary` event lands. Emergency and
+  // clarification messages never get one, and the flag is only set by the
+  // streaming path, so a reloaded conversation never shows a stuck skeleton.
+  const [summaryPending, setSummaryPending] = useState(
+    () => message.summaryPending === true
+  );
   const [displayedChars, setDisplayedChars] = useState(() =>
     isNew ? 0 : message.content.length,
   );
@@ -141,6 +155,45 @@ export function ChatBubble({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Fetch the Hindi block the first time the user asks for it. Skipped
+  // entirely when the answer is an emergency redirect or clarification, which
+  // have no summary to translate.
+  useEffect(() => {
+    if (!hindi || hindiBlock || hindiRequested.current) return;
+    if (message.isEmergency || message.isClarification) return;
+    hindiRequested.current = true;
+    setHindiLoading(true);
+    let cancelled = false;
+    fetchHindiSummary({
+      query: message.query ?? "",
+      answer: message.content,
+      retrieved: (message.reasoning?.retrieved_verses ?? []).map((v) => ({
+        text: v.text,
+      })),
+      is_emergency: message.isEmergency ?? false,
+      is_clarification: message.isClarification ?? false,
+    })
+      .then((block) => {
+        if (!cancelled && block) setHindiBlock(block);
+      })
+      .catch(() => {
+        if (!cancelled) hindiRequested.current = false;
+      })
+      .finally(() => {
+        if (!cancelled) setHindiLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hindi, hindiBlock]);
+
+  // Clear the skeleton as soon as the delayed summary arrives. A loaded
+  // conversation already carries its summary, so this settles immediately.
+  useEffect(() => {
+    if (message.summary) setSummaryPending(false);
+  }, [message.summary]);
 
   // If isNew flips to false before typewriter finishes, complete instantly
   useEffect(() => {
@@ -257,64 +310,81 @@ export function ChatBubble({
       }`}
     >
       <div className="msg__bubble">
-        {isTyped && message.summary && message.summary.title !== "" && (
+        {isTyped && summaryPending && (
+          <div className="msg__summary msg__summary--loading" aria-hidden="true">
+            <div className="msg__summary-top">
+              <span className="skeleton skeleton--title" />
+              <span className="lang-toggle">
+                <span className="lang-toggle__btn lang-toggle__btn--on">English</span>
+                <span className="lang-toggle__btn">हिंदी</span>
+              </span>
+            </div>
+            <span className="skeleton skeleton--line" />
+            <span className="skeleton skeleton--line" />
+            <span className="msg__summary-status">
+              <span className="dot-pulse" /> Preparing summary…
+            </span>
+          </div>
+        )}
+        {isTyped && !summaryPending && message.summary && message.summary.title !== "" && (
           <div className="msg__summary chat-reveal" style={{ animationDelay: "0ms" }}>
             <div className="msg__summary-top">
               <div className="msg__summary-title">
-                {hindi && message.summary.hindi
-                  ? message.summary.hindi.title
-                  : message.summary.title}
+                {hindi && hindiBlock ? hindiBlock.title : message.summary.title}
+                {hindi && !hindiBlock && hindiLoading ? (
+                  <span className="lang-toggle__btn lang-toggle__btn--on">
+                    हिंदी…
+                  </span>
+                ) : null}
               </div>
-              {message.summary.hindi && (
-                <div
-                  className="lang-toggle"
-                  role="group"
-                  aria-label="Summary language"
+              <div
+                className="lang-toggle"
+                role="group"
+                aria-label="Summary language"
+              >
+                <button
+                  type="button"
+                  className={!hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
+                  onClick={() => {
+                    setHindi(false);
+                    localStorage.setItem("charaka-lang", "en");
+                  }}
                 >
-                  <button
-                    type="button"
-                    className={!hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
-                    onClick={() => {
-                      setHindi(false);
-                      localStorage.setItem("charaka-lang", "en");
-                    }}
-                  >
-                    English
-                  </button>
-                  <button
-                    type="button"
-                    className={hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
-                    onClick={() => {
-                      setHindi(true);
-                      localStorage.setItem("charaka-lang", "hin");
-                    }}
-                  >
-                    हिंदी
-                  </button>
-                </div>
-              )}
+                  English
+                </button>
+                <button
+                  type="button"
+                  className={hindi ? "lang-toggle__btn lang-toggle__btn--on" : "lang-toggle__btn"}
+                  onClick={() => {
+                    setHindi(true);
+                    localStorage.setItem("charaka-lang", "hin");
+                  }}
+                >
+                  हिंदी
+                </button>
+              </div>
             </div>
-            {(hindi && message.summary.hindi
-              ? message.summary.hindi.takeaways
+            {(hindi && hindiBlock
+              ? hindiBlock.takeaways
               : message.summary.takeaways
             ).length > 0 && (
               <ul className="msg__summary-takeaways">
-                {(hindi && message.summary.hindi
-                  ? message.summary.hindi.takeaways
+                {(hindi && hindiBlock
+                  ? hindiBlock.takeaways
                   : message.summary.takeaways
                 ).map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
             )}
-            {(hindi && message.summary.hindi
-              ? message.summary.hindi.doctor_check
+            {(hindi && hindiBlock
+              ? hindiBlock.doctor_check
               : message.summary.doctor_check
             ).length > 0 && (
               <div className="msg__summary-doc">
                 <IconShield width={13} height={13} />
-                {(hindi && message.summary.hindi
-                  ? message.summary.hindi.doctor_check
+                {(hindi && hindiBlock
+                  ? hindiBlock.doctor_check
                   : message.summary.doctor_check
                 ).map((d, i) => (
                   <span key={i}>{d}</span>

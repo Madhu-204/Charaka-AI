@@ -128,6 +128,30 @@ def save_turn(conversation_id, user_message, assistant_payload):
     return record["id"], record["title"]
 
 
+def patch_last_assistant(conversation_id, updates):
+    """Merge `updates` into the most recent assistant message of a conversation.
+
+    The streaming endpoint appends the turn as soon as the answer is ready and
+    then enriches it with the summary, which is generated off the critical
+    path. save_turn is append-only, so this patches the stored message in
+    place rather than writing a duplicate turn.
+    """
+    if not conversation_id or not updates:
+        return False
+    with _lock:
+        rows = _load()
+        for r in rows:
+            if r["id"] != conversation_id:
+                continue
+            for msg in reversed(r.get("messages") or []):
+                if msg.get("role") == "assistant":
+                    msg.update(updates)
+                    r["updated_at"] = _now()
+                    _save(rows)
+                    return True
+        return False
+
+
 def delete_conversation(conversation_id):
     with _lock:
         rows = _load()

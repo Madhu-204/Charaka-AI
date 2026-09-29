@@ -16,10 +16,26 @@ class LRUCache:
         self._lock = threading.Lock()
 
     @staticmethod
-    def key_for(query: str, dosha_profile: str | None = None) -> str:
+    def key_for(
+        query: str,
+        dosha_profile: str | None = None,
+        scope: str = "shared",
+    ) -> str:
+        """Build a cache key.
+
+        `scope` exists to keep user-specific answers out of the shared tier.
+        Anything derived from a profile, a conversation, an uploaded document
+        or a stored memory must pass a scope that includes the owning user,
+        so one user's personalised answer can never be served to another.
+        The default "shared" is only correct for corpus-grounded answers that
+        contain no user-specific content.
+        """
         norm = " ".join(query.strip().lower().split())
+        # dosha is supplied by the client, so normalise it too — otherwise
+        # "Vata" and " vata " miss against each other for no reason.
+        dosha = " ".join((dosha_profile or "").strip().lower().split())
         return hashlib.sha1(
-            f"{norm}|{dosha_profile or ''}".encode("utf-8")
+            f"{scope.strip().lower()}|{norm}|{dosha}".encode("utf-8")
         ).hexdigest()
 
     def get(self, key: str):

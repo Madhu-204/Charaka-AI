@@ -19,6 +19,7 @@ interface SidebarProps {
   conversationRefresh: number;
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
+  onDeleteConversation: (id: string) => void;
 }
 
 const NAV: { id: ViewName; label: string; icon: ComponentType }[] = [
@@ -36,6 +37,7 @@ export function Sidebar({
   conversationRefresh,
   onSelectConversation,
   onNewConversation,
+  onDeleteConversation,
 }: SidebarProps) {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 
@@ -58,6 +60,7 @@ export function Sidebar({
     } catch {
       /* non-fatal */
     }
+    onDeleteConversation(id);
     load();
   }
 

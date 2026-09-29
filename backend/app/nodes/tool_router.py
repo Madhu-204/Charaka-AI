@@ -1,4 +1,5 @@
 import os
+import re
 
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -70,11 +71,34 @@ Decide which retrieval tool to use for the user's question.
 - Otherwise → plain_retrieval (the default)."""
 
 
+# Surface forms users actually type when they want one specific book.
+# Checked before skipping the router, so an explicit book request always
+# reaches the LLM and can set a metadata_filter.
+STHANA_MENTIONS = re.compile(
+    r"\b(sutra|sutrasthana|vimana|sharira|chikitsa|chikitsasthana)\b", re.IGNORECASE
+)
+
+
 def route_tools(state):
     new_state = {
         "tool_decision": "plain_retrieval",
         "metadata_filter": None,
     }
+
+    # Skip the LLM only when the cheap deterministic herb detector already
+    # decided the routing AND the user did not name a specific book. The book
+    # check matters: "ashwagandha in chikitsasthana" needs scope_retrieval to
+    # set metadata_filter, so herb detection alone is not sufficient.
+    if not STHANA_MENTIONS.search(state.get("query", "")):
+        from app.nodes.retriever import _detect_herb
+
+        if _detect_herb(state.get("query", "")):
+            new_state["tool_decision"] = "herb_lookup"
+            new_state["trace"] = state.get("trace", []) + [
+                "tool router: skipped LLM — herb detected deterministically, "
+                "no book named"
+            ]
+            return new_state
 
     try:
         result = llm.invoke(

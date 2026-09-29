@@ -1486,6 +1486,103 @@
   margin-bottom: 12px;
 }
 
+/* Summary is generated after the answer finishes streaming, so the card
+   reserves its space up front instead of popping in and shifting the
+   message text downward. */
+.msg__summary--loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-style: dashed;
+  border-color: rgba(92, 107, 71, 0.45);
+}
+
+.skeleton {
+  display: block;
+  border-radius: 5px;
+  background: linear-gradient(
+    90deg,
+    rgba(92, 107, 71, 0.10) 0%,
+    rgba(92, 107, 71, 0.20) 50%,
+    rgba(92, 107, 71, 0.10) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+.skeleton--title {
+  width: 46%;
+  height: 15px;
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+.skeleton--line {
+  width: 100%;
+  height: 11px;
+}
+
+.skeleton--line:last-of-type {
+  width: 72%;
+}
+
+@keyframes skeleton-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.msg__summary-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--olive);
+  animation: dot-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.82);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Inline "translating…" chip shown inside the title while the Hindi block
+   is being fetched on first toggle. */
+.msg__summary-title .lang-toggle__btn {
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .dot-pulse {
+    animation: none;
+  }
+  .skeleton {
+    background: rgba(92, 107, 71, 0.16);
+  }
+}
+
 .msg__summary-title {
   font-weight: 800;
   font-size: 14.5px;

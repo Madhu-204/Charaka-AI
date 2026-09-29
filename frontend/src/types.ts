@@ -190,6 +190,10 @@ export interface ChatMessage {
   suggestions?: string[] | null;
   attribution?: AttributionSegment[] | null;
   usedDocuments?: boolean;
+  /** True only while a freshly streamed answer is waiting on its delayed
+      summary event. Historical messages never set it, so a reloaded
+      conversation does not show a loading state. */
+  summaryPending?: boolean;
 }
 
 export interface DocRecord {

@@ -27,9 +27,22 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      # Shared key for /ask, conversations, documents and feedback.
       - key: CHARAKA_API_KEY
+        sync: false
+      # Separate key for /eval, /traces and /stats. Set this to a different
+      # value: leaving it unset leaves those routes open to anyone.
+      - key: CHARAKA_ADMIN_KEY
         sync: false
       - key: CHARAKA_RATE_LIMIT
         value: "30"
       - key: CHARAKA_RATE_BURST
         value: "60"
+      # 2 concurrent LLM calls keeps us inside Groq's 8K TPM free tier.
+      - key: CHARAKA_LLM_CONCURRENCY
+        value: "2"
+      - key: CHARAKA_LLM_QUEUE_TIMEOUT
+        value: "45"
+      # Lock the API down to your own frontend origin once it is deployed.
+      - key: CHARAKA_ALLOWED_ORIGINS
+        sync: false

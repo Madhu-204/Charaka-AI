@@ -2,6 +2,7 @@ import asyncio
 import json
 import mimetypes
 import os
+import secrets
 import threading
 import time
 from datetime import datetime, timezone
@@ -11,12 +12,12 @@ from typing import List, Literal, Optional
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 from app.graph import charaka_agent
 from app import cache, conversations, ratelimit, stats, trace
-from app.nodes.summarize import build_summary
+from app.nodes.summarize import build_hindi_summary, build_summary
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
@@ -29,6 +30,7 @@ load_dotenv()
 app = FastAPI()
 
 API_KEY = os.getenv("CHARAKA_API_KEY")
+ADMIN_KEY = os.getenv("CHARAKA_ADMIN_KEY")
 _QUERY_CACHE = cache.LRUCache(
     capacity=int(os.getenv("CHARAKA_CACHE_SIZE", "64")),
     ttl=int(os.getenv("CHARAKA_CACHE_TTL", "3600")),
@@ -37,7 +39,19 @@ _LIMITER = ratelimit.RateLimiter(
     per_minute=int(os.getenv("CHARAKA_RATE_LIMIT", "30")),
     burst=int(os.getenv("CHARAKA_RATE_BURST", "60")),
 )
+_GATE = ratelimit.ConcurrencyGate(
+    slots=int(os.getenv("CHARAKA_LLM_CONCURRENCY", "2")),
+    timeout=float(os.getenv("CHARAKA_LLM_QUEUE_TIMEOUT", "45")),
+)
 _FEEDBACK_STATS = stats.FeedbackStats(FEEDBACK_LOG)
+
+
+def _key_matches(provided: Optional[str], expected: Optional[str]) -> bool:
+    if not expected:
+        return True
+    if not provided:
+        return False
+    return secrets.compare_digest(provided, expected)
 
 
 def guard_ask(
@@ -56,6 +70,33 @@ def guard_ask(
         )
 
 
+def guard_private(x_api_key: Optional[str] = Header(default=None)) -> None:
+    """Gate conversation, document and feedback routes.
+
+    These were previously world-readable and world-writable: any client could
+    list, read and delete every stored conversation, and read or delete another
+    user's uploaded documents by guessing their session id.
+    """
+    if not _key_matches(x_api_key, API_KEY):
+        raise HTTPException(
+            status_code=401,
+            detail="invalid or missing API key",
+        )
+
+
+def guard_admin(x_api_key: Optional[str] = Header(default=None)) -> None:
+    """Gate /stats, /traces and /eval/run.
+
+    /traces and /stats expose every user's query text. /eval/run drives the
+    LLM with no quota of its own, so leaving it open is an unmetered spend.
+    """
+    if not _key_matches(x_api_key, ADMIN_KEY):
+        raise HTTPException(
+            status_code=401,
+            detail="admin API key required",
+        )
+
+
 STHANA_ORDER = ["sutrasthana", "vimanasthana", "sharirasthana", "chikitsasthana"]
 STHANA_TITLES = {
     "sutrasthana": "Sutra Sthana — General Principles",
@@ -68,9 +109,16 @@ try:
     _CORPUS = json.loads((PROCESSED / "charaka_structured.json").read_text(encoding="utf-8"))
 except Exception:  # noqa: BLE001
     _CORPUS = []
+def _allowed_origins() -> list:
+    raw = os.getenv("CHARAKA_ALLOWED_ORIGINS", "").strip()
+    if not raw:
+        return ["*"]
+    return [o.strip() for o in raw.split(",") if o.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -194,6 +242,15 @@ def _history_from_store(conversation_id):
     }
 
 
+def _cache_scope(dosha_profile: Optional[str]) -> str:
+    """Namespace the shared cache so a dosha-shaped answer is never handed to
+    a user who has no dosha, or vice versa. Once accounts land, this becomes
+    the authenticated user id, and any request touching memory or documents
+    bypasses the cache entirely.
+    """
+    return f"dosha:{(dosha_profile or '').strip().lower()}" if dosha_profile else "shared"
+
+
 def _suggest_questions(result) -> list:
     if result.get("is_emergency") or result.get("is_clarification"):
         return []
@@ -279,7 +336,11 @@ async def _event_stream(
 
     cacheable = conversation_id is None and not doc_session
     cache_key = (
-        cache.LRUCache.key_for(query, dosha_profile) if cacheable else None
+        cache.LRUCache.key_for(
+            query, dosha_profile, scope=_cache_scope(dosha_profile)
+        )
+        if cacheable
+        else None
     )
     if cache_key:
         cached = _QUERY_CACHE.get(cache_key)
@@ -313,6 +374,16 @@ async def _event_stream(
     def run():
         merged = {}
         synthesize_seen = False
+        acquired = _GATE.acquire()
+        if not acquired:
+            queue.put_nowait(
+                (
+                    "error",
+                    "the assistant is busy — too many questions at once, please retry",
+                )
+            )
+            queue.put_nowait(("done", {}))
+            return
         try:
             for mode, payload in charaka_agent.stream(
                 state,
@@ -334,6 +405,7 @@ async def _event_stream(
         except Exception as e:  # noqa: BLE001
             queue.put_nowait(("error", str(e)))
         finally:
+            _GATE.release()
             queue.put_nowait(("done", merged))
 
     threading.Thread(target=run, daemon=True).start()
@@ -366,13 +438,14 @@ async def _event_stream(
         elif kind == "done":
             latency = round((now - t0) * 1000)
             resp = build_response(payload, latency_ms=latency)
+            resp["suggestions"] = _suggest_questions(payload)
             if payload.get("final_answer"):
-                resp = _attach_summaries(resp, query, payload, lang=lang)
                 conv_id, conv_title = conversations.save_turn(
                     conversation_id, query, resp
                 )
                 resp["conversation_id"] = conv_id
                 resp["conversation_title"] = conv_title
+                conversation_id = conv_id
             resp["cache_hit"] = False
             if node_times:
                 node_times[-1] = (
@@ -389,11 +462,39 @@ async def _event_stream(
                 dosha=payload.get("dosha"),
                 resolved_chapter=_resolved_label(payload),
             )
+            # Build the summary BEFORE persisting the turn, so the stored
+            # assistant message includes it and a reloaded conversation does
+            # not depend on regenerating. The `done` event is still emitted
+            # first, so the user sees the answer immediately.
+            summary = None
+            if payload.get("final_answer") and not payload.get("is_emergency"):
+                try:
+                    if _GATE.acquire():
+                        try:
+                            summary = build_summary(
+                                query, resp["answer"], payload, lang=lang or "en"
+                            )
+                        finally:
+                            _GATE.release()
+                except Exception as e:  # noqa: BLE001
+                    print(f"[main] summary failed ({e})")
+                    summary = None
+            if summary:
+                resp["summary"] = summary
+            if payload.get("final_answer"):
+                # Append-only store: re-save with the summary would duplicate
+                # the turn, so the summary is patched onto the stored message
+                # instead.
+                conversations.patch_last_assistant(
+                    conversation_id, {"summary": summary}
+                )
             if cache_key and payload.get("final_answer") and not payload.get(
                 "is_emergency"
             ):
                 _QUERY_CACHE.set(cache_key, resp)
             yield _sse("done", resp)
+            if summary:
+                yield _sse("summary", {"summary": summary})
             break
 
 
@@ -406,7 +507,9 @@ def ask(req: AskRequest):
         state["doc_session"] = req.doc_session
 
     cache_key = (
-        cache.LRUCache.key_for(req.query, req.dosha_profile)
+        cache.LRUCache.key_for(
+            req.query, req.dosha_profile, scope=_cache_scope(req.dosha_profile)
+        )
         if not req.history and not req.doc_session
         else None
     )
@@ -427,11 +530,27 @@ def ask(req: AskRequest):
             return resp
 
     t0 = time.time()
-    result, node_times, token_count = _run_graph_collect(state)
+    if not _GATE.acquire():
+        raise HTTPException(
+            status_code=503,
+            detail="the assistant is busy — too many questions at once, retry shortly",
+            headers={"Retry-After": "3"},
+        )
+    try:
+        result, node_times, token_count = _run_graph_collect(state)
+    finally:
+        _GATE.release()
     latency = round((time.time() - t0) * 1000)
     resp = build_response(result, latency_ms=latency)
-    if result.get("final_answer"):
-        resp = _attach_summaries(resp, req.query, result, lang=req.lang)
+    resp["suggestions"] = _suggest_questions(result)
+    if result.get("final_answer") and not result.get("is_emergency"):
+        if _GATE.acquire():
+            try:
+                resp = _attach_summaries(resp, req.query, result, lang=req.lang)
+            finally:
+                _GATE.release()
+        else:
+            resp["suggestions"] = _suggest_questions(result)
     resp["cache_hit"] = False
     if cache_key and result.get("final_answer") and not result.get("is_emergency"):
         _QUERY_CACHE.set(cache_key, resp)
@@ -459,12 +578,12 @@ async def ask_stream(req: AskRequest):
     )
 
 
-@app.get("/conversations")
+@app.get("/conversations", dependencies=[Depends(guard_private)])
 def list_conversations():
     return {"conversations": conversations.list_conversations()}
 
 
-@app.get("/conversations/{conversation_id}")
+@app.get("/conversations/{conversation_id}", dependencies=[Depends(guard_private)])
 def get_conversation(conversation_id: str):
     record = conversations.get_conversation(conversation_id)
     if record is None:
@@ -472,12 +591,14 @@ def get_conversation(conversation_id: str):
     return {"ok": True, "conversation": record}
 
 
-@app.delete("/conversations/{conversation_id}")
+@app.delete(
+    "/conversations/{conversation_id}", dependencies=[Depends(guard_private)]
+)
 def delete_conversation(conversation_id: str):
     return {"ok": conversations.delete_conversation(conversation_id)}
 
 
-@app.post("/documents/upload")
+@app.post("/documents/upload", dependencies=[Depends(guard_private)])
 async def upload_document(session_id: str = Form(...), file: UploadFile = File(...)):
     from app import documents
 
@@ -489,14 +610,14 @@ async def upload_document(session_id: str = Form(...), file: UploadFile = File(.
     return {"ok": True, **result}
 
 
-@app.get("/documents/{session_id}")
+@app.get("/documents/{session_id}", dependencies=[Depends(guard_private)])
 def list_documents(session_id: str):
     from app import documents
 
     return {"ok": True, "documents": documents.list_uploads(session_id)}
 
 
-@app.delete("/documents/{session_id}")
+@app.delete("/documents/{session_id}", dependencies=[Depends(guard_private)])
 def delete_documents(session_id: str):
     from app import documents
 
@@ -568,6 +689,48 @@ class CorpusSearchRequest(BaseModel):
     limit: int = 8
 
 
+class HindiSummaryRequest(BaseModel):
+    # Length caps matter here: the fields are caller-supplied and forwarded to
+    # the LLM, so an unbounded query would let anyone drain the daily TPM
+    # budget on this endpoint alone.
+    query: str = Field(..., max_length=500)
+    answer: str = Field(..., max_length=4000)
+    retrieved: List[dict] = Field(default_factory=list, max_length=6)
+    is_emergency: bool = False
+    is_clarification: bool = False
+
+
+@app.post("/summary/hindi", dependencies=[Depends(guard_private)])
+def summary_hindi(req: HindiSummaryRequest):
+    """Generate the Hindi summary on demand.
+
+    The card's EN/HI toggle used to depend on the Hindi block being generated
+    for every answer. This endpoint generates it the first time it is actually
+    requested, which removes ~2.8K tokens from every English question.
+    """
+    if not _GATE.acquire():
+        raise HTTPException(
+            status_code=503,
+            detail="the assistant is busy — retry in a moment",
+            headers={"Retry-After": "3"},
+        )
+    try:
+        result = build_hindi_summary(
+            req.query,
+            req.answer,
+            {
+                "retrieved": req.retrieved,
+                "is_emergency": req.is_emergency,
+                "is_clarification": req.is_clarification,
+            },
+        )
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(status_code=502, detail=f"hindi summary failed: {e}")
+    finally:
+        _GATE.release()
+    return {"ok": result is not None, "hindi": result}
+
+
 @app.post("/corpus/search")
 def corpus_search(req: CorpusSearchRequest):
     from app.nodes.retriever import search_verses
@@ -576,7 +739,7 @@ def corpus_search(req: CorpusSearchRequest):
     return {"query": req.query, "results": search_verses(req.query, limit=limit)}
 
 
-@app.post("/feedback")
+@app.post("/feedback", dependencies=[Depends(guard_private)])
 def feedback(req: FeedbackRequest):
     FEEDBACK_LOG.parent.mkdir(parents=True, exist_ok=True)
     record = {
@@ -595,20 +758,21 @@ def feedback(req: FeedbackRequest):
     return {"ok": True}
 
 
-@app.get("/stats")
+@app.get("/stats", dependencies=[Depends(guard_admin)])
 def get_stats():
     data = _FEEDBACK_STATS.snapshot()
     data["cache"] = _QUERY_CACHE.stats()
+    data["llm_gate"] = _GATE.stats()
     return data
 
 
-@app.get("/traces")
+@app.get("/traces", dependencies=[Depends(guard_admin)])
 def list_traces(limit: int = 50):
     limit = max(1, min(limit, 200))
     return {"traces": trace.list_traces(TRACES_DIR, limit)}
 
 
-@app.get("/traces/{run_id}")
+@app.get("/traces/{run_id}", dependencies=[Depends(guard_admin)])
 def get_trace(run_id: str):
     record = trace.get_trace(TRACES_DIR, run_id)
     if record is None:
@@ -686,7 +850,7 @@ async def _eval_event_stream(corner: bool, mode: str):
             break
 
 
-@app.post("/eval/run")
+@app.post("/eval/run", dependencies=[Depends(guard_admin)])
 async def eval_run(req: EvalRunRequest):
     return StreamingResponse(
         _eval_event_stream(req.corner, req.mode),
@@ -695,7 +859,7 @@ async def eval_run(req: EvalRunRequest):
     )
 
 
-@app.get("/eval/last")
+@app.get("/eval/last", dependencies=[Depends(guard_admin)])
 def eval_last():
     if not EVAL_RESULTS.exists():
         return {"ok": False, "error": "no_runs"}

@@ -1,4 +1,5 @@
 import type {
+  AnswerSummary,
   AskResponse,
   ChatMessage,
   ConversationSummary,
@@ -18,6 +19,17 @@ const API_URL = (import.meta.env?.VITE_API_URL ?? "http://localhost:8000").repla
   ""
 );
 
+// Sent as X-API-Key on every call. Empty string means "no key configured",
+// which is the local-dev default; the backend only enforces a key when one
+// is set. Never commit a real value here — it ships to the browser.
+const API_KEY = (import.meta.env?.VITE_CHARAKA_API_KEY ?? "") as string;
+
+function authHeaders(extra?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = { ...(extra ?? {}) };
+  if (API_KEY) headers["X-API-Key"] = API_KEY;
+  return headers;
+}
+
 export class ApiError extends Error {
   status: number;
 
@@ -36,10 +48,19 @@ async function request<T>(
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(`${API_URL}${path}`, {
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       ...init,
       signal: controller.signal,
     });
+    if (res.status === 401) {
+      throw new ApiError(
+        401,
+        "This action needs a valid API key. Check your backend key setup."
+      );
+    }
+    if (res.status === 503) {
+      throw new ApiError(503, "The assistant is busy right now — retry in a moment.");
+    }
     if (!res.ok) {
       throw new ApiError(res.status, `Request failed (${res.status})`);
     }
@@ -65,6 +86,7 @@ export interface StreamHandlers {
   onStage?: (stage: StreamStage) => void;
   onToken?: (delta: string) => void;
   onDone?: (resp: AskResponse) => void;
+  onSummary?: (summary: AnswerSummary) => void;
   onError?: (err: Error) => void;
 }
 
@@ -107,7 +129,7 @@ export async function askStream(
   try {
     const res = await fetch(`${API_URL}/ask/stream`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         query,
         history: opts.history ?? [],
@@ -118,6 +140,12 @@ export async function askStream(
       }),
       signal: controller.signal,
     });
+    if (res.status === 401) {
+      throw new ApiError(
+        401,
+        "This action needs a valid API key. Check your backend key setup."
+      );
+    }
     if (!res.ok) {
       throw new ApiError(res.status, `Request failed (${res.status})`);
     }
@@ -144,6 +172,11 @@ export async function askStream(
           if (parsed.delta) handlers.onToken?.(parsed.delta);
         } else if (ev.type === "done") {
           handlers.onDone?.(JSON.parse(ev.data) as AskResponse);
+        } else if (ev.type === "summary") {
+          // Arrives after `done` so the answer bubble finalises without
+          // waiting on the summary LLM call.
+          const parsed = JSON.parse(ev.data) as { summary?: AnswerSummary | null };
+          if (parsed.summary) handlers.onSummary?.(parsed.summary);
         } else if (ev.type === "error") {
           const parsed = JSON.parse(ev.data) as { message?: string };
           throw new ApiError(500, parsed.message ?? "Stream error");
@@ -169,6 +202,24 @@ export async function fetchHerbs(): Promise<HerbSummary[]> {
   return data.herbs;
 }
 
+export interface HindiSummaryPayload {
+  query: string;
+  answer: string;
+  retrieved?: { text?: string }[];
+  is_emergency?: boolean;
+  is_clarification?: boolean;
+}
+
+export async function fetchHindiSummary(
+  payload: HindiSummaryPayload
+): Promise<AnswerSummary | null> {
+  const data = await request<{ ok: boolean; hindi: AnswerSummary | null }>(
+    "/summary/hindi",
+    { method: "POST", body: JSON.stringify(payload) }
+  );
+  return data.ok ? data.hindi : null;
+}
+
 export async function fetchLastEval(): Promise<EvalResult | null> {
   const data = await request<{ ok: boolean } & Partial<EvalResult>>("/eval/last");
   if (!data.ok || !data.summary) return null;
@@ -191,7 +242,7 @@ export async function runEvalStream(
   try {
     const res = await fetch(`${API_URL}/eval/run`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({ corner, mode }),
       signal: controller.signal,
     });
@@ -302,6 +353,7 @@ export async function uploadDocument(
   form.append("file", file);
   const res = await fetch(`${API_URL}/documents/upload`, {
     method: "POST",
+    headers: authHeaders(),
     body: form,
   });
   if (!res.ok) {
