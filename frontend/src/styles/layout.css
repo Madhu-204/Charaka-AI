@@ -257,6 +257,64 @@
   font-weight: 600;
 }
 
+/* ---------- Signed-in account row ---------- */
+
+.sidebar__account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--chip-green);
+  border: 1px solid rgba(92, 107, 71, 0.3);
+  border-radius: var(--radius);
+}
+
+.sidebar__account-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: 1px;
+}
+
+.sidebar__account-name,
+.sidebar__account-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__account-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--olive-deep);
+}
+
+.sidebar__account-email {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sidebar__signout {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--olive-deep);
+  background: transparent;
+  border: 1px solid rgba(92, 107, 71, 0.35);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sidebar__signout:hover {
+  background: var(--olive);
+  color: var(--white);
+}
+
 /* ---------- Center column ---------- */
 
 .main-col {

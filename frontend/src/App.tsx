@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ViewName } from "./types";
+import type { AuthUser } from "./api";
+import { fetchAuthConfig, fetchMe, logout, setToken, setUnauthorizedHandler } from "./api";
 import type { ReasoningContent } from "./components/ReasoningPanel";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Sidebar } from "./components/Sidebar";
 import { ReasoningPanel } from "./components/ReasoningPanel";
+import { AuthView } from "./views/AuthView";
 import { ChatView } from "./views/ChatView";
 import { HerbLibraryView } from "./views/HerbLibraryView";
 import { SavedAnswersView } from "./views/SavedAnswersView";
 import { AboutView } from "./views/AboutView";
 import { IconAlert, IconMenu } from "./components/Icons";
+
+type AuthPhase = "checking" | "ready" | "signedOut";
 
 export default function App() {
   const [view, setView] = useState<ViewName>("chat");
@@ -17,6 +22,63 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversationRefresh, setConversationRefresh] = useState(0);
+
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [authPhase, setAuthPhase] = useState<AuthPhase>("checking");
+  const [needsRegistration, setNeedsRegistration] = useState(false);
+
+  // Validate the stored token once on load. A stale or revoked token must land
+  // on the sign-in screen rather than failing on the first question.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const config = await fetchAuthConfig();
+        if (cancelled) return;
+        setNeedsRegistration(config.needs_registration);
+        if (!config.auth_required) {
+          setAuthPhase("ready");
+          return;
+        }
+        const me = await fetchMe();
+        if (cancelled) return;
+        setUser(me);
+        setAuthPhase(me ? "ready" : "signedOut");
+      } catch {
+        if (!cancelled) setAuthPhase("signedOut");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // A 401 from any request means the session is gone: drop it and show sign-in.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setToken(null);
+      setUser(null);
+      setConversationId(null);
+      setReasoning(null);
+      setAuthPhase("signedOut");
+    });
+  }, []);
+
+  const onAuthenticated = useCallback((next: AuthUser) => {
+    setUser(next);
+    setAuthPhase("ready");
+    setConversationId(null);
+    setReasoning(null);
+  }, []);
+
+  const onSignOut = useCallback(async () => {
+    await logout();
+    setToken(null);
+    setUser(null);
+    setConversationId(null);
+    setReasoning(null);
+    setAuthPhase("signedOut");
+  }, []);
 
   const onNavigate = useCallback((v: ViewName) => {
     setView(v);
@@ -67,6 +129,22 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  if (authPhase === "checking") {
+    return (
+      <div className="auth auth--loading">
+        <div className="auth__spinner" role="status" aria-label="Loading" />
+      </div>
+    );
+  }
+
+  if (authPhase === "signedOut") {
+    return (
+      <ErrorBoundary>
+        <AuthView needsRegistration={needsRegistration} onAuthenticated={onAuthenticated} />
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div
@@ -83,6 +161,8 @@ export default function App() {
           onSelectConversation={onSelectConversation}
           onNewConversation={onNewConversation}
           onDeleteConversation={onDeleteConversation}
+          user={user}
+          onSignOut={onSignOut}
         />
 
         <main className={`main-col ${view === "chat" ? "main-col--chat" : ""}`}>

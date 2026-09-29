@@ -19,13 +19,41 @@ const API_URL = (import.meta.env?.VITE_API_URL ?? "http://localhost:8000").repla
   ""
 );
 
-// Sent as X-API-Key on every call. Empty string means "no key configured",
-// which is the local-dev default; the backend only enforces a key when one
-// is set. Never commit a real value here — it ships to the browser.
+// Legacy shared-key header. Kept only for CHARAKA_AUTH_REQUIRED=0 single-user
+// setups; real sessions use the bearer token below.
 const API_KEY = (import.meta.env?.VITE_CHARAKA_API_KEY ?? "") as string;
+
+const TOKEN_KEY = "charaka-token";
+
+export function getToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setToken(token: string | null): void {
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* private browsing — session stays in memory only */
+  }
+}
+
+let onUnauthorized: (() => void) | null = null;
+
+/** Registered by the app shell so an expired or revoked token bounces the
+    user back to the sign-in screen instead of failing silently per request. */
+export function setUnauthorizedHandler(fn: () => void): void {
+  onUnauthorized = fn;
+}
 
 function authHeaders(extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = { ...(extra ?? {}) };
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   if (API_KEY) headers["X-API-Key"] = API_KEY;
   return headers;
 }
@@ -48,21 +76,39 @@ async function request<T>(
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(`${API_URL}${path}`, {
-      headers: authHeaders({ "Content-Type": "application/json" }),
       ...init,
+      // Spread init last would drop the auth headers, so merge explicitly.
+      headers: authHeaders({
+        "Content-Type": "application/json",
+        ...(init?.headers as Record<string, string> | undefined),
+      }),
       signal: controller.signal,
     });
     if (res.status === 401) {
-      throw new ApiError(
-        401,
-        "This action needs a valid API key. Check your backend key setup."
-      );
+      onUnauthorized?.();
+      // Read the server's message: it distinguishes a bad password from an
+      // expired session.
+      let detail = "Please sign in to continue.";
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = String(body.detail);
+      } catch {
+        /* non-JSON error body */
+      }
+      throw new ApiError(401, detail);
     }
     if (res.status === 503) {
       throw new ApiError(503, "The assistant is busy right now — retry in a moment.");
     }
     if (!res.ok) {
-      throw new ApiError(res.status, `Request failed (${res.status})`);
+      let detail = `Request failed (${res.status})`;
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = String(body.detail);
+      } catch {
+        /* keep the status-based message */
+      }
+      throw new ApiError(res.status, detail);
     }
     return (await res.json()) as T;
   } catch (e) {
@@ -141,10 +187,15 @@ export async function askStream(
       signal: controller.signal,
     });
     if (res.status === 401) {
-      throw new ApiError(
-        401,
-        "This action needs a valid API key. Check your backend key setup."
-      );
+      onUnauthorized?.();
+      let detail = "Your session has expired. Please sign in again.";
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = String(body.detail);
+      } catch {
+        /* non-JSON error body */
+      }
+      throw new ApiError(401, detail);
     }
     if (!res.ok) {
       throw new ApiError(res.status, `Request failed (${res.status})`);
@@ -200,6 +251,70 @@ export async function askStream(
 export async function fetchHerbs(): Promise<HerbSummary[]> {
   const data = await request<{ herbs: HerbSummary[] }>("/herbs");
   return data.herbs;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  created_at: string;
+}
+
+export interface AuthConfig {
+  auth_required: boolean;
+  needs_registration: boolean;
+}
+
+/** Public: tells the client whether to gate on sign-in and whether the very
+    first visitor should be nudged to create an account. */
+export async function fetchAuthConfig(): Promise<AuthConfig> {
+  const res = await fetch(`${API_URL}/auth/config`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, "Could not reach the sign-in service.");
+  }
+  return (await res.json()) as AuthConfig;
+}
+
+export async function fetchMe(): Promise<AuthUser | null> {
+  try {
+    const data = await request<{ user: AuthUser | null }>("/auth/me");
+    return data.user;
+  } catch (e) {
+    // 401 is the expected "not signed in" answer here, not a failure.
+    if (e instanceof ApiError && e.status === 401) return null;
+    throw e;
+  }
+}
+
+export async function register(
+  email: string,
+  password: string,
+  name: string
+): Promise<{ token: string; user: AuthUser }> {
+  return request<{ token: string; user: AuthUser }>("/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ email, password, name }),
+  });
+}
+
+export async function login(
+  email: string,
+  password: string
+): Promise<{ token: string; user: AuthUser }> {
+  return request<{ token: string; user: AuthUser }>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await request("/auth/logout", { method: "POST" });
+  } catch {
+    // Revoking server-side is best-effort; the local token is cleared either way.
+  }
 }
 
 export interface HindiSummaryPayload {

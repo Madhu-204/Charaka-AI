@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 from app.graph import charaka_agent
-from app import cache, conversations, ratelimit, stats, trace
+from app import auth, cache, conversations, ratelimit, stats, trace
 from app.nodes.summarize import build_hindi_summary, build_summary
 
 BACKEND = Path(__file__).resolve().parents[1]
@@ -31,6 +31,14 @@ app = FastAPI()
 
 API_KEY = os.getenv("CHARAKA_API_KEY")
 ADMIN_KEY = os.getenv("CHARAKA_ADMIN_KEY")
+# Accounts are mandatory by default: every private route needs a real session
+# so one person can never read another's conversations. Set to 0 only for
+# single-user local work, which reopens the legacy shared-key mode.
+AUTH_REQUIRED = os.getenv("CHARAKA_AUTH_REQUIRED", "1").strip().lower() not in (
+    "0",
+    "false",
+    "no",
+)
 _QUERY_CACHE = cache.LRUCache(
     capacity=int(os.getenv("CHARAKA_CACHE_SIZE", "64")),
     ttl=int(os.getenv("CHARAKA_CACHE_TTL", "3600")),
@@ -54,12 +62,65 @@ def _key_matches(provided: Optional[str], expected: Optional[str]) -> bool:
     return secrets.compare_digest(provided, expected)
 
 
+def _bearer_token(authorization: Optional[str]) -> Optional[str]:
+    if not authorization:
+        return None
+    scheme, _, value = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not value.strip():
+        return None
+    return value.strip()
+
+
+def current_user(
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+    x_api_key: Optional[str] = Header(default=None),
+) -> Optional[dict]:
+    """Resolve the caller to a registered account.
+
+    A valid session token identifies a real user and scopes their data. The
+    shared CHARAKA_API_KEY still works, but resolves to None so that key-based
+    callers fall back to the legacy unscoped behaviour instead of silently
+    sharing one account's data.
+    """
+    token = _bearer_token(authorization)
+    user = auth.resolve_token(token) if token else None
+    if user:
+        request.state.user_id = user["id"]
+        return user
+    if not AUTH_REQUIRED and _key_matches(x_api_key, API_KEY):
+        return None
+    raise HTTPException(
+        status_code=401,
+        detail="sign in to continue",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+def optional_user(
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+    x_api_key: Optional[str] = Header(default=None),
+) -> Optional[dict]:
+    """Same as current_user but never raises; used by public routes."""
+    token = _bearer_token(authorization)
+    user = auth.resolve_token(token) if token else None
+    if user:
+        request.state.user_id = user["id"]
+    return user
+
+
+def _owner(request: Request) -> str:
+    return getattr(request.state, "user_id", None) or "shared"
+
+
 def guard_ask(
-    request: Request, x_api_key: Optional[str] = Header(default=None)
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+    x_api_key: Optional[str] = Header(default=None),
 ) -> None:
-    if API_KEY and x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="invalid or missing API key")
-    client_id = x_api_key or (
+    current_user(request, authorization, x_api_key)
+    client_id = getattr(request.state, "user_id", None) or x_api_key or (
         request.client.host if request.client else "local"
     )
     if not _LIMITER.allow(client_id):
@@ -70,18 +131,19 @@ def guard_ask(
         )
 
 
-def guard_private(x_api_key: Optional[str] = Header(default=None)) -> None:
+def guard_private(
+    request: Request,
+    authorization: Optional[str] = Header(default=None),
+    x_api_key: Optional[str] = Header(default=None),
+) -> None:
     """Gate conversation, document and feedback routes.
 
     These were previously world-readable and world-writable: any client could
     list, read and delete every stored conversation, and read or delete another
-    user's uploaded documents by guessing their session id.
+    user's uploaded documents by guessing their session id. A registered
+    session is now required and scopes the caller to their own rows.
     """
-    if not _key_matches(x_api_key, API_KEY):
-        raise HTTPException(
-            status_code=401,
-            detail="invalid or missing API key",
-        )
+    current_user(request, authorization, x_api_key)
 
 
 def guard_admin(x_api_key: Optional[str] = Header(default=None)) -> None:
@@ -154,6 +216,17 @@ class FeedbackRequest(BaseModel):
     query: str
     rating: Literal["up", "down"]
     message_id: Optional[str] = None
+
+
+class RegisterRequest(BaseModel):
+    email: str = Field(..., max_length=254)
+    password: str = Field(..., max_length=200)
+    name: str = Field(default="", max_length=80)
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(..., max_length=254)
+    password: str = Field(..., max_length=200)
     answer: Optional[str] = None
     trace: Optional[List[str]] = None
     dosha: Optional[str] = None
@@ -228,8 +301,8 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-def _history_from_store(conversation_id):
-    record = conversations.get_conversation(conversation_id)
+def _history_from_store(conversation_id, owner=None):
+    record = conversations.get_conversation(conversation_id, owner)
     if not record:
         return {"history": None, "dosha_profile": None}
     return {
@@ -326,18 +399,21 @@ async def _event_stream(
     query: str, history: Optional[List[dict]], conversation_id: Optional[str],
     dosha_profile: Optional[str], lang: Optional[str] = None,
     doc_session: Optional[str] = None,
+    owner: Optional[str] = None,
 ):
     queue: asyncio.Queue = asyncio.Queue()
 
     if history is None and conversation_id:
-        store = _history_from_store(conversation_id)
+        store = _history_from_store(conversation_id, owner)
         history = store["history"]
         dosha_profile = dosha_profile or store["dosha_profile"]
 
     cacheable = conversation_id is None and not doc_session
     cache_key = (
         cache.LRUCache.key_for(
-            query, dosha_profile, scope=_cache_scope(dosha_profile)
+            query,
+            dosha_profile,
+            scope=f"{_cache_scope(dosha_profile)}|u={owner or 'shared'}",
         )
         if cacheable
         else None
@@ -441,7 +517,7 @@ async def _event_stream(
             resp["suggestions"] = _suggest_questions(payload)
             if payload.get("final_answer"):
                 conv_id, conv_title = conversations.save_turn(
-                    conversation_id, query, resp
+                    conversation_id, query, resp, owner
                 )
                 resp["conversation_id"] = conv_id
                 resp["conversation_title"] = conv_title
@@ -486,7 +562,7 @@ async def _event_stream(
                 # the turn, so the summary is patched onto the stored message
                 # instead.
                 conversations.patch_last_assistant(
-                    conversation_id, {"summary": summary}
+                    conversation_id, {"summary": summary}, owner
                 )
             if cache_key and payload.get("final_answer") and not payload.get(
                 "is_emergency"
@@ -499,16 +575,19 @@ async def _event_stream(
 
 
 @app.post("/ask", dependencies=[Depends(guard_ask)])
-def ask(req: AskRequest):
+def ask(req: AskRequest, request: Request):
+    owner = _owner(request)
     state = {"query": req.query, "history": req.history or []}
     if req.dosha_profile:
         state["dosha_profile"] = req.dosha_profile
     if req.doc_session:
-        state["doc_session"] = req.doc_session
+        state["doc_session"] = _doc_scope(owner, req.doc_session)
 
     cache_key = (
         cache.LRUCache.key_for(
-            req.query, req.dosha_profile, scope=_cache_scope(req.dosha_profile)
+            req.query,
+            req.dosha_profile,
+            scope=f"{_cache_scope(req.dosha_profile)}|u={owner}",
         )
         if not req.history and not req.doc_session
         else None
@@ -567,25 +646,67 @@ def ask(req: AskRequest):
 
 
 @app.post("/ask/stream", dependencies=[Depends(guard_ask)])
-async def ask_stream(req: AskRequest):
+async def ask_stream(req: AskRequest, request: Request):
     return StreamingResponse(
         _event_stream(
             req.query, req.history, req.conversation_id, req.dosha_profile,
-            lang=req.lang, doc_session=req.doc_session,
+            lang=req.lang,
+            doc_session=(
+                _doc_scope(_owner(request), req.doc_session)
+                if req.doc_session
+                else None
+            ),
+            owner=_owner(request),
         ),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
 
+@app.post("/auth/register")
+def register(req: RegisterRequest):
+    try:
+        user = auth.create_user(req.email, req.password, req.name)
+    except auth.AuthError as e:
+        raise HTTPException(status_code=e.status, detail=e.message)
+    return {"token": auth.issue_token(user["id"]), "user": user}
+
+
+@app.post("/auth/login")
+def login(req: LoginRequest):
+    try:
+        user = auth.authenticate(req.email, req.password)
+    except auth.AuthError as e:
+        raise HTTPException(status_code=e.status, detail=e.message)
+    return {"token": auth.issue_token(user["id"]), "user": user}
+
+
+@app.post("/auth/logout")
+def logout(authorization: Optional[str] = Header(default=None)):
+    return {"ok": auth.revoke_token(_bearer_token(authorization))}
+
+
+@app.get("/auth/me")
+def me(user: Optional[dict] = Depends(current_user)):
+    return {"user": user, "auth_required": AUTH_REQUIRED}
+
+
+@app.get("/auth/config")
+def auth_config():
+    """Public, non-identifying. Tells the client whether to show the sign-in
+    screen and how many accounts already exist, so the first visitor knows to
+    register rather than being told their password is wrong."""
+    return {"auth_required": AUTH_REQUIRED, "needs_registration": auth.count_users() == 0}
+
+
 @app.get("/conversations", dependencies=[Depends(guard_private)])
-def list_conversations():
-    return {"conversations": conversations.list_conversations()}
+def list_conversations(request: Request):
+    return {"conversations": conversations.list_conversations(_owner(request))}
 
 
 @app.get("/conversations/{conversation_id}", dependencies=[Depends(guard_private)])
-def get_conversation(conversation_id: str):
-    record = conversations.get_conversation(conversation_id)
+def get_conversation(conversation_id: str, request: Request):
+    record = conversations.get_conversation(conversation_id, _owner(request))
     if record is None:
         return {"ok": False, "error": "not_found"}
     return {"ok": True, "conversation": record}
@@ -594,34 +715,58 @@ def get_conversation(conversation_id: str):
 @app.delete(
     "/conversations/{conversation_id}", dependencies=[Depends(guard_private)]
 )
-def delete_conversation(conversation_id: str):
-    return {"ok": conversations.delete_conversation(conversation_id)}
+def delete_conversation(conversation_id: str, request: Request):
+    return {"ok": conversations.delete_conversation(conversation_id, _owner(request))}
+
+
+def _doc_scope(owner: Optional[str], session_id: str) -> str:
+    """Namespace a client-supplied document session id by its owner.
+
+    The session id arrives from the browser, so without this any signed-in user
+    could pass someone else's id and read or delete their uploaded documents.
+    """
+    safe = "".join(ch for ch in (session_id or "") if ch.isalnum() or ch in "-_")[:64]
+    return f"u_{owner or 'shared'}_{safe or 'default'}"
 
 
 @app.post("/documents/upload", dependencies=[Depends(guard_private)])
-async def upload_document(session_id: str = Form(...), file: UploadFile = File(...)):
+async def upload_document(
+    request: Request,
+    session_id: str = Form(...),
+    file: UploadFile = File(...),
+):
     from app import documents
 
     data = await file.read()
     try:
-        result = documents.upload(session_id, file.filename or "document.txt", data)
+        result = documents.upload(
+            _doc_scope(_owner(request), session_id),
+            file.filename or "document.txt",
+            data,
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"ok": True, **result}
 
 
 @app.get("/documents/{session_id}", dependencies=[Depends(guard_private)])
-def list_documents(session_id: str):
+def list_documents(session_id: str, request: Request):
     from app import documents
 
-    return {"ok": True, "documents": documents.list_uploads(session_id)}
+    return {
+        "ok": True,
+        "documents": documents.list_uploads(_doc_scope(_owner(request), session_id)),
+    }
 
 
 @app.delete("/documents/{session_id}", dependencies=[Depends(guard_private)])
-def delete_documents(session_id: str):
+def delete_documents(session_id: str, request: Request):
     from app import documents
 
-    return {"ok": True, "removed": documents.remove(session_id)}
+    return {
+        "ok": True,
+        "removed": documents.remove(_doc_scope(_owner(request), session_id)),
+    }
 
 
 @app.get("/healthz")

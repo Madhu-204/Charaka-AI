@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ComponentType } from "react";
 import type { ConversationSummary, ViewName } from "../types";
+import type { AuthUser } from "../api";
 import { deleteConversation, fetchConversations } from "../api";
 import {
   IconBookmark,
   IconChat,
   IconInfo,
+  IconLogout,
   IconPlant,
   IconPlus,
   IconTrash,
@@ -20,6 +22,8 @@ interface SidebarProps {
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
+  user: AuthUser | null;
+  onSignOut: () => void;
 }
 
 const NAV: { id: ViewName; label: string; icon: ComponentType }[] = [
@@ -38,6 +42,8 @@ export function Sidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  user,
+  onSignOut,
 }: SidebarProps) {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 
@@ -142,6 +148,27 @@ export function Sidebar({
         <div className="sidebar__chip">
           Not a diagnosis tool — always know when to see a doctor.
         </div>
+
+        {user && (
+          <div className="sidebar__account">
+            <div className="sidebar__account-info">
+              <span className="sidebar__account-name">
+                {user.name?.trim() || user.email}
+              </span>
+              {user.name?.trim() && (
+                <span className="sidebar__account-email">{user.email}</span>
+              )}
+            </div>
+            <button
+              className="sidebar__signout"
+              onClick={() => void onSignOut()}
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <IconLogout width={15} height={15} />
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );

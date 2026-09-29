@@ -19,6 +19,12 @@ backend/eval_results.json
 backend/traces/
 backend/user_chroma_db/
 
+# Accounts and sessions. Never commit: these hold password hashes and live
+# session tokens.
+backend/users.db
+backend/users.db-shm
+backend/users.db-wal
+
 # Frontend
 frontend/node_modules/
 frontend/dist/

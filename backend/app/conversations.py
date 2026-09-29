@@ -42,7 +42,12 @@ def _title_for(first_user_text):
     return (text[:60] + "…") if len(text) > 60 else (text or "New conversation")
 
 
-def list_conversations():
+def _owned(r, owner):
+    """Rows written before accounts existed have no user_id and stay shared."""
+    return r.get("user_id", "shared") == (owner or "shared")
+
+
+def list_conversations(owner=None):
     with _lock:
         rows = _load()
     summaries = [
@@ -54,26 +59,27 @@ def list_conversations():
             "message_count": len(r["messages"]),
         }
         for r in rows
+        if _owned(r, owner)
     ]
     summaries.sort(key=lambda r: r["updated_at"], reverse=True)
     return summaries
 
 
-def get_conversation(conversation_id):
+def get_conversation(conversation_id, owner=None):
     with _lock:
         rows = _load()
     for r in rows:
-        if r["id"] == conversation_id:
+        if r["id"] == conversation_id and _owned(r, owner):
             return r
     return None
 
 
-def _upsert(conversation_id, title, user_msg, assistant_msg):
+def _upsert(conversation_id, title, user_msg, assistant_msg, owner=None):
     with _lock:
         rows = _load()
         record = None
         for r in rows:
-            if r["id"] == conversation_id:
+            if r["id"] == conversation_id and _owned(r, owner):
                 record = r
                 break
         now = _now()
@@ -83,6 +89,7 @@ def _upsert(conversation_id, title, user_msg, assistant_msg):
                 "title": title,
                 "created_at": now,
                 "updated_at": now,
+                "user_id": owner or "shared",
                 "messages": [],
             }
             rows.append(record)
@@ -105,7 +112,7 @@ def _upsert(conversation_id, title, user_msg, assistant_msg):
         return record
 
 
-def save_turn(conversation_id, user_message, assistant_payload):
+def save_turn(conversation_id, user_message, assistant_payload, owner=None):
     conversation_id = conversation_id or str(uuid.uuid4())
     title = _title_for(user_message)
     user_msg = {"content": user_message}
@@ -115,7 +122,7 @@ def save_turn(conversation_id, user_message, assistant_payload):
         content = assistant_payload.pop("answer", "")
     assistant_msg = {"content": content}
     assistant_msg.update(assistant_payload)
-    record = _upsert(conversation_id, title, user_msg, assistant_msg)
+    record = _upsert(conversation_id, title, user_msg, assistant_msg, owner)
     dosha = assistant_payload.get("dosha")
     if dosha:
         with _lock:
@@ -128,7 +135,7 @@ def save_turn(conversation_id, user_message, assistant_payload):
     return record["id"], record["title"]
 
 
-def patch_last_assistant(conversation_id, updates):
+def patch_last_assistant(conversation_id, updates, owner=None):
     """Merge `updates` into the most recent assistant message of a conversation.
 
     The streaming endpoint appends the turn as soon as the answer is ready and
@@ -141,7 +148,7 @@ def patch_last_assistant(conversation_id, updates):
     with _lock:
         rows = _load()
         for r in rows:
-            if r["id"] != conversation_id:
+            if r["id"] != conversation_id or not _owned(r, owner):
                 continue
             for msg in reversed(r.get("messages") or []):
                 if msg.get("role") == "assistant":
@@ -152,10 +159,12 @@ def patch_last_assistant(conversation_id, updates):
         return False
 
 
-def delete_conversation(conversation_id):
+def delete_conversation(conversation_id, owner=None):
     with _lock:
         rows = _load()
-        remaining = [r for r in rows if r["id"] != conversation_id]
+        remaining = [
+            r for r in rows if not (r["id"] == conversation_id and _owned(r, owner))
+        ]
         deleted = len(remaining) != len(rows)
         if deleted:
             _save(remaining)
