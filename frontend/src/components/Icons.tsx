@@ -90,6 +90,14 @@ export function IconSend(props: IconProps) {
   );
 }
 
+export function IconStop(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="5" y="5" width="14" height="14" rx="2" />
+    </svg>
+  );
+}
+
 export function IconMic(props: IconProps) {
   return (
     <svg {...base(props)}>

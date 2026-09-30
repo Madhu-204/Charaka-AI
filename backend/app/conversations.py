@@ -135,6 +135,49 @@ def save_turn(conversation_id, user_message, assistant_payload, owner=None):
     return record["id"], record["title"]
 
 
+def replace_last_turn(conversation_id, assistant_payload, owner=None):
+    """Replace the trailing user+assistant pair with a fresh one.
+
+    Regenerate should overwrite the previous attempt, not append a duplicate
+    pair — otherwise repeated regenerates fill a conversation with copies of
+    the same question. Falls back to False when the shape is not what we
+    expect, so the caller can fall back to save_turn and never lose a turn.
+    """
+    if not conversation_id:
+        return False
+    assistant_payload = dict(assistant_payload)
+    content = assistant_payload.pop("content", None)
+    if content is None:
+        content = assistant_payload.pop("answer", "")
+    with _lock:
+        rows = _load()
+        for r in rows:
+            if r["id"] != conversation_id or not _owned(r, owner):
+                continue
+            messages = r.get("messages") or []
+            if len(messages) < 2:
+                return False
+            if messages[-1].get("role") != "assistant":
+                return False
+            if messages[-2].get("role") != "user":
+                return False
+            now = _now()
+            r["messages"] = messages[:-2] + [
+                messages[-2],
+                {
+                    "id": str(uuid.uuid4()),
+                    "role": "assistant",
+                    "content": content,
+                    **assistant_payload,
+                    "timestamp": now,
+                },
+            ]
+            r["updated_at"] = now
+            _save(rows)
+            return True
+    return False
+
+
 def patch_last_assistant(conversation_id, updates, owner=None):
     """Merge `updates` into the most recent assistant message of a conversation.
 

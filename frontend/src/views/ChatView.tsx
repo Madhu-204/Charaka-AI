@@ -15,7 +15,7 @@ import { addSaved } from "../lib/saved";
 import type { AskResponse, ChatMessage, Confidence, DocRecord, FeedbackRating, StreamStage } from "../types";
 import type { ReasoningContent } from "../components/ReasoningPanel";
 import { ChatBubble } from "../components/ChatBubble";
-import { IconChat, IconMic, IconSend } from "../components/Icons";
+import { IconChat, IconMic, IconSend, IconStop } from "../components/Icons";
 
 interface ChatViewProps {
   onReasoning: (content: ReasoningContent | null) => void;
@@ -103,6 +103,8 @@ function langSetting(): "en" | "hin" {
  */
 function errorMessage(e: unknown): string {
   if (e instanceof ApiError) {
+    // A user-initiated stop is not a failure — never surface it as an error.
+    if (e.status === 499) return "";
     if (e.status === 408) return e.message;
     if (e.status === 503) {
       return "Charaka is answering a few other questions right now. Please try again in a moment.";
@@ -121,6 +123,7 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorRetryable, setErrorRetryable] = useState(false);
   const [lang, setLang] = useState<"en" | "hin">(langSetting);
   const [docsOpen, setDocsOpen] = useState(false);
   const [docs, setDocs] = useState<DocRecord[]>([]);
@@ -130,6 +133,12 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const loadedRef = useRef<string | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+  // Held so the Stop button can abort an in-flight stream.
+  const abortRef = useRef<AbortController | null>(null);
+  // The question behind the current error, so Retry can re-send it after the
+  // composer has been cleared. State rather than a ref because the Retry
+  // button's visibility depends on it during render.
+  const [failedQuery, setFailedQuery] = useState<string | null>(null);
 
   const docSession = useMemo(() => docSessionId(), []);
 
@@ -215,16 +224,12 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
     };
   }, [conversationId, onReasoning]);
 
-  async function handleSend(text?: string) {
+  async function handleSend(text?: string, regenerate = false) {
+    // Retry re-sends the question rather than whatever is in the (now empty)
+    // input box, so the Retry button works after the composer has been cleared.
     const query = (text ?? input).trim();
     if (!query || loading) return;
 
-    const userMsg: ChatMessage = {
-      id: newId(),
-      role: "user",
-      content: query,
-      createdAt: Date.now(),
-    };
     const assistantId = newId();
     const assistantMsg: ChatMessage = {
       id: assistantId,
@@ -239,10 +244,31 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
       showReasoning: false,
       saved: false,
     };
-    setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    if (regenerate) {
+      setMessages((prev) => {
+        // Remove the trailing user + assistant pair this regenerate replaces.
+        const next = [...prev];
+        if (next.length && next[next.length - 1].role === "assistant") next.pop();
+        if (next.length && next[next.length - 1].role === "user") next.pop();
+        return [...next, assistantMsg];
+      });
+    } else {
+      const userMsg: ChatMessage = {
+        id: newId(),
+        role: "user",
+        content: query,
+        createdAt: Date.now(),
+      };
+      setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    }
     setInput("");
     setError(null);
+    setErrorRetryable(false);
     setLoading(true);
+    setFailedQuery(query);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const buffer = { text: "" };
     const appendDelta = (delta: string) => {
@@ -312,6 +338,7 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
           },
           onError: (e) => {
             setError(errorMessage(e));
+            setErrorRetryable(e instanceof ApiError && e.retryable);
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === assistantId
@@ -327,11 +354,29 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
           lang,
           docSession,
           timeoutMs: 180_000,
+          signal: controller.signal,
+          regenerate,
         }
       );
     } catch (e) {
-      setError(errorMessage(e));
+      const message = errorMessage(e);
+      if (message) {
+        setError(message);
+        setErrorRetryable(e instanceof ApiError && e.retryable);
+      }
+      if (e instanceof ApiError && e.status === 499) {
+        // Keep whatever streamed before the stop, but mark it so the UI can
+        // label the answer as cut short rather than presenting it as complete.
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, streaming: false, stages: null, stopped: true, summaryPending: false }
+              : m
+          )
+        );
+      }
     } finally {
+      if (abortRef.current === controller) abortRef.current = null;
       // The summary is best-effort: the backend skips it when the concurrency
       // gate is saturated, so a stream can end with the card still pending.
       // Clearing it here prevents a skeleton that never resolves.
@@ -344,6 +389,15 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
       );
       setLoading(false);
     }
+  }
+
+  function handleRetry() {
+    if (!failedQuery || loading) return;
+    void handleSend(failedQuery);
+  }
+
+  function handleStop() {
+    abortRef.current?.abort();
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -385,7 +439,7 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
 
   function handleRegenerate(query: string) {
     if (!query.trim() || loading) return;
-    void handleSend(query);
+    void handleSend(query, true);
   }
 
   function handleLangToggle() {
@@ -509,7 +563,27 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
         ))}
       </div>
 
-      {error && <div className="chat-error">{error}</div>}
+      {error && (
+        <div className="chat-error" role="alert">
+          <span className="chat-error__text">{error}</span>
+          {errorRetryable && failedQuery && (
+            <button
+              className="chat-error__retry"
+              onClick={handleRetry}
+              disabled={loading}
+            >
+              Retry
+            </button>
+          )}
+          <button
+            className="chat-error__retry"
+            onClick={() => setError(null)}
+            aria-label="Dismiss error"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <div className="chat-input-bar">
         <div className="chat-toolbar">
@@ -595,14 +669,25 @@ export function ChatView({ onReasoning, conversationId, onConversationChange }: 
               <IconMic />
             </button>
           )}
-          <button
-            className="send-btn"
-            onClick={() => void handleSend()}
-            disabled={!input.trim() || loading}
-            aria-label="Send"
-          >
-            <IconSend />
-          </button>
+          {loading ? (
+            <button
+              className="send-btn send-btn--stop"
+              onClick={handleStop}
+              aria-label="Stop generating"
+              title="Stop generating"
+            >
+              <IconStop />
+            </button>
+          ) : (
+            <button
+              className="send-btn"
+              onClick={() => void handleSend()}
+              disabled={!input.trim()}
+              aria-label="Send"
+            >
+              <IconSend />
+            </button>
+          )}
         </div>
       </div>
     </div>

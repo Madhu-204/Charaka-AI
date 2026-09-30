@@ -10,14 +10,38 @@ with open(BACKEND / "reference" / "mappings.json", encoding="utf-8") as f:
 with open(BACKEND / "reference" / "herbs.json", encoding="utf-8") as f:
     herbs_data = json.load(f)["herbs"]
 
+# English -> Sanskrit bridge terms. The value is appended to the query so the
+# embedding model sees the term Charaka actually uses.
+#
+# These were selected by measurement, not by guessing. A candidate only earns a
+# place if both terms occur in the corpus vocabulary and appending it improved
+# retrieval on deliberately hard paraphrases ("my chest is tight and i can't
+# catch my breath"). Several plausible mappings were rejected on that basis:
+# "astringent"->"kashaya" flipped a correct answer (sutrasthana/26 ->
+# chikitsasthana/3), and "diabetes", "gut" and "body type" never appear in the
+# corpus text at all, so they could not help.
+#
+# Keys are matched with `in`, not word boundaries, so longer phrases are listed
+# before their substrings where both are wanted.
 SYNONYMS = {
-    "diabetes": "prameha",
+    "high temperature": "jwara",
+    "fever": "jwara",
+    "chest is tight": "shwasa",
+    "breathing": "shwasa",
+    "hiccups": "hikka",
+    "hiccup": "hikka",
+    "skin disease": "kushtha",
+    "joint pain": "vatavyadhi",
+    "thirsty": "prameha",
+    "old age": "ayu",
+    "indigestion": "grahani",
+    "tastes": "rasa",
     "taste": "rasa",
     "constitution": "prakriti",
     "body type": "prakriti",
     "cough": "kasa",
     "digestion": "agni",
-    "gut": "grahani",
+    "diabetes": "prameha",
 }
 
 HERB_PATTERNS = []

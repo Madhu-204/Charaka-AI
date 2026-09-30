@@ -60,10 +60,13 @@ function authHeaders(extra?: Record<string, string>): Record<string, string> {
 
 export class ApiError extends Error {
   status: number;
+  /** True when re-sending the same request could plausibly succeed. */
+  retryable: boolean;
 
-  constructor(status: number, message: string) {
+  constructor(status: number, message: string, retryable = false) {
     super(message);
     this.status = status;
+    this.retryable = retryable;
   }
 }
 
@@ -98,7 +101,16 @@ async function request<T>(
       throw new ApiError(401, detail);
     }
     if (res.status === 503) {
-      throw new ApiError(503, "The assistant is busy right now — retry in a moment.");
+      // A 503 from /ask means the LLM provider was unavailable or its quota is
+      // spent. Prefer the server's own copy so the user sees the real cause.
+      let detail = "The assistant is busy right now — retry in a moment.";
+      try {
+        const body = await res.json();
+        if (body?.detail) detail = String(body.detail);
+      } catch {
+        /* keep the default message */
+      }
+      throw new ApiError(503, detail, true);
     }
     if (!res.ok) {
       let detail = `Request failed (${res.status})`;
@@ -113,7 +125,7 @@ async function request<T>(
     return (await res.json()) as T;
   } catch (e) {
     if (controller.signal.aborted) {
-      throw new ApiError(408, "The answer took too long — backend timed out.");
+      throw new ApiError(408, "The answer took too long — backend timed out.", true);
     }
     throw e;
   } finally {
@@ -163,6 +175,17 @@ export interface AskStreamOptions {
   lang?: "en" | "hin" | null;
   docSession?: string | null;
   timeoutMs?: number;
+  /**
+   * Caller-owned abort signal for the Stop button. Aborting cancels the fetch
+   * so the UI can release immediately; the backend also watches for client
+   * disconnect and stops its own work.
+   */
+  signal?: AbortSignal;
+  /**
+   * Overwrite the previous answer for this turn instead of appending a
+   * duplicate user/assistant pair. Sent when the user presses Regenerate.
+   */
+  regenerate?: boolean;
 }
 
 export async function askStream(
@@ -172,6 +195,13 @@ export async function askStream(
 ): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? 180_000);
+  // Forward an external abort (Stop button) into our own controller.
+  const external = opts.signal;
+  const forwardAbort = () => controller.abort();
+  if (external) {
+    if (external.aborted) controller.abort();
+    else external.addEventListener("abort", forwardAbort);
+  }
   try {
     const res = await fetch(`${API_URL}/ask/stream`, {
       method: "POST",
@@ -183,6 +213,7 @@ export async function askStream(
         dosha_profile: opts.doshaProfile ?? null,
         lang: opts.lang ?? null,
         doc_session: opts.docSession ?? null,
+        regenerate: opts.regenerate ?? false,
       }),
       signal: controller.signal,
     });
@@ -229,14 +260,34 @@ export async function askStream(
           const parsed = JSON.parse(ev.data) as { summary?: AnswerSummary | null };
           if (parsed.summary) handlers.onSummary?.(parsed.summary);
         } else if (ev.type === "error") {
-          const parsed = JSON.parse(ev.data) as { message?: string };
-          throw new ApiError(500, parsed.message ?? "Stream error");
+          const parsed = JSON.parse(ev.data) as {
+            message?: string;
+            retryable?: boolean;
+          };
+          // The backend marks provider/quota and busy failures as retryable so
+          // the UI can offer a Retry button instead of implying a broken app.
+          throw new ApiError(
+            parsed.retryable ? 503 : 500,
+            parsed.message ?? "Stream error",
+            Boolean(parsed.retryable)
+          );
         }
       }
     }
   } catch (e) {
     if (controller.signal.aborted) {
-      const err = new ApiError(408, "The answer took too long — backend timed out.");
+      // A user-initiated stop is not an error: report it with a distinct 499 so
+      // the UI can leave the partial answer on screen without raising an error.
+      if (external?.aborted) {
+        const stopped = new ApiError(499, "Generation stopped.");
+        handlers.onError?.(stopped);
+        throw stopped;
+      }
+      const err = new ApiError(
+        408,
+        "The answer took too long — backend timed out.",
+        true
+      );
       handlers.onError?.(err);
       throw err;
     }
@@ -245,6 +296,7 @@ export async function askStream(
     throw err;
   } finally {
     clearTimeout(timer);
+    external?.removeEventListener("abort", forwardAbort);
   }
 }
 

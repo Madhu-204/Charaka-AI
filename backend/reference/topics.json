@@ -1,0 +1,101 @@
+{
+  "_comment": "Maps user-facing query terms to the category_tag / traditional_condition values actually stored in the vector index (see scripts/build_vector_store.py::_metadata). Only tags that exist in the corpus are listed. Surfaced by app/nodes/tool_router.py to widen metadata filtering beyond sthana.",
+  "topics": {
+    "fever_acute": {
+      "condition": "Jwara",
+      "label": "Fever and acute illness",
+      "terms": ["fever", "fevers", "jvara", "jwara", "pyrexia", "high temperature", "acute illness", "fever treatment", "high fever", "burning fever"]
+    },
+    "respiratory": {
+      "condition": null,
+      "condition_note": "Covers both Kasa (cough) and Hikka-Shwasa (breathing/hiccup); filter on traditional_condition to narrow to one.",
+      "label": "Cough, hiccup and breathing",
+      "terms": ["cough", "coughing", "kasa", "respiratory", "hiccup", "hiccups", "hikka", "shwasa", "breathing", "shortness of breath", "wheeze", "wheezing", "asthma", "dyspnea", "breathlessness", "difficulty breathing"]
+    },
+    "skin": {
+      "condition": "Kushtha",
+      "label": "Skin disease",
+      "terms": ["skin disease", "skin diseases", "kushtha", "kustha", "skin disorder", "skin disorders", "rash", "rashes", "eczema", "leprosy", "skin problem", "skin problems", "itching skin"]
+    },
+    "digestive": {
+      "condition": "Grahani",
+      "label": "Digestion and grahani",
+      "terms": ["digestion", "digestive", "grahani", "indigestion", "malabsorption", "gut", "stomach", "bowel", "appetite", "digestive health"]
+    },
+    "metabolic": {
+      "condition": "Prameha",
+      "label": "Diabetes and metabolic disease",
+      "terms": ["diabetes", "prameha", "metabolic", "blood sugar", "high blood sugar", "madhumeha", "sweet urine", "urinary disease", "diabetic"]
+    },
+    "joint_vata_sleep": {
+      "condition": "Vatavyadhi",
+      "label": "Joint and vata disorders",
+      "terms": ["joint pain", "joint pains", "joint stiffness", "arthritis", "vatavyadhi", "vata disorder", "vata disease", "rheumatism", "stiff joints", "knee pain", "back pain"]
+    },
+    "taste_potency": {
+      "condition": null,
+      "label": "Taste and potency",
+      "terms": ["taste", "tastes", "rasa", "potency", "flavor", "six tastes", "sweet taste", "pungent", "astringent taste"]
+    },
+    "taste_theory": {
+      "condition": null,
+      "label": "Theory of taste",
+      "terms": ["taste theory", "theory of taste", "rasa theory", "theory of tastes"]
+    },
+    "constitution_prakriti": {
+      "condition": null,
+      "label": "Constitution and prakriti",
+      "terms": ["constitution", "constitutional", "prakriti", "body type", "body constitution", "individual constitution"]
+    },
+    "foundational_dosha": {
+      "condition": null,
+      "label": "Foundational dosha theory",
+      "terms": ["dosha", "doshas", "three doshas", "vata pitta kapha", "pitta", "kapha", "fundamental dosha"]
+    },
+    "vata_theory": {
+      "condition": null,
+      "label": "Vata theory and daily cycles",
+      "terms": ["daily time periods", "daily time period", "circadian", "vata theory", "time periods governed by vata", "daily cycle"]
+    },
+    "food_properties": {
+      "condition": null,
+      "label": "Food properties and diet",
+      "terms": ["food", "foods", "diet", "dietetics", "nutrition", "ahara", "dietary", "eating", "meat", "soup", "food properties", "quantity of food"]
+    },
+    "diagnosis_method": {
+      "condition": null,
+      "label": "Examination and diagnosis",
+      "terms": ["diagnosis", "diagnostic", "examination", "examine", "examining the patient", "prognosis", "how does the physician examine", "examination of a patient"]
+    },
+    "routine_dinacharya": {
+      "condition": null,
+      "label": "Daily routine (dinacharya)",
+      "terms": ["daily routine", "dinacharya", "daily regimen", "daily schedule", "morning routine", "sleeping and waking", "waking", "suppressing natural urges", "natural urges"]
+    },
+    "routine_seasonal": {
+      "condition": null,
+      "label": "Seasonal routine (ritucharya)",
+      "terms": ["seasonal", "seasonal routine", "ritucharya", "ritu", "seasons", "season", "seasonal regimen"]
+    },
+    "preventive": {
+      "condition": null,
+      "label": "Prevention and longevity",
+      "terms": ["preventive", "prevention", "longevity", "long healthy life", "long and healthy life", "live a long", "healthy life", "longevity and rejuvenation"]
+    },
+    "disease_origin": {
+      "condition": null,
+      "label": "Origin of disease",
+      "terms": ["origin of disease", "disease origin", "nidana", "etiology", "causes of disease", "how disease begins"]
+    },
+    "disease_classification": {
+      "condition": null,
+      "label": "Classification of disease",
+      "terms": ["classification", "classify", "classifying diseases", "disease classification", "classification of diseases", "classifies diseases", "types of disease"]
+    },
+    "herb_groups": {
+      "condition": null,
+      "label": "Herb groups",
+      "terms": ["herb groups", "groups of herbs", "herbs for purgation", "purgation", "emesis", "virechana", "vamana", "herbs used for purgation", "which herbs"]
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 import mimetypes
 import os
@@ -18,6 +19,7 @@ from dotenv import load_dotenv
 from app.graph import charaka_agent
 from app import auth, cache, conversations, ratelimit, stats, trace
 from app.nodes.summarize import build_hindi_summary, build_summary
+from app.nodes.synthesis import SynthesisUnavailable
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
@@ -171,6 +173,13 @@ try:
     _CORPUS = json.loads((PROCESSED / "charaka_structured.json").read_text(encoding="utf-8"))
 except Exception:  # noqa: BLE001
     _CORPUS = []
+
+# Answers are cached in-process for the TTL, so a re-index that changes the
+# corpus would otherwise keep serving pre-change answers. Stamp the corpus into
+# the cache key so a rebuild invalidates old entries without a restart.
+_CORPUS_VERSION = hashlib.sha256(
+    json.dumps(_CORPUS, sort_keys=True, ensure_ascii=False).encode("utf-8")
+).hexdigest()[:16]
 def _allowed_origins() -> list:
     raw = os.getenv("CHARAKA_ALLOWED_ORIGINS", "").strip()
     if not raw:
@@ -210,6 +219,9 @@ class AskRequest(BaseModel):
     dosha_profile: Optional[str] = None
     lang: Optional[Literal["en", "hin"]] = None
     doc_session: Optional[str] = None
+    # True when the user pressed Regenerate: overwrite the trailing turn in
+    # place instead of appending a duplicate question/answer pair.
+    regenerate: bool = False
 
 
 class FeedbackRequest(BaseModel):
@@ -301,6 +313,23 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
+# User-facing copy for a failed synthesis. Deliberately names the real cause
+# (a provider quota / outage) and says it is retryable, because the alternative
+# — a silent canned answer — looks like a successful grounded response and makes
+# the product look broken rather than busy.
+LLM_UNAVAILABLE_MESSAGE = (
+    "The language model is temporarily unavailable — most often the free-tier "
+    "token quota is used up for the day. Your question was not answered. "
+    "Please retry in a few minutes."
+)
+
+
+def _llm_error_message(exc: Exception) -> str:
+    if isinstance(exc, SynthesisUnavailable):
+        return LLM_UNAVAILABLE_MESSAGE
+    return f"Something went wrong while answering: {exc}"
+
+
 def _history_from_store(conversation_id, owner=None):
     record = conversations.get_conversation(conversation_id, owner)
     if not record:
@@ -313,6 +342,25 @@ def _history_from_store(conversation_id, owner=None):
         ],
         "dosha_profile": record.get("dosha_profile"),
     }
+
+
+def _history_fingerprint(history: Optional[List[dict]]) -> str:
+    """Short, stable digest of the conversation history used for synthesis.
+
+    Two requests with the same query but different prior turns are different
+    questions, so the history has to be part of the cache key. Hashing the last
+    few turns (the same window the synthesis prompt actually includes) keeps
+    the key short while staying correct.
+    """
+    if not history:
+        return "none"
+    parts = []
+    for m in history[-6:]:
+        role = m.get("role", "user")
+        content = " ".join((m.get("content") or "").strip().split())
+        parts.append(f"{role}:{content[:1200]}")
+    blob = "\n".join(parts).encode("utf-8")
+    return hashlib.sha1(blob).hexdigest()[:16]
 
 
 def _cache_scope(dosha_profile: Optional[str]) -> str:
@@ -400,20 +448,36 @@ async def _event_stream(
     dosha_profile: Optional[str], lang: Optional[str] = None,
     doc_session: Optional[str] = None,
     owner: Optional[str] = None,
+    request: Optional[Request] = None,
+    regenerate: bool = False,
 ):
     queue: asyncio.Queue = asyncio.Queue()
+    # Set when the browser goes away (Stop button, tab close, network drop).
+    # The worker thread polls it so an abandoned request stops calling the LLM
+    # instead of burning a Groq slot and tokens on an answer nobody will read.
+    abandoned = threading.Event()
 
     if history is None and conversation_id:
         store = _history_from_store(conversation_id, owner)
         history = store["history"]
         dosha_profile = dosha_profile or store["dosha_profile"]
 
-    cacheable = conversation_id is None and not doc_session
+    # Cacheability must key on everything the answer actually depends on: the
+    # query, the dosha profile, the owning user, AND the conversation history
+    # (which is embedded in the synthesis prompt). Keying on the query alone
+    # would serve an answer written against turn 1 to someone asking in turn 5.
+    # Hashing the history means a genuine repeat — the Retry button, or a
+    # regenerate of the same turn — now hits instead of paying for the LLM
+    # again. It is also per-user scoped, so no answer crosses accounts.
+    cacheable = not doc_session
     cache_key = (
         cache.LRUCache.key_for(
             query,
             dosha_profile,
-            scope=f"{_cache_scope(dosha_profile)}|u={owner or 'shared'}",
+            scope=(
+                f"{_cache_scope(dosha_profile)}|u={owner or 'shared'}"
+                f"|h={_history_fingerprint(history)}|c={_CORPUS_VERSION}"
+            ),
         )
         if cacheable
         else None
@@ -455,7 +519,10 @@ async def _event_stream(
             queue.put_nowait(
                 (
                     "error",
-                    "the assistant is busy — too many questions at once, please retry",
+                    {
+                        "message": "the assistant is busy — too many questions at once, please retry",
+                        "retryable": True,
+                    },
                 )
             )
             queue.put_nowait(("done", {}))
@@ -465,6 +532,9 @@ async def _event_stream(
                 state,
                 stream_mode=["updates", "messages"],
             ):
+                if abandoned.is_set():
+                    print("[main] client disconnected mid-stream — abandoning run")
+                    return
                 if mode == "updates":
                     node = next(iter(payload))
                     merged.update(payload[node])
@@ -479,99 +549,144 @@ async def _event_stream(
                         if isinstance(text, str) and text:
                             queue.put_nowait(("token", text))
         except Exception as e:  # noqa: BLE001
-            queue.put_nowait(("error", str(e)))
+            queue.put_nowait(
+                (
+                    "error",
+                    {
+                        "message": _llm_error_message(e),
+                        "retryable": isinstance(e, SynthesisUnavailable),
+                    },
+                )
+            )
         finally:
             _GATE.release()
             queue.put_nowait(("done", merged))
 
     threading.Thread(target=run, daemon=True).start()
 
+    # Watch for the client going away for the whole life of the stream. Without
+    # this, closing the tab mid-answer leaves the worker calling Groq to
+    # completion, which spends tokens and holds one of only two LLM slots.
+    async def _watch_disconnect() -> None:
+        while not abandoned.is_set():
+            if await request.is_disconnected():
+                abandoned.set()
+                return
+            await asyncio.sleep(0.5)
+
+    watcher = (
+        asyncio.create_task(_watch_disconnect()) if request is not None else None
+    )
+
     t0 = time.time()
     prev = t0
     node_times = []
     token_count = 0
-    while True:
-        kind, payload = await queue.get()
-        now = time.time()
-        if kind == "stage":
-            ms = round((now - prev) * 1000)
-            prev = now
-            node_times.append((payload, ms, 0))
-            yield _sse(
-                "stage",
-                {
-                    "node": payload,
-                    "label": STAGE_LABELS.get(payload, payload.replace("_", " ")),
-                    "ms": ms,
-                },
-            )
-        elif kind == "token":
-            token_count += len(payload.split())
-            yield _sse("token", {"delta": payload})
-        elif kind == "error":
-            yield _sse("error", {"message": payload})
-            break
-        elif kind == "done":
-            latency = round((now - t0) * 1000)
-            resp = build_response(payload, latency_ms=latency)
-            resp["suggestions"] = _suggest_questions(payload)
-            if payload.get("final_answer"):
-                conv_id, conv_title = conversations.save_turn(
-                    conversation_id, query, resp, owner
+    try:
+        while True:
+            kind, payload = await queue.get()
+            now = time.time()
+            if kind == "stage":
+                ms = round((now - prev) * 1000)
+                prev = now
+                node_times.append((payload, ms, 0))
+                yield _sse(
+                    "stage",
+                    {
+                        "node": payload,
+                        "label": STAGE_LABELS.get(payload, payload.replace("_", " ")),
+                        "ms": ms,
+                    },
                 )
-                resp["conversation_id"] = conv_id
-                resp["conversation_title"] = conv_title
-                conversation_id = conv_id
-            resp["cache_hit"] = False
-            if node_times:
-                node_times[-1] = (
-                    node_times[-1][0],
-                    node_times[-1][1],
+            elif kind == "token":
+                token_count += len(payload.split())
+                yield _sse("token", {"delta": payload})
+            elif kind == "error":
+                if isinstance(payload, dict):
+                    yield _sse("error", payload)
+                else:
+                    yield _sse("error", {"message": payload, "retryable": False})
+                break
+            elif kind == "done":
+                latency = round((now - t0) * 1000)
+                resp = build_response(payload, latency_ms=latency)
+                resp["suggestions"] = _suggest_questions(payload)
+                if payload.get("final_answer"):
+                    # Regenerate overwrites the previous attempt in place. If
+                    # the stored shape is not a user/assistant pair we fall
+                    # back to appending, so a turn is never lost.
+                    replaced = regenerate and conversations.replace_last_turn(
+                        conversation_id, resp, owner
+                    )
+                    if not replaced:
+                        conv_id, conv_title = conversations.save_turn(
+                            conversation_id, query, resp, owner
+                        )
+                        resp["conversation_id"] = conv_id
+                        resp["conversation_title"] = conv_title
+                        conversation_id = conv_id
+                    else:
+                        record = conversations.get_conversation(
+                            conversation_id, owner
+                        )
+                        resp["conversation_id"] = conversation_id
+                        resp["conversation_title"] = (
+                            record.get("title") if record else None
+                        )
+                    resp["regenerated"] = bool(replaced)
+                resp["cache_hit"] = False
+                if node_times:
+                    node_times[-1] = (
+                        node_times[-1][0],
+                        node_times[-1][1],
+                        token_count,
+                    )
+                trace.write_trace(
+                    TRACES_DIR,
+                    query,
+                    node_times,
                     token_count,
+                    latency,
+                    dosha=payload.get("dosha"),
+                    resolved_chapter=_resolved_label(payload),
                 )
-            trace.write_trace(
-                TRACES_DIR,
-                query,
-                node_times,
-                token_count,
-                latency,
-                dosha=payload.get("dosha"),
-                resolved_chapter=_resolved_label(payload),
-            )
-            # Build the summary BEFORE persisting the turn, so the stored
-            # assistant message includes it and a reloaded conversation does
-            # not depend on regenerating. The `done` event is still emitted
-            # first, so the user sees the answer immediately.
-            summary = None
-            if payload.get("final_answer") and not payload.get("is_emergency"):
-                try:
-                    if _GATE.acquire():
-                        try:
-                            summary = build_summary(
-                                query, resp["answer"], payload, lang=lang or "en"
-                            )
-                        finally:
-                            _GATE.release()
-                except Exception as e:  # noqa: BLE001
-                    print(f"[main] summary failed ({e})")
-                    summary = None
-            if summary:
-                resp["summary"] = summary
-            if payload.get("final_answer"):
-                # Append-only store: re-save with the summary would duplicate
-                # the turn, so the summary is patched onto the stored message
-                # instead.
-                conversations.patch_last_assistant(
-                    conversation_id, {"summary": summary}, owner
-                )
-            if cache_key and payload.get("final_answer") and not payload.get(
-                "is_emergency"
-            ):
-                _QUERY_CACHE.set(cache_key, resp)
-            yield _sse("done", resp)
-            if summary:
-                yield _sse("summary", {"summary": summary})
-            break
+                # Build the summary BEFORE persisting the turn, so the stored
+                # assistant message includes it and a reloaded conversation does
+                # not depend on regenerating. The `done` event is still emitted
+                # first, so the user sees the answer immediately.
+                summary = None
+                if payload.get("final_answer") and not payload.get("is_emergency"):
+                    try:
+                        if _GATE.acquire():
+                            try:
+                                summary = build_summary(
+                                    query, resp["answer"], payload, lang=lang or "en"
+                                )
+                            finally:
+                                _GATE.release()
+                    except Exception as e:  # noqa: BLE001
+                        print(f"[main] summary failed ({e})")
+                        summary = None
+                if summary:
+                    resp["summary"] = summary
+                if payload.get("final_answer"):
+                    # Append-only store: re-save with the summary would duplicate
+                    # the turn, so the summary is patched onto the stored message
+                    # instead.
+                    conversations.patch_last_assistant(
+                        conversation_id, {"summary": summary}, owner
+                    )
+                if cache_key and payload.get("final_answer") and not payload.get(
+                    "is_emergency"
+                ):
+                    _QUERY_CACHE.set(cache_key, resp)
+                yield _sse("done", resp)
+                if summary:
+                    yield _sse("summary", {"summary": summary})
+                break
+    finally:
+        if watcher is not None:
+            watcher.cancel()
 
 
 @app.post("/ask", dependencies=[Depends(guard_ask)])
@@ -583,13 +698,18 @@ def ask(req: AskRequest, request: Request):
     if req.doc_session:
         state["doc_session"] = _doc_scope(owner, req.doc_session)
 
+    # Same key composition as the streaming path: query + dosha + owner +
+    # history fingerprint. See _event_stream for why history belongs in the key.
     cache_key = (
         cache.LRUCache.key_for(
             req.query,
             req.dosha_profile,
-            scope=f"{_cache_scope(req.dosha_profile)}|u={owner}",
+            scope=(
+                f"{_cache_scope(req.dosha_profile)}|u={owner}"
+                f"|h={_history_fingerprint(req.history)}|c={_CORPUS_VERSION}"
+            ),
         )
-        if not req.history and not req.doc_session
+        if not req.doc_session
         else None
     )
     if cache_key:
@@ -617,6 +737,15 @@ def ask(req: AskRequest, request: Request):
         )
     try:
         result, node_times, token_count = _run_graph_collect(state)
+    except SynthesisUnavailable as e:
+        # Surface as a retryable 503 rather than an opaque 500. Nothing was
+        # persisted and nothing was cached, so the client can safely re-ask.
+        print(f"[main] synthesis unavailable: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail=LLM_UNAVAILABLE_MESSAGE,
+            headers={"Retry-After": "30"},
+        )
     finally:
         _GATE.release()
     latency = round((time.time() - t0) * 1000)
@@ -657,6 +786,8 @@ async def ask_stream(req: AskRequest, request: Request):
                 else None
             ),
             owner=_owner(request),
+            request=request,
+            regenerate=req.regenerate,
         ),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},

@@ -8,7 +8,12 @@ from langchain_groq import ChatGroq
 
 load_dotenv()
 
-_summ_llm = ChatGroq(model="openai/gpt-oss-120b", api_key=os.environ["GROQ_API_KEY"])
+_summ_llm = ChatGroq(
+    model="openai/gpt-oss-120b",
+    api_key=os.environ["GROQ_API_KEY"],
+    max_retries=2,
+    timeout=60,
+)
 
 SYSTEM_PROMPT = """You are the answer summariser for Charaka AI, an Ayurvedic wellness assistant.
 Given the QUESTION, the ANSWER, and the CITED VERSE TEXTS, produce a JSON object with exactly this shape:
@@ -160,5 +165,12 @@ def _summarize_en(human: str, query: str, answer: str, result: dict) -> dict:
         parsed["title"] = str(parsed.get("title") or "").strip()[:80]
         return parsed
     except Exception as e:  # noqa: BLE001
+        # The answer itself already succeeded, so this is not a request-level
+        # failure. The template is built from real retrieved verse data rather
+        # than invented text, so it stays truthful — but flag it as degraded so
+        # the UI can say the summary is abbreviated instead of passing it off
+        # as a full generated card.
         print(f"[summarize] Groq failed ({e}) → template summary")
-        return _template_summary(query, answer, result)
+        degraded = _template_summary(query, answer, result)
+        degraded["degraded"] = True
+        return degraded

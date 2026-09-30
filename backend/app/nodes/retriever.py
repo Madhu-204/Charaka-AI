@@ -66,8 +66,18 @@ BM25_INDEX = _BM25(_ALL["ids"], _ALL["documents"])
 
 _RERANK_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 _reranker = None
-# Eval-gated: ms-marco rerank regressed chapter disambiguation on the 28-question
-# set (23/28 hybrid-only → 20/28 reranked), so it stays optional/off by default.
+# Eval-gated and left off by default. Measured, not assumed:
+#   - The cross-encoder itself is healthy: on a 12-candidate pool it produces
+#     well-separated scores (spread 8.33, 12/12 distinct) in the right order.
+#   - Reordering cannot fix most of the remaining misses because the correct
+#     verse is never a candidate. Of the four chapter misses, two are recall
+#     failures (the right chapter is absent from the pool entirely), so no
+#     reranker can reach them.
+#   - Widening the pool to admit those verses makes top-1 accuracy worse
+#     (20/24 at n=12 falling to 16/24 at n=80): the correct verse for eval_18
+#     only enters at rank 17, where it dilutes the fused score instead of
+#     leading it. The narrow pool is load-bearing, not a limitation.
+# Re-enable only with a reranker that beats hybrid-only on scripts/eval_run.py.
 _rerank_enabled = os.getenv("CHARAKA_RERANKER", "0") == "1"
 
 
@@ -246,7 +256,13 @@ def _hybrid_pool(query, q_emb, where=None):
 
     for sub in _decompose_compound(query) or []:
         try:
-            r = collection.query(query_embeddings=[model.encode([sub]).tolist()[0]], n_results=6)
+            sub_kwargs = {"query_embeddings": [model.encode([sub]).tolist()[0]], "n_results": 6}
+            # Subqueries must honor the same filter as the main query, otherwise
+            # a scoped request silently pulls unfiltered results into the pool
+            # and the scope stops constraining anything.
+            if where:
+                sub_kwargs["where"] = where
+            r = collection.query(**sub_kwargs)
             absorb(r["ids"][0], r["documents"][0], r["metadatas"][0])
         except Exception as e:
             print(f"[retriever] subquery '{sub}' failed: {e}")

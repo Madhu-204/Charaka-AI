@@ -409,6 +409,12 @@ export function ChatBubble({
         </div>
       </div>
 
+      {message.stopped && (
+        <div className="chat-stopped-note">
+          Stopped early — this answer is incomplete.
+        </div>
+      )}
+
       {streaming && stages.length > 0 && (
         <div className="chat-stages chat-reveal">
           {stages.map((s, i) => (

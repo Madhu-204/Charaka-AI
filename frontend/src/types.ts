@@ -194,6 +194,9 @@ export interface ChatMessage {
       summary event. Historical messages never set it, so a reloaded
       conversation does not show a loading state. */
   summaryPending?: boolean;
+  /** True when the user pressed Stop. The partial text is kept and labelled so
+      a truncated answer is never mistaken for a finished one. */
+  stopped?: boolean;
 }
 
 export interface DocRecord {

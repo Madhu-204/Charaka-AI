@@ -22,7 +22,12 @@ STHANA_NAMES = {
     "chikitsasthana": "Chikitsa Sthana",
 }
 
-llm = ChatGroq(model="openai/gpt-oss-120b", api_key=os.environ["GROQ_API_KEY"])
+llm = ChatGroq(
+    model="openai/gpt-oss-120b",
+    api_key=os.environ["GROQ_API_KEY"],
+    max_retries=2,
+    timeout=60,
+)
 
 SYSTEM_PROMPT = """You are Charaka AI, a general-wellness Ayurvedic assistant grounded in classical texts.
 
@@ -42,11 +47,13 @@ Rules you must always follow:
 - If SOURCE DISAGREEMENTS are provided, state each one verbatim and frame it as a practitioner-review caution (classical texts describe use, but modern sources flag a strong caution).
 - If a USER-SUPPLIED DOCUMENT CONTEXT block is present, you may draw on it, but ALWAYS label anything taken from it as coming from "your uploaded document", cite it with its [U1]/[U2] markers, and never present it as classical Samhita text. Keep the classical corpus as your primary basis."""
 
-FALLBACK_ANSWER = (
-    "I couldn't retrieve a grounded answer right now. Classical texts describe "
-    "patterns here, but I can't confirm a match for your question at the moment. "
-    "If your symptoms persist or worsen, please consult a doctor."
-)
+class SynthesisUnavailable(RuntimeError):
+    """Raised when the LLM provider fails or rate-limits during synthesis.
+
+    Callers must surface this as a retryable error. Never swallow it and
+    substitute a canned answer: a fabricated string with no citations is
+    indistinguishable from a real grounded answer to the user.
+    """
 
 
 def _format_block(rc):
@@ -148,5 +155,9 @@ def synthesize(state):
             chunks.append(chunk.content)
         return {"final_answer": "".join(chunks)}
     except Exception as e:
+        # Deliberately no fallback answer. A canned string here looks like a
+        # successful grounded response but carries no citations, which reads as
+        # a broken product rather than a rate limit. Raising lets the caller
+        # surface an honest, retryable error.
         print(f"[synthesis] Groq call failed: {e}")
-        return {"final_answer": FALLBACK_ANSWER}
+        raise SynthesisUnavailable(str(e)) from e
