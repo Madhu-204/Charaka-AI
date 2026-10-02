@@ -159,7 +159,10 @@
     "expected_chapter": 1,
     "expected_condition": null,
     "expected_category": "taste_theory",
-    "notes": null
+    "notes": "Both this chapter and sutrasthana/26 are titled on tastes/rasa, and sutrasthana/26 answers the digestion half of the question directly (rasa felt at commencement, post-digestive effects later). Crediting only one chapter reported a correct retrieval as a failure.",
+    "acceptable_chapters": [
+      "sutrasthana/26"
+    ]
   },
   {
     "eval_id": "eval_19",

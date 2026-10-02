@@ -54,11 +54,22 @@ def run_question(item: dict, mode: str = "retrieval") -> dict:
         resolved_hit = (st.get("canonical_term") or "").lower() == exp_canonical.lower()
         top_n_hit = resolved_hit
     else:
-        resolved_hit = (
-            r_meta["sthana"] == exp_sthana and r_meta["chapter"] == exp_chapter
-        )
+        # Charaka treats many topics in more than one chapter, so an item may
+        # credit several. Both "vimanasthana/1" and "sutrasthana/26" are titled
+        # on tastes/rasa, and scoring only the one that happens to be listed
+        # turned a correct retrieval into a reported failure.
+        acceptable = {
+            (exp_sthana, exp_chapter),
+            *{
+                tuple(part.split("/", 1))
+                for part in (item.get("acceptable_chapters") or [])
+                if "/" in part
+            },
+        }
+        acceptable = {(s, int(c)) for s, c in acceptable}
+        resolved_hit = (r_meta["sthana"], r_meta["chapter"]) in acceptable
         top_n_hit = any(
-            c["meta"]["sthana"] == exp_sthana and c["meta"]["chapter"] == exp_chapter
+            (c["meta"]["sthana"], c["meta"]["chapter"]) in acceptable
             for c in r["retrieved"][:3]
         )
 
