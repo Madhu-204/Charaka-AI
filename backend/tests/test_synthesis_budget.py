@@ -145,7 +145,7 @@ class TestContextStructure:
         st = state(safety_flags=["flag one"], verification_notes=["note one"])
         ctx = _build_context(st["resolved_chapter"], st["retrieved"][:3], st, [], "none", [])
         assert ctx.count("PRIMARY CONTEXT") == 1
-        assert ctx.count("Safety flags:") == 1
+        assert ctx.count("MODERN SAFETY FLAGS") == 1
         assert ctx.count("VERIFICATION NOTES") == 1
 
     def test_documents_labelled_as_non_corpus(self):

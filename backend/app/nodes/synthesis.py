@@ -33,6 +33,17 @@ HERB_ALIASES = {h["name"]: h["aliases"] for h in _herbs_list}
 # dropping safety text to fit a budget would trade a working answer for an unsafe
 # one. Only redundant/optional context is dropped, and truncation is announced to
 # the model rather than done silently.
+#
+# Residual risk, NOT fixed here: whether Groq's 8000 is a per-request or a shared
+# per-minute budget was never confirmed - the error text ("Limit 8000, Requested
+# 8321") does not distinguish them, and the 8321 case came from an oversized
+# diagnostic rather than a reproduced real user query. Concurrency is already
+# bounded to CHARAKA_LLM_CONCURRENCY (default 2) by main._GATE, so the worst
+# case here is 2 x MAX_REQUEST_TOKENS = 15000 in one window. If the limit is
+# minute-scoped, concurrent large requests can still 413. That surfaces as a
+# retryable 503 via SynthesisUnavailable, never a fabricated answer, so the
+# failure mode is honest even when it is not ideal. Lower the concurrency or the
+# request ceiling only with evidence that the shared budget is real.
 MAX_CONTEXT_TOKENS = int(os.getenv("CHARAKA_MAX_CONTEXT_TOKENS", "6000"))
 MAX_ADDITIONAL_BLOCKS = int(os.getenv("CHARAKA_MAX_ADDITIONAL_BLOCKS", "12"))
 MAX_DOC_CHARS = int(os.getenv("CHARAKA_MAX_DOC_CHARS", "900"))
@@ -93,8 +104,8 @@ Rules you must always follow:
 - If confidence is marked "low", say explicitly that the match is uncertain. If it is marked "medium", note that the match is related but not exact, and frame the answer accordingly.
 - Always end with a line encouraging the user to consult a doctor if symptoms persist or worsen.
 - If a CONVERSATION CONTEXT is provided, use it to resolve references like "that", "it", "the same herb", or "instead" in the current question. Keep the answer self-contained (the user may have forgotten the earlier turn), but never invent details that aren't also in the current context.
-- If any safety flags are provided, state them clearly before any remedy suggestion.
-- When an herb is mentioned in the context, also note its alternate names (aliases) provided in the HERB ALIASES section. Classical texts may use different names for the same herb — recognize and explain these equivalences to the user.
+- If any MODERN SAFETY FLAGS are provided, state them clearly before any remedy suggestion, and attribute them honestly: they come from a modern pharmacology reference, not from the Charaka Samhita. Never present them as a classical instruction or cite a chapter for them.
+- When an herb is mentioned, the HERB ALIASES section may help you recognise which plant the user means. Treat those names as a modern botanical naming aid, not as a classical claim: if you use them, say they are modern alternative names for the same plant, and never claim the classical text used that name unless the verse itself shows it.
 - If a SPECIES/IDENTITY DISCLOSURE is provided for an herb, state it explicitly and prominently BEFORE giving any remedy or safety detail for that herb — never bury it. If a disclosure says an herb's profile is based on a different (closest-match) species, or that one species must not be confused with another, repeat that clearly so the user cannot mistake one plant for another.
 - If SOURCE DISAGREEMENTS are provided, state each one verbatim and frame it as a practitioner-review caution (classical texts describe use, but modern sources flag a strong caution).
 - If a USER-SUPPLIED DOCUMENT CONTEXT block is present, you may draw on it, but ALWAYS label anything taken from it as coming from "your uploaded document", cite it with its [U1]/[U2] markers, and never present it as classical Samhita text. Keep the classical corpus as your primary basis."""
@@ -136,7 +147,12 @@ def _format_history(history):
 def _herb_alias_block(herbs_found):
     lines = []
     for h in herbs_found:
-        aliases = HERB_ALIASES.get(h, [])
+        # Drop self-referential aliases. 9 entries in herbs.json list only the
+        # herb's own name, which rendered as "trikatu (also called: trikatu)" and
+        # taught the model that the alias list is meaningless noise.
+        aliases = [
+            a for a in HERB_ALIASES.get(h, []) if a.strip().lower() != h.strip().lower()
+        ]
         if aliases:
             lines.append(f"- {h} (also called: {', '.join(aliases)})")
         else:
@@ -157,8 +173,12 @@ def _build_context(primary, additional, state, herbs_found, alias_block, history
         + "\n\n"
         f"Confidence: {state['confidence']}\n"
         f"Herbs found: {', '.join(herbs_found) or 'none'}\n"
-        f"HERB ALIASES (these are alternate names for the same herb):\n{alias_block}\n"
-        f"Safety flags: {', '.join(state['safety_flags']) or 'none'}\n"
+        f"HERB ALIASES (modern botanical naming reference, NOT from the classical "
+        f"corpus; use only to help the user recognise a plant, never as a classical claim):\n"
+        f"{alias_block}\n"
+        f"MODERN SAFETY FLAGS (from a modern pharmacology reference, NOT Charaka Samhita "
+        f"text; present them as a modern safety caution, never as a classical instruction): "
+        f"{', '.join(state['safety_flags']) or 'none'}\n"
     )
 
     verification_notes = state.get("verification_notes", [])

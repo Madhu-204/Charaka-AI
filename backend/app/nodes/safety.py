@@ -83,9 +83,13 @@ for row in herb_rows:
 with open(BACKEND / "reference" / "herb_safety.json", encoding="utf-8") as f:
     SAFETY_DB = {entry["herb"]: entry for entry in json.load(f)}
 
+# Hand-authored conservative cautions with no corpus or pharmacology source
+# behind them. Kept because the risk of omitting a real caution outweighs the
+# cost of one, but the flag text marks the provenance so it is never presented
+# as either classical text or a cited modern monograph.
 LEGACY_CONTRAINDICATIONS = {
-    "guggulu": "avoid during pregnancy",
-    "trikatu": "use cautiously with active acid reflux",
+    "guggulu": "avoid during pregnancy (app-level safety caution, no cited source)",
+    "trikatu": "use cautiously with active acid reflux (app-level safety caution, no cited source)",
 }
 
 MCP_SERVER_SCRIPT = str(BACKEND / "app" / "mcp_server.py")
@@ -279,7 +283,8 @@ def check_safety(state):
         else:
             flags.append(
                 f"{h}: no safety monograph on file — use only in food quantities, "
-                f"or confirm with a practitioner before medicinal use"
+                f"or confirm with a practitioner before medicinal use "
+                f"(absence-of-data caution from the app, not a classical statement)"
             )
             sources[h] = "uncovered"
 
