@@ -9,16 +9,23 @@ import chromadb
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from app.chunking import chapter_context, herb_key
+from app.chunking import EMBEDDING_MODEL, chapter_context, herb_key
 from app.nodes.tool_router import _and_clauses
 
 BACKEND = Path(__file__).resolve().parents[2]
 
 client = chromadb.PersistentClient(path=str(BACKEND / "chroma_db"))
 collection = client.get_collection(name="charaka_ai_corpus")
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer(EMBEDDING_MODEL)
 
-_ALL = collection.get(include=["documents", "metadatas"])
+_ALL = collection.get(include=["documents", "metadatas", "embeddings"])
+
+# Verse embeddings are read on every retrieval, and they never change while the
+# process is up -- the store is immutable between rebuilds. Fetching them per
+# query meant a SQLite round-trip for a dozen vectors on every request, so they
+# are loaded once here alongside the documents. ~4 MB for 2,490x384 float32.
+# Values are the same arrays Chroma returned, so scoring is unchanged.
+_EMBED = dict(zip(_ALL["ids"], _ALL["embeddings"]))
 
 # BM25 must see the same text the vector index was built from, or the two halves
 # of hybrid search disagree about what a verse says. The stored `documents` are
@@ -47,6 +54,9 @@ class _BM25:
         }
         self.k1 = 1.5
         self.b = 0.75
+        # id -> row, so a restricted search can jump straight to the allowed
+        # rows instead of scanning all N and testing membership.
+        self.row_of = {vid: i for i, vid in enumerate(ids)}
 
     def _score_doc(self, qtok, toks):
         dl = len(toks)
@@ -62,11 +72,19 @@ class _BM25:
 
     def search(self, query, top=12, restrict=None):
         qtok = [t for t in _TITLE_CASEFOLD_RE.findall(query.lower()) if t in self.idf or t]
-        restrict = set(restrict) if restrict is not None else None
+        # A restricted search is the hot path: retrieval always passes the
+        # Chroma candidate list, so walking that list directly avoids scanning
+        # all N rows for membership. Same rows scored, same scores returned.
+        if restrict is None:
+            rows = range(self.N)
+        else:
+            rows = []
+            for vid in restrict:
+                idx = self.row_of.get(vid)
+                if idx is not None:
+                    rows.append(idx)
         scored = []
-        for idx in range(self.N):
-            if restrict is not None and self.ids[idx] not in restrict:
-                continue
+        for idx in rows:
             s = self._score_doc(qtok, self.tokens[idx])
             if s > 0:
                 scored.append((self.ids[idx], s))
@@ -107,17 +125,28 @@ def _get_reranker():
 
 
 def _apply_reranker(hybrid, query):
+    """Rerank a candidate pool with the cross-encoder.
+
+    Returns ``(pairs_or_None, status)`` where status is one of:
+      "off"     the cross-encoder is disabled or unavailable
+      "applied" scores were produced and the pool was reordered
+      "failed"  the model raised; hybrid ranking stands
+
+    The status is returned rather than inferred so the trace can name what
+    actually ran. Reporting "rerank" unconditionally made every trace line
+    claim a stage that is off by default.
+    """
     reranker = _get_reranker()
     if reranker is None:
-        return None
+        return None, "off"
     try:
         texts = [c["text"][:800] for c in hybrid[:14]]
         pairs = [(query, t) for t in texts]
         scores = reranker.predict(pairs, show_progress_bar=False)
-        return list(zip(hybrid[:14], [float(s) for s in scores]))
+        return list(zip(hybrid[:14], [float(s) for s in scores])), "applied"
     except Exception as e:  # noqa: BLE001
         print(f"[retriever] rerank failed ({e}) → hybrid ranking used")
-        return None
+        return None, "failed"
 
 with open(BACKEND / "reference" / "mappings.json", encoding="utf-8") as f:
     mappings = json.load(f)
@@ -314,6 +343,11 @@ def _enrich(c, hybrid):
 
 
 def _hybrid_pool(query, q_emb, where=None):
+    """Fuse vector and lexical candidates into one ranked pool.
+
+    Returns ``(pool, rerank_status)``; see ``_apply_reranker`` for the status
+    values.
+    """
     query_kwargs = {"query_embeddings": [q_emb], "n_results": 12}
     if where:
         query_kwargs["where"] = where
@@ -350,18 +384,15 @@ def _hybrid_pool(query, q_emb, where=None):
             candidates[vid]["_bm25"] = bscore
 
     if not cand_ids:
-        return []
-
-    emb_get = collection.get(ids=cand_ids, include=["embeddings"])
-    emb_map = dict(zip(emb_get["ids"], emb_get["embeddings"]))
+        return [], "off"
 
     have = []
     for vid in cand_ids:
         cand = candidates[vid]
-        cos = _cosine(emb_map[vid], q_emb)
+        cos = _cosine(_EMBED[vid], q_emb)
         cand["_cos"] = cos
         cand["_bm25"] = cand.get("_bm25", 0.0)
-        cand["_emb"] = emb_map[vid]
+        cand["_emb"] = _EMBED[vid]
         cand["verse_id"] = vid
         have.append(cand)
 
@@ -372,7 +403,7 @@ def _hybrid_pool(query, q_emb, where=None):
 
     have.sort(key=lambda c: c["_fused"], reverse=True)
 
-    reranked = _apply_reranker(have, query)
+    reranked, rerank_status = _apply_reranker(have, query)
     if reranked:
         rerank_vals = [s for _, s in reranked]
         norm = _minmax(rerank_vals)
@@ -380,13 +411,13 @@ def _hybrid_pool(query, q_emb, where=None):
             c["_fused"] = n
         have.sort(key=lambda c: c["_fused"], reverse=True)
 
-    return have
+    return have, rerank_status
 
 
 def search_verses(query, limit=8):
     """Expose ranked hybrid results as plain text (used by the corpus search page)."""
     q_emb = model.encode([query]).tolist()[0]
-    pool = _hybrid_pool(query, q_emb)
+    pool, _rerank_status = _hybrid_pool(query, q_emb)
     pool.sort(key=lambda c: c["_fused"], reverse=True)
     out = []
     for c in pool[:limit]:
@@ -443,7 +474,7 @@ def retrieve(state):
             herb_filter = {key: True}
             where = _and_clauses([where, herb_filter]) if where else herb_filter
 
-    hybrid = _hybrid_pool(query, q_emb, where=where)
+    hybrid, rerank_status = _hybrid_pool(query, q_emb, where=where)
 
     if not hybrid and herb_filter:
         # An over-narrow filter (an alias that matched but whose verses were
@@ -453,7 +484,7 @@ def retrieve(state):
             f"retrieval: herb filter {herb_filter} matched nothing → "
             f"retried with the requested scope only"
         ]
-        hybrid = _hybrid_pool(query, q_emb, where=state.get("metadata_filter"))
+        hybrid, _rerank_status = _hybrid_pool(query, q_emb, where=state.get("metadata_filter"))
         herb_filter = None
 
     if not hybrid:
@@ -512,8 +543,17 @@ def retrieve(state):
 
     confidence = _confidence_band(resolved["score"])
     scope = f" + herb filter '{herb}'" if herb_filter else ""
+    # MMR below is diversity selection over the 3 verses kept, not a rerank of
+    # the pool. The cross-encoder gets its own label so a trace never implies a
+    # stage ran when the reranker is disabled, which is the default.
+    rerank_note = {
+        "applied": "cross-encoder rerank applied",
+        "failed": "cross-encoder rerank failed, hybrid order kept",
+        "off": "cross-encoder rerank disabled",
+    }[rerank_status]
     step = (
-        f"retrieval: algorithm='hybrid' vector+BM25 + MMR rerank{scope} → "
+        f"retrieval: algorithm='hybrid' vector+BM25; {rerank_note}; "
+        f"MMR diversification over top 3{scope} → "
         f"resolved {resolved['verse_id']} (cos {float(resolved['score']):.3f}, {confidence})"
     )
     

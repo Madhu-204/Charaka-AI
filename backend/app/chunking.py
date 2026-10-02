@@ -50,6 +50,16 @@ def herb_key(herb: str) -> str:
     return f"herb_{slug}" if slug else ""
 
 
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+"""The sentence-transformers model used for both indexing and query encoding.
+
+Defined here for the same reason as ``herb_key``: the index builder and the
+retriever must never disagree about it. Changing the encoder invalidates every
+vector in the store without changing a single byte of the corpus, so
+``index_freshness`` compares the builder's recorded model against this value.
+"""
+
+
 @lru_cache(maxsize=1)
 def load_chapter_titles() -> dict[str, str]:
     """Map "sthana/chapter" -> chapter title. Empty if the file is absent.
@@ -137,50 +147,97 @@ def corpus_sha256(path=None) -> str:
     return digest.hexdigest()
 
 
+def titles_sha256() -> str:
+    """SHA-256 of the generated chapter-title table, or "" if it is absent.
+
+    Shared by the index builder (to stamp) and ``index_freshness`` (to verify)
+    so the two can never hash the file differently.
+    """
+    if not TITLES_PATH.is_file():
+        return ""
+    import hashlib
+
+    return hashlib.sha256(TITLES_PATH.read_bytes()).hexdigest()
+
+
 def index_freshness(collection=None) -> dict:
-    """Compare the on-disk corpus against the hash stored in the index.
+    """Compare the on-disk corpus and index inputs against what the index was built from.
 
     Returns a dict suitable for /healthz:
 
         {"status": "ok"|"stale"|"unknown", "corpus_sha256": ..., "index_sha256": ...,
-         "detail": "..."}
+         "verse_count": ..., "mismatches": [...], "detail": "..."}
 
-    ``unknown`` means the index predates this bookkeeping and carries no hash,
-    which is not an error -- it just cannot be verified, and callers should not
-    fail a health check over it.
+    Three things are checked, because two of them are invisible to the corpus
+    hash: swapping the embedding model or editing the chapter-title table
+    invalidates every vector and every BM25 document without touching
+    ``charaka_structured.json``. Checking only ``corpus_sha256`` reported "ok"
+    over a store whose vectors no longer matched their own index.
+
+    A field the index does not record (a store built before this bookkeeping)
+    is skipped rather than failed, so ``unknown`` means "cannot be verified",
+    never "wrong". Callers should not fail a health check over it.
     """
     current = corpus_sha256()
+    expected_model = EMBEDDING_MODEL
+    current_titles = titles_sha256()
     result = {
         "status": "unknown",
         "corpus_sha256": current,
         "index_sha256": None,
         "verse_count": None,
+        "embedding_model": expected_model,
+        "index_embedding_model": None,
+        "chapter_titles_sha256": current_titles,
+        "index_chapter_titles_sha256": None,
+        "mismatches": [],
         "detail": "index carries no corpus hash; rebuild to enable verification",
     }
     if collection is None:
         return result
     try:
-        stored = (collection.metadata or {}).get("corpus_sha256")
+        meta = collection.metadata or {}
+        stored = meta.get("corpus_sha256")
         result["index_sha256"] = stored
         result["verse_count"] = collection.count()
+        result["index_embedding_model"] = meta.get("embedding_model")
+        result["index_chapter_titles_sha256"] = meta.get("chapter_titles_sha256")
     except Exception as exc:  # noqa: BLE001 - never break a health check
         result["detail"] = f"could not read index metadata: {exc}"
         return result
 
     if not stored:
         return result
+
+    # A missing recorded field cannot be compared, so it is not a mismatch. Only
+    # a field that is present AND different proves the index is stale.
+    mismatches = []
+    index_model = result["index_embedding_model"]
+    if index_model and index_model != expected_model:
+        mismatches.append(f"embedding_model (index: {index_model})")
+    index_titles = result["index_chapter_titles_sha256"]
+    if index_titles and current_titles and index_titles != current_titles:
+        mismatches.append("chapter_titles")
+    if current and stored != current:
+        mismatches.append("corpus")
+    result["mismatches"] = mismatches
+
+    if mismatches:
+        result["status"] = "stale"
+        result["detail"] = (
+            "the index does not match: " + ", ".join(mismatches) + " - run "
+            "`python scripts/transform.py && python scripts/build_chapter_titles.py "
+            "&& python scripts/build_vector_store.py`"
+        )
+        return result
+
     if not current:
         result["status"] = "unknown"
         result["detail"] = "corpus file missing; cannot verify the index"
         return result
-    if stored == current:
-        result["status"] = "ok"
-        result["detail"] = "index matches the processed corpus"
-    else:
-        result["status"] = "stale"
-        result["detail"] = (
-            "corpus has changed since the index was built - run "
-            "`python scripts/transform.py && python scripts/build_chapter_titles.py "
-            "&& python scripts/build_vector_store.py`"
-        )
+
+    result["status"] = "ok"
+    result["detail"] = (
+        "index matches the processed corpus, the embedding model and the chapter titles"
+    )
     return result

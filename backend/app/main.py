@@ -20,6 +20,11 @@ from app.graph import charaka_agent
 from app import auth, cache, conversations, ratelimit, stats, trace
 from app.nodes.summarize import build_hindi_summary, build_summary
 from app.nodes.synthesis import SynthesisUnavailable
+# Confidence bands live in the retriever because that is where they are derived
+# from the cosine score. They were duplicated here as bare literals, which meant
+# retuning one silently left the API reporting a different band than the agent
+# used. app.graph above already imports the retriever, so this costs nothing.
+from app.nodes.retriever import HIGH_SCORE, MEDIUM_SCORE
 
 BACKEND = Path(__file__).resolve().parents[1]
 FEEDBACK_LOG = BACKEND / "feedback_log.jsonl"
@@ -194,8 +199,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-HIGH_SCORE = 0.60
-MEDIUM_SCORE = 0.45
 VERSE_TEXT_CHARS = 280
 
 STAGE_LABELS = {

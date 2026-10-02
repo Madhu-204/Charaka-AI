@@ -40,7 +40,6 @@ model the retriever loads for query encoding.
 """
 
 import argparse
-import hashlib
 import json
 import shutil
 import sys
@@ -49,10 +48,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.chunking import (  # noqa: E402
-    TITLES_PATH,
+    EMBEDDING_MODEL,
     corpus_sha256,
     embed_document,
     herb_key,
+    titles_sha256,
 )
 
 import chromadb
@@ -62,7 +62,9 @@ BACKEND = Path(__file__).resolve().parents[1]
 PROCESSED = BACKEND / "processed"
 CHROMA_DIR = BACKEND / "chroma_db"
 COLLECTION = "charaka_ai_corpus"
-MODEL_NAME = "all-MiniLM-L6-v2"
+# Shared with the retriever via app.chunking so a rebuild and a running server
+# can never encode with different models without the health check noticing.
+MODEL_NAME = EMBEDDING_MODEL
 BATCH = 64
 
 
@@ -145,11 +147,7 @@ def build(force: bool = False) -> dict:
     # surfaces the result on /healthz. Also record the embedding model and the
     # chapter-title table, because changing either silently invalidates every
     # vector without changing the corpus hash.
-    titles_sha = (
-        hashlib.sha256(TITLES_PATH.read_bytes()).hexdigest()
-        if TITLES_PATH.is_file()
-        else ""
-    )
+    titles_sha = titles_sha256()
     # Default L2 space (encoder emits L2-normalized vectors, so L2 and cosine
     # rankings coincide). High construction/search ef makes the approximate
     # index behave like exact search, so a rebuild is stable regardless of
