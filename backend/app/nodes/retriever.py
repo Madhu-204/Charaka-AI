@@ -237,6 +237,28 @@ def _detect_herb(query):
 HIGH_SCORE = 0.60
 MEDIUM_SCORE = 0.45
 
+# Blend weight for the semantic (cosine) signal against the lexical (BM25)
+# signal. Raised from 0.5/0.5 after measuring the eval set.
+#
+# The balanced blend buried correct answers under short verses. eval_28
+# ("What does Charaka say about shatavari as a rejuvenator?") resolves to
+# cs_sutra_4_18, which reads "...cork swallow wort, climbing asparagus,
+# Indian pennywort... these ten are rejuvenators" -- the exact answer. It carries
+# the highest cosine of all 15 shatavari verses (0.3547 vs 0.1341 for the winner)
+# yet BM25 scored it 0.0002 against 3.0609 for cs_chikitsa_3_250-251 and it lost.
+#
+# Cause: BM25's length normalisation. The correct verse is 26 words, and none of
+# the query's rare terms appear literally in it -- the corpus says "climbing
+# asparagus", never "shatavari", and "rejuvenator" vs "rejuvenators". So the one
+# term it does win on is invisible to the lexical scorer, which then promotes a
+# longer, lexically louder, topically wrong verse.
+#
+# Measured on the 28 core eval cases, 0.5/0.5 -> 0.6/0.4:
+#   resolved 25/28 -> 27/28  (fixes eval_28 and eval_11, no regressions)
+#   top-3    27/28 -> 27/28  (unchanged)
+# 0.65 and above score identically, so the mildest sufficient change is used.
+COSINE_WEIGHT = float(os.getenv("CHARAKA_COSINE_WEIGHT", "0.6"))
+
 
 def _confidence_band(score) -> str:
     if score > HIGH_SCORE:
@@ -346,7 +368,7 @@ def _hybrid_pool(query, q_emb, where=None):
     cos_norm = _minmax([c["_cos"] for c in have])
     bm_norm = _minmax([c["_bm25"] for c in have])
     for c, cn, bn in zip(have, cos_norm, bm_norm):
-        c["_fused"] = 0.5 * cn + 0.5 * bn
+        c["_fused"] = COSINE_WEIGHT * cn + (1.0 - COSINE_WEIGHT) * bn
 
     have.sort(key=lambda c: c["_fused"], reverse=True)
 

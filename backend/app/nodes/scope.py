@@ -25,9 +25,18 @@ Design notes:
    apostrophes and word boundaries (this module imports rather than duplicates).
 """
 
+import json
 import re
+from pathlib import Path
 
 from app.nodes.emergency import _matches, _norm
+
+# _detect_herb recognises any herb in herbs.json (discussed or not), so the
+# coverage gate can tell "only about an absent herb" from "also about a
+# discussed one". query_expansion does not import this module, so no cycle.
+from app.nodes.query_expansion import _detect_herb
+
+BACKEND = Path(__file__).resolve().parents[2]
 
 # --- categories -------------------------------------------------------------
 
@@ -192,6 +201,14 @@ def check_scope(state):
 
     category, matched = classify_scope(query)
     if not category:
+        coverage = check_corpus_coverage({"query": query, "trace": []})
+        if coverage.get("is_out_of_scope"):
+            return {
+                "is_out_of_scope": True,
+                "scope_category": coverage["scope_category"],
+                "final_answer": coverage["final_answer"],
+                "trace": trace + coverage["trace"],
+            }
         return {
             "is_out_of_scope": False,
             "scope_category": None,
@@ -204,4 +221,102 @@ def check_scope(state):
         "final_answer": CATEGORY_REFUSALS[category],
         "trace": trace
         + [f"scope gate: REFUSED '{category}' (matched '{matched}') - no retrieval, no synthesis"],
+    }
+
+
+# --- corpus coverage --------------------------------------------------------
+#
+# herbs.json is keyed by Sanskrit/modern names, but the corpus is an English
+# translation that names plants in common English, so a user can ask about a
+# herb this translation never discusses. build_herb_terminology.py classifies
+# every herb by what actually occurs in the corpus; 22 occur under no name and
+# no alias. Retrieval for those returns a weak, topically wrong verse at low
+# confidence, which reads as grounded but is not.
+#
+# This is the same defect the categories above handle - asserting things beyond
+# the evidence - so it belongs in this gate rather than in retrieval. The
+# generated file is authoritative and nothing here is hand-listed, so a corpus
+# rebuild that starts discussing a herb silently lifts the refusal.
+
+_TERMINOLOGY_PATH = BACKEND / "reference" / "herb_terminology.json"
+
+try:
+    with open(_TERMINOLOGY_PATH, encoding="utf-8") as _f:
+        _TERMINOLOGY = json.load(_f)
+except (OSError, ValueError):  # noqa: BLE001
+    # Missing or malformed generated data must not refuse valid questions: the
+    # gate degrades to "no coverage information", never to "refuse everything".
+    _TERMINOLOGY = None
+
+ABSENT_HERBS = {
+    name
+    for name, entry in (_TERMINOLOGY or {}).get("herbs", {}).items()
+    if entry.get("status") == "not_in_corpus"
+}
+
+HERB_NAMES = set((_TERMINOLOGY or {}).get("herbs", {}).keys())
+
+COVERAGE_REFUSAL = (
+    "This herb is not discussed in the Charaka Samhita text I have indexed, so I "
+    "have no verse to ground an answer in. That is a limit of the translation I am "
+    "working from, not a judgement about the plant. I would rather say that than "
+    "assemble an answer from passages that do not mention it. If you can tell me "
+    "an English name the text uses, I will look again."
+)
+
+
+def absent_herbs_in(text):
+    """Absent herb names mentioned in ``text``, longest match first.
+
+    Matching still goes through _matches for word boundaries, so a short name
+    cannot fire inside a longer plant name. Longest-first matters when one
+    absent name is a prefix of another; sorting keeps the most specific match.
+    """
+    found = [h for h in ABSENT_HERBS if _matches(h, text)]
+    return sorted(found, key=len, reverse=True)
+
+
+def check_corpus_coverage(state):
+    """Refuse a question whose subject herb this corpus never discusses.
+
+    Deliberately narrow. It refuses only when the herb is the *whole* subject of
+    the query. "bibhitaki for cough" is refused because there is nothing to say;
+    "bibhitaki and ginger for cough" is not, because ginger is discussed and the
+    question is still partly answerable. Refusing there would trade one
+    ungrounded answer for a refusal of a grounded one.
+
+    Called from check_scope, which runs it only after the category patterns have
+    declined to match, so a medication or dosage refusal keeps priority.
+    """
+    query = state.get("query", "")
+    trace = state.get("trace", [])
+    if not ABSENT_HERBS or not _norm(query):
+        return {"is_out_of_scope": False, "scope_category": None, "trace": trace}
+
+    q = _norm(query)
+
+    # If the query also names a herb the corpus DOES discuss, it is not purely
+    # about the absent one. _detect_herb matches all 93 herbs in herbs.json,
+    # including absent ones, so it cannot answer this directly: it is used to
+    # confirm the query is herb-led at all, then each detected herb is looked up
+    # in the generated table.
+    if _detect_herb(q):
+        named = {n for n in HERB_NAMES if _matches(n, q)}
+        if any(n not in ABSENT_HERBS for n in named):
+            return {"is_out_of_scope": False, "scope_category": None, "trace": trace}
+
+    absent = absent_herbs_in(q)
+    if not absent:
+        return {"is_out_of_scope": False, "scope_category": None, "trace": trace}
+
+    herb = absent[0]
+    return {
+        "is_out_of_scope": True,
+        "scope_category": "not_in_corpus",
+        "final_answer": COVERAGE_REFUSAL,
+        "trace": trace
+        + [
+            f"scope gate: REFUSED 'not_in_corpus' - '{herb}' occurs in no corpus "
+            f"verse under any name or alias"
+        ],
     }

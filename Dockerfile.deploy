@@ -30,9 +30,12 @@ COPY backend/charaka_data backend/charaka_data
 # build_chapter_titles.py must run before build_vector_store.py: the indexer
 # prepends parent chapter context to every verse, and that context comes from
 # the generated title table.
+# build_herb_terminology.py classifies each herb against the corpus. It reads
+# processed/charaka_structured.json, so it must run after transform.py.
 RUN python backend/scripts/transform.py \
     && python backend/scripts/audit_ids.py \
     && python backend/scripts/build_chapter_titles.py \
+    && python backend/scripts/build_herb_terminology.py \
     && python backend/scripts/build_vector_store.py
 COPY --from=fe /build/dist frontend/dist
 
