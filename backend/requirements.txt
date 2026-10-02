@@ -12,3 +12,4 @@ pydantic
 mcp
 langchain-mcp-adapters
 pypdf
+pytest

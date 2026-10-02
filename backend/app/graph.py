@@ -2,6 +2,7 @@ from langgraph.graph import StateGraph, END
 
 from app.state import AgentState
 from app.nodes.emergency import check_emergency
+from app.nodes.scope import check_scope
 from app.nodes.dosha import tag_dosha
 from app.nodes.query_expansion import expand_query
 from app.nodes.retriever import retrieve
@@ -14,7 +15,11 @@ from app.nodes.tool_router import route_tools
 
 
 def route_after_emergency(state):
-    return END if state["is_emergency"] else "tag_dosha"
+    return END if state["is_emergency"] else "check_scope"
+
+
+def route_after_scope(state):
+    return END if state.get("is_out_of_scope") else "tag_dosha"
 
 
 def route_after_retrieve(state):
@@ -29,6 +34,7 @@ def route_after_retrieve(state):
 
 graph = StateGraph(AgentState)
 graph.add_node("check_emergency", check_emergency)
+graph.add_node("check_scope", check_scope)
 graph.add_node("tag_dosha", tag_dosha)
 graph.add_node("expand_query", expand_query)
 graph.add_node("route_tools", route_tools)
@@ -43,6 +49,11 @@ graph.set_entry_point("check_emergency")
 graph.add_conditional_edges(
     "check_emergency",
     route_after_emergency,
+    {"check_scope": "check_scope", END: END},
+)
+graph.add_conditional_edges(
+    "check_scope",
+    route_after_scope,
     {"tag_dosha": "tag_dosha", END: END},
 )
 graph.add_edge("tag_dosha", "expand_query")

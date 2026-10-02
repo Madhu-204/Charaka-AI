@@ -170,13 +170,26 @@ def _and_clauses(clauses: list[dict]) -> dict:
 
     Chroma requires exactly one top-level operator and rejects an $and holding
     fewer than two clauses, so a one-clause list must degrade to the bare dict.
+
+    Nested `$and`s are flattened here rather than left to the caller. Merging a
+    book scope into an existing topic scope at line ~277 already handles it, but
+    that made correctness depend on every call site remembering; a missed site
+    produces a nested operator Chroma rejects only at query time. Flattening
+    here keeps the returned value valid for any input.
     """
-    cleaned = [c for c in clauses if c]
-    if not cleaned:
+    flattened: list[dict] = []
+    for clause in clauses:
+        if not clause:
+            continue
+        if set(clause) == {"$and"}:
+            flattened.extend(c for c in clause["$and"] if c)
+        else:
+            flattened.append(clause)
+    if not flattened:
         return {}
-    if len(cleaned) == 1:
-        return cleaned[0]
-    return {"$and": cleaned}
+    if len(flattened) == 1:
+        return flattened[0]
+    return {"$and": flattened}
 
 
 def _topic_clauses(tag: str) -> list[dict]:
@@ -271,8 +284,8 @@ def route_tools(state):
         ):
             # Merge, don't replace: a book scope and a topic scope are both valid
             # together ("in Chikitsa Sthana, on fever"). Chroma allows only one
-            # top-level operator in `where`, so an existing $and has to be
-            # nested inside a new $and rather than updated as a flat dict.
+            # top-level operator in `where`, so an existing $and is flattened
+            # by _and_clauses rather than updated as a flat dict.
             existing = new_state["metadata_filter"] or {}
             clauses = list(existing.get("$and", [existing])) if existing else []
             parts = []

@@ -268,22 +268,28 @@ def _verse_summary(candidate: dict) -> dict:
 def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     rc = result.get("resolved_chapter") or {}
     is_emergency = result["is_emergency"]
+    # A scope refusal is terminal like an emergency: nothing was retrieved, so
+    # chapter/category/dosha must be null rather than stale defaults.
+    is_out_of_scope = bool(result.get("is_out_of_scope"))
+    no_context = is_emergency or is_out_of_scope
     response = {
         "answer": result["final_answer"],
         "is_emergency": is_emergency,
+        "is_out_of_scope": is_out_of_scope,
+        "scope_category": result.get("scope_category"),
         "is_clarification": bool(result.get("is_clarification")),
         "confidence": result.get("confidence"),
-        "chapter": rc.get("meta", {}).get("chapter") if not is_emergency else None,
-        "category_tag": rc.get("meta", {}).get("category_tag") if not is_emergency else None,
+        "chapter": rc.get("meta", {}).get("chapter") if not no_context else None,
+        "category_tag": rc.get("meta", {}).get("category_tag") if not no_context else None,
         "safety_flags": result.get("safety_flags", []),
-        "dosha": result.get("dosha") if not is_emergency else None,
+        "dosha": result.get("dosha") if not no_context else None,
         "latency_ms": latency_ms,
         "used_documents": bool(result.get("used_documents")),
         "document_names": sorted(
             {d.get("doc", "uploaded document") for d in result.get("user_docs", [])}
         ),
     }
-    if not is_emergency:
+    if not no_context:
         response["attribution"] = result.get("attribution", [])
         response["reasoning_trace"] = {
             "steps": result.get("trace", []),
@@ -373,7 +379,11 @@ def _cache_scope(dosha_profile: Optional[str]) -> str:
 
 
 def _suggest_questions(result) -> list:
-    if result.get("is_emergency") or result.get("is_clarification"):
+    if (
+        result.get("is_emergency")
+        or result.get("is_out_of_scope")
+        or result.get("is_clarification")
+    ):
         return []
     rc = result.get("resolved_chapter") or {}
     meta = rc.get("meta", {}) or {}
@@ -396,7 +406,11 @@ def _suggest_questions(result) -> list:
 
 def _attach_summaries(resp, query, result, lang: Optional[str] = None):
     resp["suggestions"] = _suggest_questions(result)
-    if result.get("final_answer") and not result["is_emergency"]:
+    # A refusal must not be run through the summariser: that would re-ask the
+    # LLM to summarise our own fixed text, and could soften a firm refusal.
+    if result.get("final_answer") and not (
+        result["is_emergency"] or result.get("is_out_of_scope")
+    ):
         try:
             resp["summary"] = build_summary(query, resp["answer"], result, lang=lang or "en")
         except Exception as e:  # noqa: BLE001
@@ -655,7 +669,9 @@ async def _event_stream(
                 # not depend on regenerating. The `done` event is still emitted
                 # first, so the user sees the answer immediately.
                 summary = None
-                if payload.get("final_answer") and not payload.get("is_emergency"):
+                if payload.get("final_answer") and not (
+                    payload.get("is_emergency") or payload.get("is_out_of_scope")
+                ):
                     try:
                         if _GATE.acquire():
                             try:
@@ -751,7 +767,9 @@ def ask(req: AskRequest, request: Request):
     latency = round((time.time() - t0) * 1000)
     resp = build_response(result, latency_ms=latency)
     resp["suggestions"] = _suggest_questions(result)
-    if result.get("final_answer") and not result.get("is_emergency"):
+    if result.get("final_answer") and not (
+        result.get("is_emergency") or result.get("is_out_of_scope")
+    ):
         if _GATE.acquire():
             try:
                 resp = _attach_summaries(resp, req.query, result, lang=req.lang)
@@ -902,7 +920,30 @@ def delete_documents(session_id: str, request: Request):
 
 @app.get("/healthz")
 def healthz():
-    return {"ok": True, "app": "charaka-ai", "ts": int(time.time())}
+    """Liveness plus index freshness.
+
+    The heartbeat workflow polls this endpoint to keep the free Space awake, so
+    it must stay cheap and must never fail because the index is stale -- a stale
+    index is reported, not fatal. An unhealthy answer would also silently stop
+    the keep-alive, so ``ok`` tracks liveness only.
+    """
+    fresh = {}
+    try:
+        from app.chunking import index_freshness
+        from app.nodes.retriever import collection
+
+        fresh = index_freshness(collection)
+    except Exception as exc:  # noqa: BLE001 - a health check must not raise
+        fresh = {"status": "unknown", "detail": f"freshness check failed: {exc}"}
+
+    if fresh.get("status") == "stale":
+        print(f"[healthz] STALE INDEX: {fresh.get('detail')}")
+    return {
+        "ok": True,
+        "app": "charaka-ai",
+        "ts": int(time.time()),
+        "index": fresh,
+    }
 
 
 @app.get("/corpus/sthanas")

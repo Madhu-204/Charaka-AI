@@ -27,8 +27,12 @@ COPY backend/charaka_data backend/charaka_data
 # processed/ and chroma_db/ are git-ignored, so regenerate them in-image from
 # the committed raw corpus — this is what makes the deploy build from a clean
 # checkout (Render/CI). audit_ids.py exits non-zero on any integrity failure.
+# build_chapter_titles.py must run before build_vector_store.py: the indexer
+# prepends parent chapter context to every verse, and that context comes from
+# the generated title table.
 RUN python backend/scripts/transform.py \
     && python backend/scripts/audit_ids.py \
+    && python backend/scripts/build_chapter_titles.py \
     && python backend/scripts/build_vector_store.py
 COPY --from=fe /build/dist frontend/dist
 

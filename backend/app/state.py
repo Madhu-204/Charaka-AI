@@ -8,6 +8,8 @@ class AgentState(TypedDict, total=False):
     dosha_profile: Optional[str]
     is_emergency: bool
     emergency_reason: Optional[str]
+    is_out_of_scope: bool
+    scope_category: Optional[str]
     dosha: Optional[str]
     dosha_scores: Optional[dict]
     expanded_query: str

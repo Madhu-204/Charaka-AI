@@ -114,5 +114,35 @@
     "expected_category": "routine_seasonal",
     "notes": "Informational cross-reference phrasing; must still pinpoint the seasonal chapter.",
     "known_gap": false
+  },
+  {
+    "eval_id": "ec_13",
+    "corner": true,
+    "question": "ज्वर का उपचार क्या है?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "expected_category": "fever_acute",
+    "notes": "Hindi input: Devanagari must normalize to the romanised Sanskrit the corpus uses (jwara).",
+    "known_gap": false
+  },
+  {
+    "eval_id": "ec_14",
+    "corner": true,
+    "question": "खांसी का उपचार",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "expected_category": "respiratory",
+    "notes": "Hindi input: kasa maps to the cough chapter.",
+    "known_gap": false
+  },
+  {
+    "eval_id": "ec_15",
+    "corner": true,
+    "question": "ज्वर में अश्वगंधा का उपयोग कैसे करें?",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "expected_category": "fever_acute",
+    "notes": "Hindi herb name plus a named condition: both must normalize (ashwagandha, jwara).",
+    "known_gap": false
   }
 ]

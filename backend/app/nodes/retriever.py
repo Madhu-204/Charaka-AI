@@ -9,13 +9,25 @@ import chromadb
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from app.chunking import chapter_context, herb_key
+from app.nodes.tool_router import _and_clauses
+
 BACKEND = Path(__file__).resolve().parents[2]
 
 client = chromadb.PersistentClient(path=str(BACKEND / "chroma_db"))
 collection = client.get_collection(name="charaka_ai_corpus")
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-_ALL = collection.get(include=["documents"])
+_ALL = collection.get(include=["documents", "metadatas"])
+
+# BM25 must see the same text the vector index was built from, or the two halves
+# of hybrid search disagree about what a verse says. The stored `documents` are
+# kept clean for display, so the parent-chapter context is re-applied here from
+# the metadata rather than read back out of the stored string.
+_BM25_DOCS = [
+    chapter_context(meta) + (doc or "")
+    for doc, meta in zip(_ALL["documents"], _ALL["metadatas"])
+]
 
 _TITLE_CASEFOLD_RE = re.compile(r"[a-z]+")
 
@@ -62,7 +74,7 @@ class _BM25:
         return scored[:top]
 
 
-BM25_INDEX = _BM25(_ALL["ids"], _ALL["documents"])
+BM25_INDEX = _BM25(_ALL["ids"], _BM25_DOCS)
 
 _RERANK_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 _reranker = None
@@ -113,9 +125,6 @@ with open(BACKEND / "reference" / "mappings.json", encoding="utf-8") as f:
 with open(BACKEND / "reference" / "herbs.json", encoding="utf-8") as f:
     herbs_data = json.load(f)["herbs"]
 
-with open(BACKEND / "processed" / "herb_mentions.json", encoding="utf-8") as f:
-    herb_mentions = json.load(f)
-
 chapter_meta = mappings["chapter_meta"]
 
 DECOMPOSITION_TERMS = [
@@ -137,13 +146,59 @@ for herb in herbs_data:
     pattern = r"\b(?:" + "|".join(escaped) + r")\b"
     HERB_PATTERNS.append((herb["name"], re.compile(pattern, re.IGNORECASE)))
 
-VERSES_BY_HERB = {}
-for row in herb_mentions:
-    VERSES_BY_HERB.setdefault(row["herb"], []).append(row["verse_id"])
-
-
 def _chapter_key(candidate):
     return f"{candidate['meta']['sthana']}/{candidate['meta']['chapter']}"
+
+
+# Reciprocal Rank Fusion constant. The standard value; k dampens the influence of
+# the very top ranks so a single #1 hit cannot outvote a broad consensus.
+RRF_K = 60
+
+
+def _chapter_scores(pool, k=RRF_K):
+    """Reciprocal-rank-fusion vote over chapters present in ``pool``.
+
+    A question about a subject ("which herbs for purgation", "shatavari as a
+    rejuvenator") is answered by a chapter, not by whichever single verse
+    happens to share the most words. Measured on the eval set, taking the
+    top-fused verse outright let one verse win on a lone BM25 hit while the
+    correct chapter filled most of the pool:
+
+        "Which herbs are used for purgation and emesis?"
+            #0 sutrasthana/25  cos=0.615 bm25=4.29 fused=0.678   <- won
+            #1 sutrasthana/4   cos=0.611 bm25=4.30 fused=0.631
+            ... 8 more sutrasthana/4 verses in the top 10
+
+    Ten verses from the right chapter lost to one that merely contained the
+    word "emesis". Fusing by rank rather than by raw score makes the breadth of
+    agreement count for something, which is what the user actually asked about.
+
+    Returns ``{chapter_key: rrf_score}``.
+    """
+    scores: dict[str, float] = {}
+    for rank, cand in enumerate(pool):
+        key = _chapter_key(cand)
+        scores[key] = scores.get(key, 0.0) + 1.0 / (k + rank + 1)
+    return scores
+
+
+def _resolve_by_chapter_vote(pool, k=RRF_K):
+    """Pick the verse to resolve to, by chapter-level consensus.
+
+    Returns ``(verse, chapter_scores)``. Falls back to the top-fused verse when
+    the pool is empty. Within the winning chapter the best-fused verse wins, so
+    this only changes *which chapter* is answered from -- it never promotes a
+    weak verse over a strong one inside the chapter the pool already agreed on.
+    """
+    if not pool:
+        return None, {}
+    scores = _chapter_scores(pool, k=k)
+    # Ties (and an all-one-verse-per-chapter pool) fall back to pool order, so
+    # the top-fused verse still wins. Python's max is stable on the first
+    # maximum, and dicts preserve insertion order = first-seen rank.
+    best_chapter = max(scores, key=lambda key: scores[key])
+    best = next((c for c in pool if _chapter_key(c) == best_chapter), None)
+    return best, scores
 
 
 def _resolve_chapter_key(canonical_term):
@@ -306,47 +361,6 @@ def _hybrid_pool(query, q_emb, where=None):
     return have
 
 
-def _herb_retrieve(herb_name, expanded_query, query_embedding):
-    verse_ids = VERSES_BY_HERB.get(herb_name, [])
-    if not verse_ids:
-        return None
-
-    unique_ids = list(dict.fromkeys(verse_ids))
-
-    results = collection.get(
-        ids=unique_ids, include=["documents", "metadatas", "embeddings"]
-    )
-
-    if not results["ids"]:
-        return None
-
-    embeddings = np.array(results["embeddings"])
-    q_emb = np.array(query_embedding).flatten()
-    similarities = [_cosine(e, q_emb) for e in embeddings]
-
-    ranked = sorted(
-        zip(results["ids"], results["documents"], results["metadatas"], similarities),
-        key=lambda x: x[3],
-        reverse=True,
-    )
-
-    pool = [
-        {"text": doc, "meta": meta, "score": float(score), "verse_id": vid}
-        for vid, doc, meta, score in ranked
-    ]
-
-    resolved = pool[0]
-
-    confidence = _confidence_band(resolved["score"])
-
-    return {
-        "retrieved": pool[:3],
-        "resolved_chapter": resolved,
-        "confidence": confidence,
-        "confidence_score": float(resolved["score"]),
-    }
-
-
 def search_verses(query, limit=8):
     """Expose ranked hybrid results as plain text (used by the corpus search page)."""
     q_emb = model.encode([query]).tolist()[0]
@@ -391,23 +405,34 @@ def retrieve(state):
         ]
 
     herb = _detect_herb(query)
-    if herb:
-        herb_result = _herb_retrieve(herb, query, q_emb)
-        if herb_result:
-            resolved = herb_result["resolved_chapter"]
-            step = (
-                f"retrieval: herb path via '{herb}' verse index → "
-                f"resolved {resolved['verse_id']} "
-                f"(score {herb_result['confidence_score']:.3f}, {herb_result['confidence']})"
-            )
-            return {
-                **herb_result,
-                "user_docs": user_docs,
-                "used_documents": used_documents,
-                "trace": trace + [step],
-            }
+    where = state.get("metadata_filter")
 
-    hybrid = _hybrid_pool(query, q_emb, where=state.get("metadata_filter"))
+    # A named herb is a *filter* on the ordinary hybrid path, not a separate
+    # retrieval mode. The previous `_herb_retrieve` bypass ranked every verse
+    # mentioning the herb by similarity alone and returned early, which meant
+    # the rest of the question never got a vote: "How is ashwagandha used in
+    # fever treatment?" answered from a verse that matched the herb but not the
+    # complaint. Filtering keeps the hybrid ranking intact while still
+    # guaranteeing the resolved verse actually mentions the herb.
+    herb_filter = None
+    if herb:
+        key = herb_key(herb)
+        if key:
+            herb_filter = {key: True}
+            where = _and_clauses([where, herb_filter]) if where else herb_filter
+
+    hybrid = _hybrid_pool(query, q_emb, where=where)
+
+    if not hybrid and herb_filter:
+        # An over-narrow filter (an alias that matched but whose verses were
+        # removed by a scope clause) must not leave the user with nothing:
+        # retry on the scoped pool alone and say so in the trace.
+        trace = trace + [
+            f"retrieval: herb filter {herb_filter} matched nothing → "
+            f"retried with the requested scope only"
+        ]
+        hybrid = _hybrid_pool(query, q_emb, where=state.get("metadata_filter"))
+        herb_filter = None
 
     if not hybrid:
         step = "retrieval: hybrid pool empty → no match returned"
@@ -445,6 +470,14 @@ def retrieve(state):
             if hit:
                 resolved = hit
 
+    # Chapter-consensus voting (see _chapter_scores) was implemented and then
+    # removed: on the 40-question eval it fixed eval_11/eval_21 but broke
+    # eval_12/eval_14, netting 36/40 against a 37/40 baseline. A chapter vote
+    # rewards breadth, so a pool that is broad but shallow (several chapters
+    # each contributing one loosely-related verse) can outvote the one chapter
+    # that is genuinely on topic. The helpers are kept because the diagnosis is
+    # worth preserving; they are not called on any retrieval path.
+
     selected = [resolved]
     remaining = [c for c in pool if c["verse_id"] != resolved["verse_id"]]
     while len(selected) < 3 and remaining:
@@ -456,10 +489,12 @@ def retrieve(state):
         remaining = [c for c in remaining if c["verse_id"] != picked["verse_id"]]
 
     confidence = _confidence_band(resolved["score"])
+    scope = f" + herb filter '{herb}'" if herb_filter else ""
     step = (
-        f"retrieval: algorithm='hybrid' vector+BM25 + MMR rerank → "
+        f"retrieval: algorithm='hybrid' vector+BM25 + MMR rerank{scope} → "
         f"resolved {resolved['verse_id']} (cos {float(resolved['score']):.3f}, {confidence})"
     )
+    
 
     return {
         "retrieved": selected,
