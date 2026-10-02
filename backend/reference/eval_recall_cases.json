@@ -1,0 +1,252 @@
+[
+  {
+    "eval_id": "rc_01",
+    "recall": true,
+    "question": "What does Charaka say about abnormalities?",
+    "expected_verse_id": "cs_sharira_8_24-27",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "abnormalities",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_02",
+    "recall": true,
+    "question": "What does Charaka say about administrations?",
+    "expected_verse_id": "cs_sharira_8_31-b",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "administrations",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_03",
+    "recall": true,
+    "question": "What does Charaka say about anaphrodisiacs?",
+    "expected_verse_id": "cs_sutra_27_4-b",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "anaphrodisiacs",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_04",
+    "recall": true,
+    "question": "What does Charaka say about arithmetical?",
+    "expected_verse_id": "cs_chikitsa_7_130",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "arithmetical",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_05",
+    "recall": true,
+    "question": "What does Charaka say about autometeorism?",
+    "expected_verse_id": "cs_sutra_27_181",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "autometeorism",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_06",
+    "recall": true,
+    "question": "What does Charaka say about cauterization?",
+    "expected_verse_id": "cs_chikitsa_28_100-100",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "cauterization",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_07",
+    "recall": true,
+    "question": "What does Charaka say about cohabitation?",
+    "expected_verse_id": "cs_sutra_25_40-d",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "cohabitation",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_08",
+    "recall": true,
+    "question": "What does Charaka say about conditioning?",
+    "expected_verse_id": "cs_sutra_26_81",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "conditioning",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_09",
+    "recall": true,
+    "question": "What does Charaka say about constellations?",
+    "expected_verse_id": "cs_sutra_12_8-b",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "constellations",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_10",
+    "recall": true,
+    "question": "What does Charaka say about contemplated?",
+    "expected_verse_id": "cs_sutra_1_55-a",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "contemplated",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_11",
+    "recall": true,
+    "question": "What does Charaka say about cyavanaprasha?",
+    "expected_verse_id": "cs_chikitsa_28_242-242",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "cyavanaprasha",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_12",
+    "recall": true,
+    "question": "What does Charaka say about deradenoncuses?",
+    "expected_verse_id": "cs_sutra_26_43-a",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "deradenoncuses",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_13",
+    "recall": true,
+    "question": "What does Charaka say about differentiating?",
+    "expected_verse_id": "cs_chikitsa_3_256",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "differentiating",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_14",
+    "recall": true,
+    "question": "What does Charaka say about disagreeable?",
+    "expected_verse_id": "cs_chikitsa_3_330-331",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "disagreeable",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_15",
+    "recall": true,
+    "question": "What does Charaka say about disintegrate?",
+    "expected_verse_id": "cs_vimana_8_122-d",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "disintegrate",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_16",
+    "recall": true,
+    "question": "What does Charaka say about distillation?",
+    "expected_verse_id": "cs_vimana_1_22-b",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "distillation",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_17",
+    "recall": true,
+    "question": "What does Charaka say about exhaustively?",
+    "expected_verse_id": "cs_sutra_25_48",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "exhaustively",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_18",
+    "recall": true,
+    "question": "What does Charaka say about extinguishes?",
+    "expected_verse_id": "cs_chikitsa_15_65",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "extinguishes",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_19",
+    "recall": true,
+    "question": "What does Charaka say about illustrating?",
+    "expected_verse_id": "cs_vimana_8_137-b",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "illustrating",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_20",
+    "recall": true,
+    "question": "What does Charaka say about indubitability?",
+    "expected_verse_id": "cs_sutra_20_23",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "indubitability",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_21",
+    "recall": true,
+    "question": "What does Charaka say about invigorative?",
+    "expected_verse_id": "cs_sutra_5_69",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "invigorative",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_22",
+    "recall": true,
+    "question": "What does Charaka say about odontoseisis?",
+    "expected_verse_id": "cs_sutra_20_11",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "odontoseisis",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_23",
+    "recall": true,
+    "question": "What does Charaka say about preponderant?",
+    "expected_verse_id": "cs_chikitsa_7_101",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "preponderant",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_24",
+    "recall": true,
+    "question": "What does Charaka say about promulgation?",
+    "expected_verse_id": "cs_sutra_1_136",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "promulgation",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_25",
+    "recall": true,
+    "question": "What does Charaka say about transformation?",
+    "expected_verse_id": "cs_vimana_1_22-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "transformation",
+    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  }
+]

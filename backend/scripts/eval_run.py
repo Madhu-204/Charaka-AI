@@ -23,15 +23,22 @@ def main():
         action="store_true",
         help="also run the corner-case regression set (reference/eval_corner_cases.json)",
     )
+    parser.add_argument(
+        "--recall",
+        action="store_true",
+        help="also run the verse-level recall probe (reference/eval_recall_cases.json). "
+        "Synthetic needle queries that pin one verse; measures recall, not answer quality.",
+    )
     args = parser.parse_args()
 
-    eval_items = load_eval_items(corner=args.corner)
+    eval_items = load_eval_items(corner=args.corner, recall=args.recall)
     rows = [run_question(item, mode=args.mode) for item in eval_items]
     summary = summarize(rows)
 
     print(f"\n{'=' * 78}")
     print(f"EVAL — {summary['total']} questions · mode={args.mode} · "
-          f"corner={'yes' if args.corner else 'no'}")
+          f"corner={'yes' if args.corner else 'no'} · "
+          f"recall={'yes' if args.recall else 'no'}")
     print(f"{'=' * 78}")
     for r in rows:
         mark = "+" if r["resolved_hit"] else "x"
@@ -63,6 +70,14 @@ def main():
           f"({summary['corner']['resolved_pct']}%)]")
     print(f"Top-3 accuracy   : {summary['top_n']}/{summary['total']} "
           f"({summary['top_n_pct']}%)")
+    rec = summary["recall"]
+    if rec["total"]:
+        print(f"Recall probe     : {rec['total']} needle cases · "
+              f"verse hit {rec['verse']}/{rec['total']} ({rec['verse_pct']}%) · "
+              f"verse in top-3 {rec['verse_top_n']}/{rec['total']} "
+              f"({rec['verse_top_n_pct']}%) · "
+              f"chapter hit {rec['chapter_resolved']}/{rec['total']} "
+              f"({rec['chapter_resolved_pct']}%)")
     print(f"False emergency positives: {summary['emergency_false_positives']}/{summary['total']}")
     print(f"Known gaps       : {summary['known_gaps']} "
           f"({summary['known_gaps_admitted']} admitted/not yet fixed)")
@@ -79,6 +94,21 @@ def main():
             print(f"  MISS {r['eval_id']}: expected {r['expected']} -> resolved {r['resolved']} "
                   f"({r['resolved_verse']}) conf={r['confidence']}"
                   f"{'  (known gap)' if r['known_gap'] else ''}")
+
+    missed_verses = [r for r in rows if r["verse_hit"] is False]
+    if missed_verses:
+        print(f"{'=' * 78}")
+        print(f"Recall misses ({len(missed_verses)}): the pinned verse was not resolved")
+        for r in missed_verses:
+            top3 = "in top-3" if r["top_n_verse_hit"] else "NOT in top-3"
+            print(f"  {r['eval_id']}: expected {r['expected_verse']} "
+                  f"-> got {r['resolved_verse']} ({top3}, conf={r['confidence']})")
+        # A verse that never reaches the top 3 cannot be fixed by reranking the
+        # existing pool: it is a recall failure, and widening the pool is the
+        # only thing that would admit it.
+        recall_failures = [r for r in missed_verses if not r["top_n_verse_hit"]]
+        print(f"  -> {len(recall_failures)} are recall failures "
+              f"(candidate pool never contained the verse)")
 
 
 if __name__ == "__main__":

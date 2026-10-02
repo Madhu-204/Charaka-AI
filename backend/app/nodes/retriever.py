@@ -27,6 +27,20 @@ _ALL = collection.get(include=["documents", "metadatas", "embeddings"])
 # Values are the same arrays Chroma returned, so scoring is unchanged.
 _EMBED = dict(zip(_ALL["ids"], _ALL["embeddings"]))
 
+# Text and metadata by id, for candidates that BM25 surfaces but the vector
+# query did not return. Without these a lexical-only candidate has no verse text
+# to cite or attribute against.
+_DOC_BY_ID = dict(zip(_ALL["ids"], _ALL["documents"]))
+_META_BY_ID = dict(zip(_ALL["ids"], _ALL["metadatas"]))
+
+# Let BM25 contribute candidates rather than only re-rank the dense results.
+# Off by default while it is measured: it raises the recall ceiling but also
+# enlarges the pool fusion ranks, so it can displace a verse that previously
+# won. Both effects are measured separately by scripts/eval_run.py --core and
+# --recall -- and it should only be switched on if the core set holds.
+BM25_UNION_ENABLED = os.getenv("CHARAKA_BM25_UNION", "0") == "1"
+BM25_UNION_TOP = int(os.getenv("CHARAKA_BM25_UNION_TOP", "30"))
+
 # BM25 must see the same text the vector index was built from, or the two halves
 # of hybrid search disagree about what a verse says. The stored `documents` are
 # kept clean for display, so the parent-chapter context is re-applied here from
@@ -379,9 +393,32 @@ def _hybrid_pool(query, q_emb, where=None):
             print(f"[retriever] subquery '{sub}' failed: {e}")
 
     cand_ids = list(candidates)
-    for vid, bscore in BM25_INDEX.search(query, top=12, restrict=cand_ids):
-        if vid in candidates:
-            candidates[vid]["_bm25"] = bscore
+    if BM25_UNION_ENABLED:
+        # Search the whole corpus, not just the vector's candidates.
+        #
+        # Restricting BM25 to `cand_ids` means the lexical half can only ever
+        # REORDER what the dense half already found; it can never contribute a
+        # candidate of its own. That makes the recall ceiling identical to the
+        # dense retriever's, which defeats the point of running two retrievers.
+        # Measured on the verse-level recall probe (reference/eval_recall_cases.
+        # json), every single miss was a verse absent from the vector top-12 --
+        # while unrestricted BM25 ranked that same verse 1st-10th on the very
+        # term that identified it. So BM25 had the answer and was not allowed
+        # to return it.
+        for vid, bscore in BM25_INDEX.search(query, top=BM25_UNION_TOP, restrict=None):
+            if vid in candidates:
+                candidates[vid]["_bm25"] = bscore
+                continue
+            candidates[vid] = {
+                "text": _DOC_BY_ID.get(vid, ""),
+                "meta": _META_BY_ID.get(vid, {}),
+                "_bm25": bscore,
+            }
+        cand_ids = list(candidates)
+    else:
+        for vid, bscore in BM25_INDEX.search(query, top=12, restrict=cand_ids):
+            if vid in candidates:
+                candidates[vid]["_bm25"] = bscore
 
     if not cand_ids:
         return [], "off"
