@@ -1,252 +1,1202 @@
 [
   {
-    "eval_id": "rc_01",
+    "eval_id": "rc_001",
     "recall": true,
-    "question": "What does Charaka say about abnormalities?",
-    "expected_verse_id": "cs_sharira_8_24-27",
-    "expected_sthana": "sharirasthana",
-    "expected_chapter": 8,
-    "probe_term": "abnormalities",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_02",
-    "recall": true,
-    "question": "What does Charaka say about administrations?",
-    "expected_verse_id": "cs_sharira_8_31-b",
-    "expected_sthana": "sharirasthana",
-    "expected_chapter": 8,
-    "probe_term": "administrations",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_03",
-    "recall": true,
-    "question": "What does Charaka say about anaphrodisiacs?",
-    "expected_verse_id": "cs_sutra_27_4-b",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 27,
-    "probe_term": "anaphrodisiacs",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_04",
-    "recall": true,
-    "question": "What does Charaka say about arithmetical?",
-    "expected_verse_id": "cs_chikitsa_7_130",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 7,
-    "probe_term": "arithmetical",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_05",
-    "recall": true,
-    "question": "What does Charaka say about autometeorism?",
-    "expected_verse_id": "cs_sutra_27_181",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 27,
-    "probe_term": "autometeorism",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_06",
-    "recall": true,
-    "question": "What does Charaka say about cauterization?",
-    "expected_verse_id": "cs_chikitsa_28_100-100",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 28,
-    "probe_term": "cauterization",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_07",
-    "recall": true,
-    "question": "What does Charaka say about cohabitation?",
-    "expected_verse_id": "cs_sutra_25_40-d",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 25,
-    "probe_term": "cohabitation",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_08",
-    "recall": true,
-    "question": "What does Charaka say about conditioning?",
-    "expected_verse_id": "cs_sutra_26_81",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 26,
-    "probe_term": "conditioning",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_09",
-    "recall": true,
-    "question": "What does Charaka say about constellations?",
-    "expected_verse_id": "cs_sutra_12_8-b",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 12,
-    "probe_term": "constellations",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_10",
-    "recall": true,
-    "question": "What does Charaka say about contemplated?",
-    "expected_verse_id": "cs_sutra_1_55-a",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 1,
-    "probe_term": "contemplated",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_11",
-    "recall": true,
-    "question": "What does Charaka say about cyavanaprasha?",
-    "expected_verse_id": "cs_chikitsa_28_242-242",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 28,
-    "probe_term": "cyavanaprasha",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_12",
-    "recall": true,
-    "question": "What does Charaka say about deradenoncuses?",
-    "expected_verse_id": "cs_sutra_26_43-a",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 26,
-    "probe_term": "deradenoncuses",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_13",
-    "recall": true,
-    "question": "What does Charaka say about differentiating?",
-    "expected_verse_id": "cs_chikitsa_3_256",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 3,
-    "probe_term": "differentiating",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_14",
-    "recall": true,
-    "question": "What does Charaka say about disagreeable?",
-    "expected_verse_id": "cs_chikitsa_3_330-331",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 3,
-    "probe_term": "disagreeable",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_15",
-    "recall": true,
-    "question": "What does Charaka say about disintegrate?",
-    "expected_verse_id": "cs_vimana_8_122-d",
-    "expected_sthana": "vimanasthana",
-    "expected_chapter": 8,
-    "probe_term": "disintegrate",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_16",
-    "recall": true,
-    "question": "What does Charaka say about distillation?",
-    "expected_verse_id": "cs_vimana_1_22-b",
-    "expected_sthana": "vimanasthana",
-    "expected_chapter": 1,
-    "probe_term": "distillation",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_17",
-    "recall": true,
-    "question": "What does Charaka say about exhaustively?",
-    "expected_verse_id": "cs_sutra_25_48",
-    "expected_sthana": "sutrasthana",
-    "expected_chapter": 25,
-    "probe_term": "exhaustively",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_18",
-    "recall": true,
-    "question": "What does Charaka say about extinguishes?",
-    "expected_verse_id": "cs_chikitsa_15_65",
+    "question": "What does Charaka say about abdominal disease?",
+    "expected_verse_id": "cs_chikitsa_15_88-91",
     "expected_sthana": "chikitsasthana",
     "expected_chapter": 15,
-    "probe_term": "extinguishes",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "abdominal disease",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_19",
+    "eval_id": "rc_002",
     "recall": true,
-    "question": "What does Charaka say about illustrating?",
-    "expected_verse_id": "cs_vimana_8_137-b",
-    "expected_sthana": "vimanasthana",
+    "question": "In the Charaka Samhita, what is said about abates immediately?",
+    "expected_verse_id": "cs_chikitsa_17_36-37",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "abates immediately",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_003",
+    "recall": true,
+    "question": "Which part of Charaka discusses abhishuka group?",
+    "expected_verse_id": "cs_chikitsa_18_102-105",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "abhishuka group",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_004",
+    "recall": true,
+    "question": "What does Charaka teach regarding abdomen misperistalsis?",
+    "expected_verse_id": "cs_chikitsa_28_211-211",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "abdomen misperistalsis",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_005",
+    "recall": true,
+    "question": "Charaka's account of abated recur?",
+    "expected_verse_id": "cs_chikitsa_3_338-339",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "abated recur",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_006",
+    "recall": true,
+    "question": "What does Charaka say about about irremediable?",
+    "expected_verse_id": "cs_chikitsa_6_52",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "about irremediable",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_007",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about abscess giddiness?",
+    "expected_verse_id": "cs_chikitsa_7_136-139",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "abscess giddiness",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_008",
+    "recall": true,
+    "question": "Which part of Charaka discusses abdomen false?",
+    "expected_verse_id": "cs_sharira_8_36",
+    "expected_sthana": "sharirasthana",
     "expected_chapter": 8,
-    "probe_term": "illustrating",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "abdomen false",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_20",
+    "eval_id": "rc_009",
     "recall": true,
-    "question": "What does Charaka say about indubitability?",
-    "expected_verse_id": "cs_sutra_20_23",
+    "question": "What does Charaka teach regarding abhijit gargya?",
+    "expected_verse_id": "cs_sutra_1_8-14",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "abhijit gargya",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_010",
+    "recall": true,
+    "question": "Charaka's account of abnormal afflict?",
+    "expected_verse_id": "cs_sutra_12_30",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "abnormal afflict",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_011",
+    "recall": true,
+    "question": "What does Charaka say about achieves success?",
+    "expected_verse_id": "cs_sutra_20_22",
     "expected_sthana": "sutrasthana",
     "expected_chapter": 20,
-    "probe_term": "indubitability",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "achieves success",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_21",
+    "eval_id": "rc_012",
     "recall": true,
-    "question": "What does Charaka say about invigorative?",
-    "expected_verse_id": "cs_sutra_5_69",
+    "question": "In the Charaka Samhita, what is said about accomplished simply?",
+    "expected_verse_id": "cs_sutra_25_22",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "accomplished simply",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_013",
+    "recall": true,
+    "question": "Which part of Charaka discusses about death?",
+    "expected_verse_id": "cs_sutra_26_84-g",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "about death",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_014",
+    "recall": true,
+    "question": "What does Charaka teach regarding about humoral?",
+    "expected_verse_id": "cs_sutra_27_207",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "about humoral",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_015",
+    "recall": true,
+    "question": "Charaka's account of amlavetasa black?",
+    "expected_verse_id": "cs_sutra_4_9",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "amlavetasa black",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_016",
+    "recall": true,
+    "question": "What does Charaka say about ablutions clipping?",
+    "expected_verse_id": "cs_sutra_5_111",
     "expected_sthana": "sutrasthana",
     "expected_chapter": 5,
-    "probe_term": "invigorative",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "ablutions clipping",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_22",
+    "eval_id": "rc_017",
     "recall": true,
-    "question": "What does Charaka say about odontoseisis?",
+    "question": "In the Charaka Samhita, what is said about absorbing period?",
+    "expected_verse_id": "cs_sutra_6_19-19",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "absorbing period",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_018",
+    "recall": true,
+    "question": "Which part of Charaka discusses abdomen caused?",
+    "expected_verse_id": "cs_sutra_7_12",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "abdomen caused",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_019",
+    "recall": true,
+    "question": "What does Charaka teach regarding accessories neither?",
+    "expected_verse_id": "cs_vimana_1_24-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "accessories neither",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_020",
+    "recall": true,
+    "question": "Charaka's account of abhyanuj acceptance?",
+    "expected_verse_id": "cs_vimana_8_27-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "abhyanuj acceptance",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_021",
+    "recall": true,
+    "question": "What does Charaka say about abnormal eating?",
+    "expected_verse_id": "cs_chikitsa_15_235-236",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "abnormal eating",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_022",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about abdominal distension?",
+    "expected_verse_id": "cs_chikitsa_17_87",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "abdominal distension",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_023",
+    "recall": true,
+    "question": "Which part of Charaka discusses acute properties?",
+    "expected_verse_id": "cs_chikitsa_18_66-68",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "acute properties",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_024",
+    "recall": true,
+    "question": "What does Charaka teach regarding abscesses splenic?",
+    "expected_verse_id": "cs_chikitsa_28_236-236",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "abscesses splenic",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_025",
+    "recall": true,
+    "question": "Charaka's account of abdomen congested?",
+    "expected_verse_id": "cs_chikitsa_3_133-135",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "abdomen congested",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_026",
+    "recall": true,
+    "question": "What does Charaka say about adipose element?",
+    "expected_verse_id": "cs_chikitsa_6_49",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "adipose element",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_027",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about acquires golden?",
+    "expected_verse_id": "cs_chikitsa_7_76",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "acquires golden",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_028",
+    "recall": true,
+    "question": "Which part of Charaka discusses abdomen should?",
+    "expected_verse_id": "cs_sharira_8_48",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "abdomen should",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_029",
+    "recall": true,
+    "question": "What does Charaka teach regarding abscesses swellings?",
+    "expected_verse_id": "cs_sutra_1_117-118",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "abscesses swellings",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_030",
+    "recall": true,
+    "question": "Charaka's account of about without?",
+    "expected_verse_id": "cs_sutra_12_7-e",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "about without",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_031",
+    "recall": true,
+    "question": "What does Charaka say about aching pains?",
+    "expected_verse_id": "cs_sutra_20_12-b",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "aching pains",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_032",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about action consequent?",
+    "expected_verse_id": "cs_sutra_25_36",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "action consequent",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_033",
+    "recall": true,
+    "question": "Which part of Charaka discusses accumulations overpowers?",
+    "expected_verse_id": "cs_sutra_26_43-e",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "accumulations overpowers",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_034",
+    "recall": true,
+    "question": "What does Charaka teach regarding about quick?",
+    "expected_verse_id": "cs_sutra_27_325",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "about quick",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_035",
+    "recall": true,
+    "question": "Charaka's account of amlavetasa indian?",
+    "expected_verse_id": "cs_sutra_4_10",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "amlavetasa indian",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_036",
+    "recall": true,
+    "question": "What does Charaka say about abundance rigidity?",
+    "expected_verse_id": "cs_sutra_5_57-59",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "abundance rigidity",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_037",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about absorption respectively?",
+    "expected_verse_id": "cs_sutra_6_8",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "absorption respectively",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_038",
+    "recall": true,
+    "question": "Which part of Charaka discusses abdomen result?",
+    "expected_verse_id": "cs_sutra_7_8",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "abdomen result",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_039",
+    "recall": true,
+    "question": "What does Charaka teach regarding accurate knowledge?",
+    "expected_verse_id": "cs_vimana_1_3",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "accurate knowledge",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_040",
+    "recall": true,
+    "question": "Charaka's account of abhyupagama siddh?",
+    "expected_verse_id": "cs_vimana_8_37-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "abhyupagama siddh",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_041",
+    "recall": true,
+    "question": "What does Charaka say about acquires first?",
+    "expected_verse_id": "cs_chikitsa_15_9",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "acquires first",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_042",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about accutely painful?",
+    "expected_verse_id": "cs_chikitsa_17_7",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "accutely painful",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_043",
+    "recall": true,
+    "question": "Which part of Charaka discusses adjuvant drinks?",
+    "expected_verse_id": "cs_chikitsa_18_186",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "adjuvant drinks",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_044",
+    "recall": true,
+    "question": "What does Charaka teach regarding absolute retention?",
+    "expected_verse_id": "cs_chikitsa_28_70-71",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "absolute retention",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_045",
+    "recall": true,
+    "question": "Charaka's account of about pants?",
+    "expected_verse_id": "cs_chikitsa_3_324-326",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "about pants",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_046",
+    "recall": true,
+    "question": "What does Charaka say about adopted accordingly?",
+    "expected_verse_id": "cs_chikitsa_6_18",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "adopted accordingly",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_047",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about added yellow?",
+    "expected_verse_id": "cs_chikitsa_7_120-121",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "added yellow",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_048",
+    "recall": true,
+    "question": "Which part of Charaka discusses abnormal menstrual?",
+    "expected_verse_id": "cs_sharira_8_25",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "abnormal menstrual",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_049",
+    "recall": true,
+    "question": "What does Charaka teach regarding achievement memory?",
+    "expected_verse_id": "cs_sutra_1_39",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "achievement memory",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_050",
+    "recall": true,
+    "question": "Charaka's account of affecting factors?",
+    "expected_verse_id": "cs_sutra_12_16",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "affecting factors",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_051",
+    "recall": true,
+    "question": "What does Charaka say about acoria stomatitis?",
+    "expected_verse_id": "cs_sutra_20_31",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "acoria stomatitis",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_052",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about activity either?",
+    "expected_verse_id": "cs_sutra_25_9",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "activity either",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_053",
+    "recall": true,
+    "question": "Which part of Charaka discusses action determination?",
+    "expected_verse_id": "cs_sutra_26_111",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "action determination",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_054",
+    "recall": true,
+    "question": "What does Charaka teach regarding accumulation being?",
+    "expected_verse_id": "cs_sutra_27_246",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "accumulation being",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_055",
+    "recall": true,
+    "question": "Charaka's account of ashraya namely?",
+    "expected_verse_id": "cs_sutra_4_5",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "ashraya namely",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_056",
+    "recall": true,
+    "question": "What does Charaka say about acquire great?",
+    "expected_verse_id": "cs_sutra_5_60-60",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "acquire great",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_057",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about accumulated kapha?",
+    "expected_verse_id": "cs_sutra_6_22",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "accumulated kapha",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_058",
+    "recall": true,
+    "question": "Which part of Charaka discusses acquired become?",
+    "expected_verse_id": "cs_sutra_7_38",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "acquired become",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_059",
+    "recall": true,
+    "question": "What does Charaka teach regarding acquiring homologation?",
+    "expected_verse_id": "cs_vimana_1_20-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "acquiring homologation",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_060",
+    "recall": true,
+    "question": "Charaka's account of about ayurveda?",
+    "expected_verse_id": "cs_vimana_8_54-b",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "about ayurveda",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_061",
+    "recall": true,
+    "question": "What does Charaka say about activity hence?",
+    "expected_verse_id": "cs_chikitsa_15_239",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "activity hence",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_062",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about added either?",
+    "expected_verse_id": "cs_chikitsa_17_104",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "added either",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_063",
+    "recall": true,
+    "question": "Which part of Charaka discusses administer wholesome?",
+    "expected_verse_id": "cs_chikitsa_18_31",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "administer wholesome",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_064",
+    "recall": true,
+    "question": "What does Charaka teach regarding aches extensive?",
+    "expected_verse_id": "cs_chikitsa_28_80-80",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "aches extensive",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_065",
+    "recall": true,
+    "question": "Charaka's account of absent mindedness?",
+    "expected_verse_id": "cs_chikitsa_3_36-36",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "absent mindedness",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_066",
+    "recall": true,
+    "question": "What does Charaka say about already arisen?",
+    "expected_verse_id": "cs_chikitsa_6_53",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "already arisen",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_067",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about administered antidotes?",
+    "expected_verse_id": "cs_chikitsa_7_55",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "administered antidotes",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_068",
+    "recall": true,
+    "question": "Which part of Charaka discusses abnormality should?",
+    "expected_verse_id": "cs_sharira_8_6-b",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "abnormality should",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_069",
+    "recall": true,
+    "question": "What does Charaka teach regarding acquired unmeasured?",
+    "expected_verse_id": "cs_sutra_1_26",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "acquired unmeasured",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_070",
+    "recall": true,
+    "question": "Charaka's account of alkaline substances?",
+    "expected_verse_id": "cs_sutra_12_8-c",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "alkaline substances",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_071",
+    "recall": true,
+    "question": "What does Charaka say about acousma hyperacousia?",
     "expected_verse_id": "cs_sutra_20_11",
     "expected_sthana": "sutrasthana",
     "expected_chapter": 20,
-    "probe_term": "odontoseisis",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "acousma hyperacousia",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_23",
+    "eval_id": "rc_072",
     "recall": true,
-    "question": "What does Charaka say about preponderant?",
-    "expected_verse_id": "cs_chikitsa_7_101",
-    "expected_sthana": "chikitsasthana",
-    "expected_chapter": 7,
-    "probe_term": "preponderant",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
-  },
-  {
-    "eval_id": "rc_24",
-    "recall": true,
-    "question": "What does Charaka say about promulgation?",
-    "expected_verse_id": "cs_sutra_1_136",
+    "question": "In the Charaka Samhita, what is said about acute stable?",
+    "expected_verse_id": "cs_sutra_25_36-a",
     "expected_sthana": "sutrasthana",
-    "expected_chapter": 1,
-    "probe_term": "promulgation",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "expected_chapter": 25,
+    "probe_term": "acute stable",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   },
   {
-    "eval_id": "rc_25",
+    "eval_id": "rc_073",
     "recall": true,
-    "question": "What does Charaka say about transformation?",
-    "expected_verse_id": "cs_vimana_1_22-a",
+    "question": "Which part of Charaka discusses action specific?",
+    "expected_verse_id": "cs_sutra_26_70-70",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "action specific",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_074",
+    "recall": true,
+    "question": "What does Charaka teach regarding acopic particularly?",
+    "expected_verse_id": "cs_sutra_27_253",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "acopic particularly",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_075",
+    "recall": true,
+    "question": "Charaka's account of asparagus nardus?",
+    "expected_verse_id": "cs_sutra_4_12",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "asparagus nardus",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_076",
+    "recall": true,
+    "question": "What does Charaka say about advantages ascribed?",
+    "expected_verse_id": "cs_sutra_5_109",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "advantages ascribed",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_077",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about accumulated pitta?",
+    "expected_verse_id": "cs_sutra_6_41",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "accumulated pitta",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_078",
+    "recall": true,
+    "question": "Which part of Charaka discusses acquires spiritual?",
+    "expected_verse_id": "cs_sutra_7_30",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "acquires spiritual",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_079",
+    "recall": true,
+    "question": "What does Charaka teach regarding acute qualities?",
+    "expected_verse_id": "cs_vimana_1_18",
     "expected_sthana": "vimanasthana",
     "expected_chapter": 1,
-    "probe_term": "transformation",
-    "notes": "Recall probe. The probe term occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+    "probe_term": "acute qualities",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_080",
+    "recall": true,
+    "question": "Charaka's account of about examination?",
+    "expected_verse_id": "cs_vimana_8_152-154",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "about examination",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_081",
+    "recall": true,
+    "question": "What does Charaka say about acute gastrointestinal?",
+    "expected_verse_id": "cs_chikitsa_15_183-185",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "acute gastrointestinal",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_082",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about affection diarrhea?",
+    "expected_verse_id": "cs_chikitsa_17_81",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "affection diarrhea",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_083",
+    "recall": true,
+    "question": "Which part of Charaka discusses administered alternately?",
+    "expected_verse_id": "cs_chikitsa_18_187",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "administered alternately",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_084",
+    "recall": true,
+    "question": "What does Charaka teach regarding action becomes?",
+    "expected_verse_id": "cs_chikitsa_28_170-171",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "action becomes",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_085",
+    "recall": true,
+    "question": "Charaka's account of activity baths?",
+    "expected_verse_id": "cs_chikitsa_3_332",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "activity baths",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_086",
+    "recall": true,
+    "question": "What does Charaka say about animals milks?",
+    "expected_verse_id": "cs_chikitsa_6_4",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "animals milks",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_087",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about administered corrective?",
+    "expected_verse_id": "cs_chikitsa_7_46",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "administered corrective",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_088",
+    "recall": true,
+    "question": "Which part of Charaka discusses abortofacient factors?",
+    "expected_verse_id": "cs_sharira_8_21-b",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "abortofacient factors",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_089",
+    "recall": true,
+    "question": "What does Charaka teach regarding acute poison?",
+    "expected_verse_id": "cs_sutra_1_126",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "acute poison",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_090",
+    "recall": true,
+    "question": "Charaka's account of allaying factors?",
+    "expected_verse_id": "cs_sutra_12_3-a",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "allaying factors",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_091",
+    "recall": true,
+    "question": "What does Charaka say about acuteness fluidity?",
+    "expected_verse_id": "cs_sutra_20_15-2",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "acuteness fluidity",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_092",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about adultery among?",
+    "expected_verse_id": "cs_sutra_25_40-d",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "adultery among",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_093",
+    "recall": true,
+    "question": "Which part of Charaka discusses action synthesizing?",
+    "expected_verse_id": "cs_sutra_26_43-m",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "action synthesizing",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_094",
+    "recall": true,
+    "question": "What does Charaka teach regarding acopic surative?",
+    "expected_verse_id": "cs_sutra_27_78-78",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "acopic surative",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_095",
+    "recall": true,
+    "question": "Charaka's account of bigger sugar?",
+    "expected_verse_id": "cs_sutra_4_14",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "bigger sugar",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_096",
+    "recall": true,
+    "question": "What does Charaka say about adversely affected?",
+    "expected_verse_id": "cs_sutra_5_16",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "adversely affected",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_097",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about acquire homologation?",
+    "expected_verse_id": "cs_sutra_6_50",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "acquire homologation",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_098",
+    "recall": true,
+    "question": "Which part of Charaka discusses administer alterative?",
+    "expected_verse_id": "cs_sutra_7_48",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "administer alterative",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_099",
+    "recall": true,
+    "question": "What does Charaka teach regarding aggravates pitta?",
+    "expected_verse_id": "cs_vimana_1_16-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "aggravates pitta",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_100",
+    "recall": true,
+    "question": "Charaka's account of about success?",
+    "expected_verse_id": "cs_vimana_8_128-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "about success",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_101",
+    "recall": true,
+    "question": "What does Charaka say about adding curds?",
+    "expected_verse_id": "cs_chikitsa_15_112-114",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 15,
+    "probe_term": "adding curds",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_102",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about aggravate kapha?",
+    "expected_verse_id": "cs_chikitsa_17_148",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 17,
+    "probe_term": "aggravate kapha",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_103",
+    "recall": true,
+    "question": "Which part of Charaka discusses administered medications?",
+    "expected_verse_id": "cs_chikitsa_18_150",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 18,
+    "probe_term": "administered medications",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_104",
+    "recall": true,
+    "question": "What does Charaka teach regarding adding equal?",
+    "expected_verse_id": "cs_chikitsa_28_148-154",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 28,
+    "probe_term": "adding equal",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_105",
+    "recall": true,
+    "question": "Charaka's account of actually giving?",
+    "expected_verse_id": "cs_chikitsa_3_336",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 3,
+    "probe_term": "actually giving",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_106",
+    "recall": true,
+    "question": "What does Charaka say about animals should?",
+    "expected_verse_id": "cs_chikitsa_6_19",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 6,
+    "probe_term": "animals should",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_107",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about affection eighteen?",
+    "expected_verse_id": "cs_chikitsa_7_4-10",
+    "expected_sthana": "chikitsasthana",
+    "expected_chapter": 7,
+    "probe_term": "affection eighteen",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_108",
+    "recall": true,
+    "question": "Which part of Charaka discusses about pigmentation?",
+    "expected_verse_id": "cs_sharira_8_17-a",
+    "expected_sthana": "sharirasthana",
+    "expected_chapter": 8,
+    "probe_term": "about pigmentation",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_109",
+    "recall": true,
+    "question": "What does Charaka teach regarding adipsous digestive?",
+    "expected_verse_id": "cs_sutra_1_107-109",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 1,
+    "probe_term": "adipsous digestive",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_110",
+    "recall": true,
+    "question": "Charaka's account of alleviative factors?",
+    "expected_verse_id": "cs_sutra_12_6-a",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 12,
+    "probe_term": "alleviative factors",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_111",
+    "recall": true,
+    "question": "What does Charaka say about amongst these?",
+    "expected_verse_id": "cs_sutra_20_19-a",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 20,
+    "probe_term": "amongst these",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_112",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about advance arguments?",
+    "expected_verse_id": "cs_sutra_25_27",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 25,
+    "probe_term": "advance arguments",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_113",
+    "recall": true,
+    "question": "Which part of Charaka discusses action takes?",
+    "expected_verse_id": "cs_sutra_26_64-65",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 26,
+    "probe_term": "action takes",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_114",
+    "recall": true,
+    "question": "What does Charaka teach regarding acquires astringent?",
+    "expected_verse_id": "cs_sutra_27_198-200",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 27,
+    "probe_term": "acquires astringent",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_115",
+    "recall": true,
+    "question": "Charaka's account of called decoctives?",
+    "expected_verse_id": "cs_sutra_4_24",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 4,
+    "probe_term": "called decoctives",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_116",
+    "recall": true,
+    "question": "What does Charaka say about affected seriously?",
+    "expected_verse_id": "cs_sutra_5_88",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 5,
+    "probe_term": "affected seriously",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_117",
+    "recall": true,
+    "question": "In the Charaka Samhita, what is said about acquired homologation?",
+    "expected_verse_id": "cs_sutra_6_49",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 6,
+    "probe_term": "acquired homologation",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_118",
+    "recall": true,
+    "question": "Which part of Charaka discusses adultery theft?",
+    "expected_verse_id": "cs_sutra_7_29",
+    "expected_sthana": "sutrasthana",
+    "expected_chapter": 7,
+    "probe_term": "adultery theft",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_119",
+    "recall": true,
+    "question": "What does Charaka teach regarding alkali develop?",
+    "expected_verse_id": "cs_vimana_1_17-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 1,
+    "probe_term": "alkali develop",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
+  },
+  {
+    "eval_id": "rc_120",
+    "recall": true,
+    "question": "Charaka's account of abundant result?",
+    "expected_verse_id": "cs_vimana_8_149-a",
+    "expected_sthana": "vimanasthana",
+    "expected_chapter": 8,
+    "probe_term": "abundant result",
+    "notes": "Recall probe. The two-word phrase occurs in exactly one verse of the corpus, so this verse is the provable answer. Not a natural-language quality question."
   }
 ]

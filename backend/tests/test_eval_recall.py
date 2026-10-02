@@ -34,7 +34,22 @@ def probe():
 
 
 def test_probe_is_not_empty(probe):
-    assert len(probe) >= 20, f"probe too small to measure anything: {len(probe)} cases"
+    assert len(probe) >= 100, f"probe too small to measure anything: {len(probe)} cases"
+
+
+def test_probe_covers_every_chapter_evenly(probe, corpus):
+    """Uneven coverage would weight dense chapters over the rest of the corpus."""
+    from collections import Counter
+
+    in_corpus = {
+        (r["sthana"], r["chapter"]) for r in corpus.values()
+    }
+    counts = Counter((x["expected_sthana"], x["expected_chapter"]) for x in probe)
+    missing = in_corpus - set(counts)
+    assert not missing, f"chapters absent from the probe: {sorted(missing, key=str)}"
+    assert len(set(counts.values())) == 1, (
+        f"uneven chapter coverage: {sorted(set(counts.values()))}"
+    )
 
 
 def test_every_case_names_a_question_and_a_target(probe):
@@ -67,30 +82,62 @@ def test_probe_targets_spread_across_chapters(probe):
     )
 
 
+def _token_bigrams(text: str) -> set:
+    """Mirror the generator's tokenisation exactly.
+
+    The generator splits on ``[a-z]+`` and rejoins with spaces, so a hyphenated
+    compound like ``abdomen-misperistalsis`` becomes the phrase
+    ``abdomen misperistalsis``. Checking for a literal substring instead would
+    fail on those, and checking only the first word would not prove anything.
+    Matching the generator's own tokenisation is what makes this a real test of
+    the invariant rather than a test of punctuation.
+    """
+    words = re.findall(r"[a-z]+", text.lower())
+    return {" ".join(words[i : i + 2]) for i in range(len(words) - 1)}
+
+
 def test_probe_term_still_identifies_exactly_one_verse(probe, corpus):
-    """The load-bearing invariant: one term, one verse.
+    """The load-bearing invariant: one phrase, one verse.
 
     This is what makes the expected answer certain instead of a judgement call.
-    A corpus rebuild that makes a probe term ambiguous invalidates the case and
-    must be caught here.
+    A corpus rebuild that makes a probe phrase ambiguous invalidates the case
+    and must be caught here.
     """
     for item in probe:
         term = item["probe_term"]
-        # Boundaries on BOTH sides. The generator counts whitespace-delimited
-        # tokens, so a trailing \b is required to agree with it -- without it
-        # this matches "transformation" inside "transformations" and reports a
-        # term as ambiguous when the corpus is fine.
-        pattern = re.compile(r"\b" + re.escape(term) + r"\b")
         hosts = [
             verse_id
             for verse_id, record in corpus.items()
-            if pattern.search((record.get("text_english") or "").lower())
+            if term in _token_bigrams(record.get("text_english") or "")
         ]
         assert hosts == [item["expected_verse_id"]], (
-            f"{item['eval_id']}: probe term '{term}' now occurs in {hosts}, "
+            f"{item['eval_id']}: probe phrase '{term}' now occurs in {hosts}, "
             f"expected only {item['expected_verse_id']}. Regenerate the probe "
             f"with scripts/build_eval_recall_set.py"
         )
+
+
+def test_probe_phrases_are_substantive(probe):
+    """Two real words each.
+
+    A single hapax *word* is not evidence of domain vocabulary in a 2,490-verse
+    corpus -- "actually" and "absolute" each occur once. The phrase form is what
+    makes the probe selective, so a regression to single words should fail here
+    rather than quietly reintroduce common English.
+    """
+    for item in probe:
+        words = item["probe_term"].split()
+        assert len(words) == 2, f"{item['eval_id']}: probe term is not a bigram"
+        assert all(len(w) >= 5 for w in words), (
+            f"{item['eval_id']}: probe term {item['probe_term']!r} has a stub token"
+        )
+
+
+def test_probe_questions_are_not_one_repeated_template(probe):
+    """Twenty question shapes over five templates, so phrasing is not a constant."""
+    assert len({x["question"] for x in probe}) == len(probe), "duplicate question"
+    shapes = {x["question"].split("?")[0] for x in probe}
+    assert len(shapes) >= 5, f"only {len(shapes)} question shapes"
 
 
 def test_probe_cases_are_marked_as_recall(probe):
@@ -169,6 +216,60 @@ class TestSummarizeBuckets:
         assert s["recall"]["verse"] == 0
         assert s["recall"]["verse_top_n"] == 1
         assert s["recall"]["chapter_resolved"] == 0
+
+    def test_intervals_bracket_the_observed_rate(self):
+        """The interval is what stops a small probe being over-read."""
+        from app.eval_suite import summarize
+
+        s = summarize(self._rows())
+        for bucket, key in ((s["recall"], "verse_ci"), (s["recall"], "verse_top_n_ci")):
+            low, high = bucket[key]
+            assert low <= high
+        low, high = s["recall"]["verse_ci"]
+        assert low == 0.0 and high > 0.0, "0/1 must not collapse to a zero-width interval"
+
+
+class TestWilson:
+    def test_contains_the_point_estimate(self):
+        from app.eval_suite import _wilson
+
+        for hits, total in ((0, 10), (1, 10), (5, 10), (9, 10), (10, 10), (3, 25)):
+            low, high = _wilson(hits, total)
+            assert low <= 100 * hits / total <= high, (hits, total, low, high)
+
+    def test_stays_nonzero_width_at_the_extremes(self):
+        """Normal approximation collapses to [0,0] at 0/n, which is wrong."""
+        from app.eval_suite import _wilson
+
+        assert _wilson(0, 20)[0] == 0.0
+        assert _wilson(0, 20)[1] > 0.0
+        assert _wilson(20, 20)[1] == 100.0
+        assert _wilson(20, 20)[0] < 100.0
+
+    def test_narrows_as_the_sample_grows(self):
+        from app.eval_suite import _wilson
+
+        narrow_small = _wilson(2, 25)
+        narrow_large = _wilson(200, 2500)
+        assert (narrow_large[1] - narrow_large[0]) < (narrow_small[1] - narrow_small[0])
+
+    def test_empty_sample_is_not_a_crash(self):
+        from app.eval_suite import _wilson
+
+        assert _wilson(0, 0) == (0.0, 0.0)
+
+    def test_old_25_case_delta_would_have_been_unresolvable(self):
+        """Why this was added: 2/25 vs 7/25 does not separate.
+
+        The union experiment moved verse recall 2/25 -> 7/25 and looked like a
+        20-point win. On 25 cases those intervals overlap heavily, so the win
+        could not be claimed -- which is part of why the change stayed off.
+        """
+        from app.eval_suite import _wilson
+
+        low_a, high_a = _wilson(2, 25)
+        low_b, high_b = _wilson(7, 25)
+        assert not (low_b > high_a), "intervals must overlap at n=25"
 
 
 class TestBM25UnionStaysOff:

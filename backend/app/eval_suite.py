@@ -110,6 +110,27 @@ def run_question(item: dict, mode: str = "retrieval") -> dict:
     }
 
 
+def _wilson(hits: int, total: int, z: float = 1.96) -> tuple:
+    """Wilson score interval for a proportion.
+
+    The recall probe is small enough that a raw percentage invites reading noise
+    as signal: 2/25 versus 7/25 looks like a 20-point swing, but the intervals
+    overlap heavily. Reporting the interval next to the count keeps a future
+    ranking change from being justified by a difference this sample cannot
+    resolve. Wilson rather than normal-approximation because it stays sane at
+    the 0% and 100% ends, which is exactly where a needle probe lives.
+    """
+    if total <= 0:
+        return (0.0, 0.0)
+    p = hits / total
+    denom = 1 + z * z / total
+    centre = (p + z * z / (2 * total)) / denom
+    margin = (
+        z * ((p * (1 - p) / total + z * z / (4 * total * total)) ** 0.5) / denom
+    )
+    return (round(100 * max(0.0, centre - margin), 1), round(100 * min(1.0, centre + margin), 1))
+
+
 def summarize(rows: list) -> dict:
     total = len(rows)
     resolved = sum(1 for x in rows if x["resolved_hit"])
@@ -146,6 +167,11 @@ def summarize(rows: list) -> dict:
     # strict pinned-verse result and is what a reranking change moves.
     recall_verse = sum(1 for x in recall if x["verse_hit"])
     recall_verse_top_n = sum(1 for x in recall if x["top_n_verse_hit"])
+    verse_ci = _wilson(recall_verse, len(recall))
+    verse_top_n_ci = _wilson(recall_verse_top_n, len(recall))
+    core_ci = _wilson(sum(1 for x in core if x["resolved_hit"]), len(core))
+    quality = core + corner
+    quality_ci = _wilson(sum(1 for x in quality if x["resolved_hit"]), len(quality))
 
     return {
         "total": total,
@@ -158,10 +184,26 @@ def summarize(rows: list) -> dict:
         "known_gaps_admitted": known_gaps - gaps_passing,
         "herb_queries": len(herb_queries),
         "safety_covered": safety_covered,
+        # Headline over the real question sets only. `resolved_pct` above spans
+        # every row, so once the 120 synthetic needles are switched on it reads
+        # like a catastrophic regression that is really just the probe
+        # outnumbering the quality sets 4:1. The quality figure is the one to
+        # judge a retrieval change by.
+        "quality": {
+            "total": len(quality),
+            "resolved": sum(1 for x in quality if x["resolved_hit"]),
+            "resolved_pct": _pct(
+                sum(1 for x in quality if x["resolved_hit"]), len(quality)
+            ),
+            "resolved_ci": quality_ci,
+            "top_n": sum(1 for x in quality if x["top_n_hit"]),
+            "top_n_pct": _pct(sum(1 for x in quality if x["top_n_hit"]), len(quality)),
+        },
         "core": {
             "total": len(core),
             "resolved": sum(1 for x in core if x["resolved_hit"]),
             "resolved_pct": _pct(sum(1 for x in core if x["resolved_hit"]), len(core)),
+            "resolved_ci": core_ci,
             "top_n": sum(1 for x in core if x["top_n_hit"]),
             "top_n_pct": _pct(sum(1 for x in core if x["top_n_hit"]), len(core)),
         },
@@ -180,7 +222,9 @@ def summarize(rows: list) -> dict:
             ),
             "verse": recall_verse,
             "verse_pct": _pct(recall_verse, len(recall)),
+            "verse_ci": verse_ci,
             "verse_top_n": recall_verse_top_n,
             "verse_top_n_pct": _pct(recall_verse_top_n, len(recall)),
+            "verse_top_n_ci": verse_top_n_ci,
         },
     }
