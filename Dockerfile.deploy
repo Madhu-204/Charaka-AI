@@ -81,6 +81,21 @@ COPY --from=fe /build/dist frontend/dist
 # was killed ~20 s after startup with "Out of memory (used over 512Mi)".
 RUN python -c "import importlib.util as u, sys; bad = [m for m in ('torch', 'transformers', 'sentence_transformers') if u.find_spec(m)]; sys.exit('RESTRICTED in runtime image: ' + str(bad)) if bad else print('runtime image is torch-free')"
 
+# Accounts are OFF for the deploy image: the SPA skips the sign-in screen and
+# opens straight on the chat dashboard.
+#
+# This lives here rather than only in render.yaml because a blueprint envVar is
+# NOT applied by a plain git push -- Render only syncs those when the blueprint is
+# re-applied from the dashboard. Without this line the service keeps reporting
+# auth_required=true and the login screen stays, whatever render.yaml says.
+# A real Render Environment entry overrides this, so setting
+# CHARAKA_AUTH_REQUIRED=1 in the dashboard turns sign-in back on.
+#
+# Only safe while nothing private is per-user: every visitor resolves to the
+# single "shared" owner, so all conversations and uploaded documents are
+# world-readable and deletable by anyone who can load the page.
+ENV CHARAKA_AUTH_REQUIRED=0
+
 # Run from backend/ so the `app` package is importable and the SPA resolves at
 # ../frontend/dist (see FRONTEND_DIST in app/main.py).
 WORKDIR /app/backend
