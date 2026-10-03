@@ -7,6 +7,15 @@ __pycache__
 .env.*
 !.env.example
 
+# This is the only .dockerignore in the repo, and it has to be: Docker reads the
+# one at the build context ROOT and silently ignores per-directory ones. There
+# used to be backend/.dockerignore and frontend/.dockerignore, which looked
+# authoritative but could never apply — and backend/.dockerignore even excluded
+# charaka_data, which Dockerfile.deploy does copy, so it was not merely inert but
+# misleading. Every build uses the repo root as context (render.yaml,
+# docker-compose.yml), and scripts/prepare_deploy.py generates deploy/.dockerignore
+# itself for the HF Spaces upload. Do not re-add nested ones.
+
 # Generated at image build time (see Dockerfile.deploy)
 backend/chroma_db
 backend/processed
