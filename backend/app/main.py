@@ -427,6 +427,25 @@ def _llm_error_message(exc: Exception) -> str:
     return f"Something went wrong while answering: {exc}"
 
 
+def _resolve_history(history, conversation_id, owner=None, dosha_profile=None):
+    """Load the stored thread, but only when the caller sent no history at all.
+
+    The difference between ``None`` and ``[]`` is load-bearing here. ``None``
+    means "I have no opinion, load whatever the thread holds"; ``[]`` means "this
+    turn has no prior context". Only ``None`` consults the store, so a client that
+    defaults an absent field to ``[]`` silently pins every turn to the first one —
+    which is exactly what the frontend was doing, making multi-turn memory look
+    implemented while it could never fire.
+
+    Returns ``(history, dosha_profile)``; the stored profile is used only to fill
+    a gap, never to override one the caller supplied.
+    """
+    if history is not None or not conversation_id:
+        return history, dosha_profile
+    store = _history_from_store(conversation_id, owner)
+    return store["history"], dosha_profile or store["dosha_profile"]
+
+
 def _history_from_store(conversation_id, owner=None):
     record = conversations.get_conversation(conversation_id, owner)
     if not record:
@@ -567,10 +586,9 @@ async def _event_stream(
     # user, and tell them to retry).
     deadline_hit = threading.Event()
 
-    if history is None and conversation_id:
-        store = _history_from_store(conversation_id, owner)
-        history = store["history"]
-        dosha_profile = dosha_profile or store["dosha_profile"]
+    history, dosha_profile = _resolve_history(
+        history, conversation_id, owner, dosha_profile
+    )
 
     # Cacheability must key on everything the answer actually depends on: the
     # query, the dosha profile, the owning user, AND the conversation history

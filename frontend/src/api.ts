@@ -208,7 +208,11 @@ export async function askStream(
       headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         query,
-        history: opts.history ?? [],
+        // Sent only when the caller actually supplies it. An explicit `[]` here
+        // looks equivalent but is not: the backend loads the stored thread only
+        // when `history is None`, so defaulting to an empty array permanently
+        // shadowed the thread and made every turn read as the first one.
+        history: opts.history,
         conversation_id: opts.conversationId ?? null,
         dosha_profile: opts.doshaProfile ?? null,
         lang: opts.lang ?? null,
