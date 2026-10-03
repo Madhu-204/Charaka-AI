@@ -37,9 +37,20 @@ def run_question(item: dict, mode: str = "retrieval") -> dict:
 
     answer = None
     if mode == "full":
+        import os
+
         from app.graph import charaka_agent
 
-        answer = charaka_agent.invoke({"query": q}).get("final_answer")
+        # Same step ceiling the serving path uses, so an eval run cannot loop
+        # where production would have been cut off.
+        answer = charaka_agent.invoke(
+            {"query": q},
+            config={
+                "recursion_limit": int(
+                    os.getenv("CHARAKA_RECURSION_LIMIT", "25")
+                )
+            },
+        ).get("final_answer")
 
     expect_emergency = bool(item.get("expected_emergency"))
     exp_sthana = item.get("expected_sthana")

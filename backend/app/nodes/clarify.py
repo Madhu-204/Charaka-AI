@@ -24,6 +24,26 @@ def clarify(state):
     selected = state.get("resolved_chapter")
     nearby = _nearby_hints(state.get("retrieved", []))
 
+    # The router can flag an underspecified question before retrieval runs, in which
+    # case there is nothing retrieved to point at and the model has already named
+    # what is missing. That is a better question than either generic fallback
+    # because it targets the actual gap.
+    hint = (state.get("clarification_hint") or "").strip()
+    if hint and not state.get("retrieved"):
+        question = (
+            f"I can look that up in the classical texts, but '{query[:80]}' doesn't "
+            f"name anything specific enough to search on — {hint}.\n\n"
+            "Could you tell me which symptom, complaint or topic you're asking about?"
+        )
+        step = "clarification: router flagged the question as underspecified → asked before retrieving"
+        trace = state.get("trace", [])
+        return {
+            "is_clarification": True,
+            "clarification": question,
+            "final_answer": question,
+            "trace": trace + [step],
+        }
+
     if nearby:
         question = (
             f"Your question ('{query[:80]}') is close to content in the classical texts, "

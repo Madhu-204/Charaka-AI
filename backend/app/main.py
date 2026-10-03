@@ -13,6 +13,7 @@ from typing import List, Literal, Optional
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
+from langchain_core.callbacks import BaseCallbackHandler
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
@@ -58,7 +59,67 @@ _GATE = ratelimit.ConcurrencyGate(
     slots=int(os.getenv("CHARAKA_LLM_CONCURRENCY", "2")),
     timeout=float(os.getenv("CHARAKA_LLM_QUEUE_TIMEOUT", "45")),
 )
+# Ceiling on graph steps per request. The graph is acyclic and its longest path is
+# 11 nodes, so this never fires today; it exists so that adding a back-edge later
+# (a grounding retry, say) cannot turn into an unbounded loop. Passed per call as
+# `recursion_limit` because LangGraph reads it from the runtime config, not from
+# compile() — graph.py compiles with no arguments and must stay that way.
+_RECURSION_LIMIT = int(os.getenv("CHARAKA_RECURSION_LIMIT", "25"))
+# Wall-clock ceiling for one streamed request, enforced on the worker thread.
+# Each LLM call is individually capped at timeout=60, so a request can otherwise
+# chain router (60s) + synthesis (60s) + summary (60s) and blow past the client's
+# own 180s abort while still holding one of only two Groq slots. 90s sits under
+# that abort so the server gives up first and can say why.
+_REQUEST_DEADLINE_S = float(os.getenv("CHARAKA_REQUEST_DEADLINE_S", "90"))
+# Requests arrive as bare `str` in the two models below. Without a cap a client can
+# post megabytes straight into the retrieval and synthesis prompt path, which costs
+# tokens before any guardrail downstream gets a say.
+MAX_QUERY_CHARS = int(os.getenv("CHARAKA_MAX_QUERY_CHARS", "2000"))
 _FEEDBACK_STATS = stats.FeedbackStats(FEEDBACK_LOG)
+
+
+class _TokenUsage(BaseCallbackHandler):
+    """Per-request token accounting read from the provider's own usage report.
+
+    This replaces a count of whitespace-separated words in the streamed answer,
+    which was wrong in the expensive direction: it ignored every prompt token and
+    the entire route_tools LLM call, so the reported figure was a small fraction of
+    what the request actually cost. That matters because Groq's free tier is a
+    shared 8000 TPM window, and synthesis.py already flags a case where two calls
+    at MAX_REQUEST_TOKENS could exceed it.
+
+    One instance per request, passed through the graph config. No module state, so
+    concurrent requests cannot read each other's numbers.
+    """
+
+    def __init__(self) -> None:
+        self.prompt = 0
+        self.completion = 0
+        self.calls = 0
+
+    def on_llm_end(self, response, **kwargs) -> None:  # noqa: ARG002
+        self.calls += 1
+        usage = (getattr(response, "llm_output", None) or {}).get("token_usage") or {}
+        if not usage:
+            # Newer langchain-core versions attach usage to the message instead.
+            try:
+                usage = response.generations[0][0].message.usage_metadata or {}
+            except (AttributeError, IndexError, KeyError, TypeError):
+                usage = {}
+        self.prompt += int(
+            usage.get("prompt_tokens") or usage.get("input_tokens") or 0
+        )
+        self.completion += int(
+            usage.get("completion_tokens") or usage.get("output_tokens") or 0
+        )
+
+    @property
+    def total(self) -> int:
+        return self.prompt + self.completion
+
+
+def _graph_config(usage: _TokenUsage) -> dict:
+    return {"recursion_limit": _RECURSION_LIMIT, "callbacks": [usage]}
 
 
 def _key_matches(provided: Optional[str], expected: Optional[str]) -> bool:
@@ -206,6 +267,7 @@ STAGE_LABELS = {
     "tag_dosha": "Analyzing dosha pattern",
     "expand_query": "Expanding query",
     "route_tools": "Choosing retrieval strategy",
+    "direct_answer": "Answering directly",
     "retrieve": "Searching 2,490 verses",
     "clarify": "Asking to disambiguate",
     "check_safety": "Checking herb safety",
@@ -216,7 +278,7 @@ STAGE_LABELS = {
 
 
 class AskRequest(BaseModel):
-    query: str
+    query: str = Field(..., max_length=MAX_QUERY_CHARS)
     history: Optional[List[dict]] = None
     conversation_id: Optional[str] = None
     dosha_profile: Optional[str] = None
@@ -228,7 +290,7 @@ class AskRequest(BaseModel):
 
 
 class FeedbackRequest(BaseModel):
-    query: str
+    query: str = Field(..., max_length=MAX_QUERY_CHARS)
     rating: Literal["up", "down"]
     message_id: Optional[str] = None
 
@@ -274,11 +336,17 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     # A scope refusal is terminal like an emergency: nothing was retrieved, so
     # chapter/category/dosha must be null rather than stale defaults.
     is_out_of_scope = bool(result.get("is_out_of_scope"))
-    no_context = is_emergency or is_out_of_scope
+    # A conversational reply is terminal for the same reason: nothing was retrieved,
+    # so chapter/category/dosha must be null rather than stale. Including it here
+    # also keeps `attribution` and `reasoning_trace` off the response, since neither
+    # means anything without a passage behind it.
+    is_direct = bool(result.get("is_direct_answer"))
+    no_context = is_emergency or is_out_of_scope or is_direct
     response = {
         "answer": result["final_answer"],
         "is_emergency": is_emergency,
         "is_out_of_scope": is_out_of_scope,
+        "is_direct_answer": is_direct,
         "scope_category": result.get("scope_category"),
         "is_clarification": bool(result.get("is_clarification")),
         "confidence": result.get("confidence"),
@@ -287,6 +355,10 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
         "safety_flags": result.get("safety_flags", []),
         "dosha": result.get("dosha") if not no_context else None,
         "latency_ms": latency_ms,
+        # 1 = drafted once, 2 = the citation check rejected the first draft and it
+        # was rewritten. Surfaced because a retried answer carries two synthesis
+        # calls, which is visible in both latency and token spend.
+        "synthesis_attempts": result.get("synthesis_attempts", 1),
         "used_documents": bool(result.get("used_documents")),
         "document_names": sorted(
             {d.get("doc", "uploaded document") for d in result.get("user_docs", [])}
@@ -386,6 +458,7 @@ def _suggest_questions(result) -> list:
         result.get("is_emergency")
         or result.get("is_out_of_scope")
         or result.get("is_clarification")
+        or result.get("is_direct_answer")
     ):
         return []
     rc = result.get("resolved_chapter") or {}
@@ -438,10 +511,12 @@ def _run_graph_collect(state):
     """Drive the graph via its stream so we can capture per-node latency + tokens."""
     merged = {}
     node_times = []
-    token_count = 0
+    usage = _TokenUsage()
     prev = time.time()
     for mode, payload in charaka_agent.stream(
-        state, stream_mode=["updates", "messages"]
+        state,
+        config=_graph_config(usage),
+        stream_mode=["updates", "messages"],
     ):
         if mode == "updates":
             node = next(iter(payload))
@@ -449,15 +524,13 @@ def _run_graph_collect(state):
             now = time.time()
             node_times.append([node, round((now - prev) * 1000), 0])
             prev = now
-        else:
-            chunk, meta = payload
-            if meta.get("langgraph_node") == "synthesize":
-                text = getattr(chunk, "content", "")
-                if isinstance(text, str) and text:
-                    token_count += len(text.split())
     if node_times:
-        node_times[-1][2] = token_count
-    return merged, node_times, token_count
+        node_times[-1][2] = usage.completion
+    print(
+        f"[main] llm usage: {usage.calls} calls, "
+        f"{usage.prompt} prompt + {usage.completion} completion tokens"
+    )
+    return merged, node_times, usage.completion, usage.prompt
 
 
 async def _event_stream(
@@ -473,6 +546,10 @@ async def _event_stream(
     # The worker thread polls it so an abandoned request stops calling the LLM
     # instead of burning a Groq slot and tokens on an answer nobody will read.
     abandoned = threading.Event()
+    # Set separately by the deadline watchdog so the worker can tell "the client
+    # left, nobody is listening" (exit silently) from "we ran too long" (tell the
+    # user, and tell them to retry).
+    deadline_hit = threading.Event()
 
     if history is None and conversation_id:
         store = _history_from_store(conversation_id, owner)
@@ -528,6 +605,11 @@ async def _event_stream(
     if doc_session:
         state["doc_session"] = doc_session
 
+    # Owned here rather than inside run() because the SSE consumer below reads the
+    # totals when the worker publishes "done". The worker mutates it; the consumer
+    # only reads, and only after that hand-off, so no lock is needed.
+    usage = _TokenUsage()
+
     def run():
         merged = {}
         synthesize_seen = False
@@ -545,12 +627,18 @@ async def _event_stream(
             queue.put_nowait(("done", {}))
             return
         try:
+            # The gate can block for up to CHARAKA_LLM_QUEUE_TIMEOUT, so a request
+            # may already be past its deadline by the time a slot frees up.
+            if abandoned.is_set():
+                _report_abandon()
+                return
             for mode, payload in charaka_agent.stream(
                 state,
+                config=_graph_config(usage),
                 stream_mode=["updates", "messages"],
             ):
                 if abandoned.is_set():
-                    print("[main] client disconnected mid-stream — abandoning run")
+                    _report_abandon()
                     return
                 if mode == "updates":
                     node = next(iter(payload))
@@ -577,8 +665,31 @@ async def _event_stream(
             )
         finally:
             _GATE.release()
+            print(
+                f"[main] llm usage: {usage.calls} calls, "
+                f"{usage.prompt} prompt + {usage.completion} completion tokens"
+            )
             queue.put_nowait(("done", merged))
 
+    def _report_abandon() -> None:
+        if deadline_hit.is_set():
+            print(f"[main] request exceeded {_REQUEST_DEADLINE_S}s deadline")
+            queue.put_nowait(
+                (
+                    "error",
+                    {
+                        "message": (
+                            "this question took longer than expected and was stopped "
+                            "— please retry"
+                        ),
+                        "retryable": True,
+                    },
+                )
+            )
+        else:
+            print("[main] client disconnected mid-stream — abandoning run")
+
+    t_start = time.time()
     threading.Thread(target=run, daemon=True).start()
 
     # Watch for the client going away for the whole life of the stream. Without
@@ -591,14 +702,27 @@ async def _event_stream(
                 return
             await asyncio.sleep(0.5)
 
+    # Server-side wall clock for the run. The worker thread polls `abandoned` and
+    # stops calling the LLM once it trips, so the deadline frees the Groq slot
+    # instead of merely hiding the result. Reuses the existing Event rather than
+    # wrapping the sync generator in asyncio.wait_for, which the worker thread
+    # would not observe.
+    async def _watch_deadline() -> None:
+        remaining = _REQUEST_DEADLINE_S - (time.time() - t_start)
+        if remaining > 0:
+            await asyncio.sleep(remaining)
+        if not abandoned.is_set():
+            deadline_hit.set()
+            abandoned.set()
+
     watcher = (
         asyncio.create_task(_watch_disconnect()) if request is not None else None
     )
+    deadline_watcher = asyncio.create_task(_watch_deadline())
 
     t0 = time.time()
     prev = t0
     node_times = []
-    token_count = 0
     try:
         while True:
             kind, payload = await queue.get()
@@ -616,7 +740,6 @@ async def _event_stream(
                     },
                 )
             elif kind == "token":
-                token_count += len(payload.split())
                 yield _sse("token", {"delta": payload})
             elif kind == "error":
                 if isinstance(payload, dict):
@@ -653,17 +776,21 @@ async def _event_stream(
                     resp["regenerated"] = bool(replaced)
                 resp["cache_hit"] = False
                 if node_times:
+                    # Real completion tokens, read from the provider by the
+                    # worker's callback handler. The worker publishes "done"
+                    # after its last LLM call, so this read is final.
                     node_times[-1] = (
                         node_times[-1][0],
                         node_times[-1][1],
-                        token_count,
+                        usage.completion,
                     )
                 trace.write_trace(
                     TRACES_DIR,
                     query,
                     node_times,
-                    token_count,
+                    usage.completion,
                     latency,
+                    prompt_tokens=usage.prompt,
                     dosha=payload.get("dosha"),
                     resolved_chapter=_resolved_label(payload),
                 )
@@ -673,7 +800,11 @@ async def _event_stream(
                 # first, so the user sees the answer immediately.
                 summary = None
                 if payload.get("final_answer") and not (
-                    payload.get("is_emergency") or payload.get("is_out_of_scope")
+                    payload.get("is_emergency")
+                    or payload.get("is_out_of_scope")
+                    # Summarising "Namaste, ask me anything" would spend a full
+                    # synthesis-class call to condense a canned greeting.
+                    or payload.get("is_direct_answer")
                 ):
                     try:
                         if _GATE.acquire():
@@ -706,6 +837,7 @@ async def _event_stream(
     finally:
         if watcher is not None:
             watcher.cancel()
+        deadline_watcher.cancel()
 
 
 @app.post("/ask", dependencies=[Depends(guard_ask)])
@@ -755,7 +887,7 @@ def ask(req: AskRequest, request: Request):
             headers={"Retry-After": "3"},
         )
     try:
-        result, node_times, token_count = _run_graph_collect(state)
+        result, node_times, token_count, prompt_tokens = _run_graph_collect(state)
     except SynthesisUnavailable as e:
         # Surface as a retryable 503 rather than an opaque 500. Nothing was
         # persisted and nothing was cached, so the client can safely re-ask.
@@ -771,7 +903,9 @@ def ask(req: AskRequest, request: Request):
     resp = build_response(result, latency_ms=latency)
     resp["suggestions"] = _suggest_questions(result)
     if result.get("final_answer") and not (
-        result.get("is_emergency") or result.get("is_out_of_scope")
+        result.get("is_emergency")
+        or result.get("is_out_of_scope")
+        or result.get("is_direct_answer")
     ):
         if _GATE.acquire():
             try:
@@ -789,6 +923,7 @@ def ask(req: AskRequest, request: Request):
         node_times,
         token_count,
         latency,
+        prompt_tokens=prompt_tokens,
         dosha=result.get("dosha"),
         resolved_chapter=_resolved_label(result),
     )

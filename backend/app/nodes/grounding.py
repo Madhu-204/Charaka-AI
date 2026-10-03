@@ -16,6 +16,34 @@ def _cited_markers(answer: str) -> list[int]:
     return out
 
 
+def _retry_instruction(n: int, valid: list[int], out_of_range: list[int]) -> str:
+    """Build the correction passed to a second synthesis pass.
+
+    Only fires on failures a rewrite can actually fix. Low coverage (say 1 of 3
+    verses cited) is deliberately NOT retried: an answer that draws on one verse
+    honestly is not a defect, and re-spending a synthesis call to make it cite
+    more would cost tokens to satisfy a metric rather than fix an error.
+    """
+    # Spelled as [1], [2] rather than [1, 2] so a marker quoted back from this
+    # sentence is unambiguously a single citation, not a range.
+    valid_markers = ", ".join(f"[{i}]" for i in range(1, n + 1))
+    if out_of_range:
+        return (
+            "Your previous answer cited source numbers that do not exist: "
+            f"{out_of_range}. Only {n} verse(s) were retrieved, so the only valid "
+            f"inline markers are {valid_markers}. Rewrite the answer using only those "
+            "markers. If a claim is not supported by any of those verses, leave it out "
+            "rather than inventing a citation."
+        )
+    additional_markers = ", ".join(f"[{i}]" for i in range(2, n + 1)) or "none"
+    return (
+        "Your previous answer cited no retrieved verse inline. Every factual claim "
+        "drawn from the context must carry the marker of the verse it came from: the "
+        f"PRIMARY CONTEXT is [1], and the ADDITIONAL CONTEXT blocks are "
+        f"{additional_markers}. Cite at least [1] wherever you state what the text says."
+    )
+
+
 def grounding(state):
     """Verify every [n] citation marker in the answer points at a real verse.
 
@@ -24,6 +52,10 @@ def grounding(state):
                             answer actually cites (N = min(top-3, retrieved)).
       grounding_cited    list of 1-based marker indices that resolved.
       grounding_notes    diagnostics surfaced to the user.
+      grounding_retry_instruction
+                         set only when a second synthesis pass could plausibly
+                         produce a better answer; the graph reads it as the retry
+                         signal. See _retry_instruction for what is excluded.
     """
     answer = state.get("final_answer", "")
     retrieved = state.get("retrieved", [])
@@ -31,10 +63,14 @@ def grounding(state):
     notes = []
 
     if n == 0:
+        # Nothing was retrieved, so there is no verse to cite and no marker that
+        # could be validated. Another pass would face the identical context, so
+        # this is a retrieval failure, not a drafting one — do not retry.
         return {
             "grounding_score": 0.0,
             "grounding_cited": [],
             "grounding_notes": ["No retrieved verses to ground the answer against."],
+            "grounding_retry_instruction": None,
         }
 
     markers = _cited_markers(answer)
@@ -55,14 +91,21 @@ def grounding(state):
     if confidence == "low":
         notes.append("Retrieval confidence is low — the closest match may not be exact.")
 
+    # An empty marker list and an out-of-range one are both drafting faults the
+    # model can be told about and correct. Anything else ships as-is.
+    retry = _retry_instruction(n, valid, out_of_range) if (not valid or out_of_range) else None
+
     trace = state.get("trace", [])
     step = (
         f"grounding: {len(set(valid))}/{n} retrieved verse(s) cited inline "
         f"(score {score:.3f})"
     )
+    if retry:
+        step += " — retrying synthesis with citation feedback"
     return {
         "grounding_score": score,
         "grounding_cited": sorted(set(valid)),
         "grounding_notes": notes,
+        "grounding_retry_instruction": retry,
         "trace": trace + [step],
     }

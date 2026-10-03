@@ -32,6 +32,7 @@ def write_trace(
     cache_hit: bool = False,
     dosha: str | None = None,
     resolved_chapter: str | None = None,
+    prompt_tokens: int = 0,
 ) -> str:
     run_id = uuid.uuid4().hex[:12]
     record = {
@@ -42,7 +43,12 @@ def write_trace(
             {"node": node, "ms": ms, "tokens": tokens}
             for node, ms, tokens in node_times
         ],
+        # Completion tokens only, which is what `tokens` has always meant here.
+        # `prompt_tokens` is recorded separately because Groq's free tier meters
+        # the combined total against a shared TPM window, so the prompt side is
+        # what actually decides whether a request fits.
         "tokens": token_count,
+        "prompt_tokens": prompt_tokens,
         "latency_ms": latency_ms,
         "cache_hit": cache_hit,
         "dosha": dosha,

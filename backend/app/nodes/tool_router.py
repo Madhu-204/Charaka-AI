@@ -95,6 +95,35 @@ TOOLS = [
                 "Default option for general wellness questions that span the corpus. "
                 "No scoping or herb index is needed."
             ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ambiguity": {
+                        "type": "string",
+                        "description": (
+                            "Optional. Set this ONLY when the question is so vague "
+                            "that no verse could meaningfully answer it — for example "
+                            "'what should I do' with no symptom, complaint or topic "
+                            "named. Describe in a few words what information is "
+                            "missing. Leave it out whenever the question names "
+                            "anything concrete, however briefly."
+                        ),
+                    }
+                },
+            },
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "direct_answer",
+            "description": (
+                "The question needs no passage from the corpus at all: a greeting, "
+                "thanks, a question about what this assistant is or what it can do, "
+                "or who you are. NEVER use this for any health, symptom, treatment, "
+                "herb, diet or lifestyle question — those must be grounded in a "
+                "verse, however simple they look."
+            ),
             "parameters": {"type": "object", "properties": {}},
         }
     },
@@ -104,7 +133,31 @@ SYSTEM_PROMPT = """You are the retrieval router for Charaka AI.
 Decide which retrieval tool to use for the user's question.
 - If the user names a specific herb and asks about it (safety, dose, properties) → herb_lookup.
 - Only use scope_retrieval if the user explicitly names a specific book of the Charaka Samhita (Sutra, Vimana, Sharira, or Chikitsasthana), or explicitly asks for a specific topic, chapter or subject area. Do not use it just because a symptom appears in the question.
-- Otherwise → plain_retrieval (the default)."""
+- If the question is a greeting, thanks, or asks what this assistant is or can do → direct_answer. Nothing in the corpus can answer it.
+- Otherwise → plain_retrieval (the default). On plain_retrieval, also set `ambiguity` if the question names no symptom, complaint, herb or topic at all, so the user can be asked for detail instead of receiving an unfocused answer."""
+
+
+# Greetings, thanks and capability questions. This is a deliberately narrow
+# whitelist, and it is the ONLY thing that can authorise the direct_answer branch.
+#
+# The LLM proposing direct_answer is not sufficient on its own: routing a health
+# question past retrieval would also route it past grounding, safety notes and
+# citation checks, and the user would get a confident answer with no verse behind
+# it. So the model's choice is treated as a proposal and confirmed here against a
+# fixed pattern. Anything not matched falls through to plain_retrieval, which is
+# the safe direction to fail in.
+#
+# Note what is absent: a bare "help". "Help" is usually the opening of a health
+# question ("help with my rash"), and the pattern is anchored at the start of the
+# string, so allowing it would swallow exactly the queries this branch must not
+# touch. The unambiguous phrasings below cover the real capability questions.
+_META_QUERY = re.compile(
+    r"^\s*(hi|hey|hello|yo|namaste|namaskar|good\s+(morning|afternoon|evening)|"
+    r"thanks|thank\s+you|thx|ok|okay|cool|nice|great|bye|goodbye|"
+    r"who\s+are\s+you|what\s+are\s+you|what\s+can\s+you\s+do|how\s+can\s+you\s+help|"
+    r"what\s+do\s+you\s+do)\b",
+    re.IGNORECASE,
+)
 
 
 # Surface forms users actually type when they want one specific book.
@@ -216,12 +269,40 @@ def _topic_filter(tag: str) -> dict:
     return _and_clauses(clauses)
 
 
+def _has_anchor(query: str, topic: str | None) -> bool:
+    """True when the query names something concrete enough to retrieve against.
+
+    Guards the ambiguity branch. A vague-sounding question that still names a
+    symptom or an herb ("what about my knee pain?", "is triphala safe?") is
+    perfectly answerable, so treating it as ambiguous would replace a real answer
+    with a follow-up question. Requiring an anchor keeps clarification for the
+    genuinely empty queries, which is where it helps.
+    """
+    if topic or STHANA_MENTIONS.search(query):
+        return True
+    from app.nodes.retriever import _detect_herb
+
+    return bool(_detect_herb(query))
+
+
 def route_tools(state):
     new_state = {
         "tool_decision": "plain_retrieval",
         "metadata_filter": None,
     }
     query = state.get("query", "")
+
+    # Cheap, deterministic, and checked before the LLM so a greeting never costs a
+    # tool-selection call at all. The regex is narrow enough that this can run first
+    # without risk: nothing here can reach a health question.
+    if _META_QUERY.match(query or ""):
+        new_state["tool_decision"] = "direct_answer"
+        new_state["direct_answer"] = True
+        new_state["trace"] = list(state.get("trace", [])) + [
+            "tool router: conversational message matched the meta-query pattern → "
+            "answered without retrieval"
+        ]
+        return new_state
 
     # A topic scope is resolved deterministically. It costs no LLM call and is
     # always available, so it is applied before (and independently of) routing.
@@ -301,6 +382,34 @@ def route_tools(state):
                 parts.append(f"topic={topic_arg}")
             new_state["metadata_filter"] = _and_clauses(clauses) if clauses else None
             step = "tool router: scope_retrieval → metadata filter on " + ", ".join(parts)
+        elif name == "direct_answer":
+            # Confirmed against the whitelist, not taken on the model's word. See
+            # _META_QUERY for why this branch is gated.
+            if _META_QUERY.match(state["query"]):
+                new_state["tool_decision"] = "direct_answer"
+                new_state["direct_answer"] = True
+                step = "tool router: LLM proposed direct_answer — confirmed by pattern"
+            else:
+                # Undo the optimistic assignment above: the model asked to skip
+                # retrieval and we are refusing, so the state must not still be
+                # labelled direct_answer. route_after_tools keys off the
+                # `direct_answer` flag rather than this field, but tool_decision is
+                # persisted and shown in the trace, so leaving it would misreport
+                # what happened.
+                new_state["tool_decision"] = "plain_retrieval"
+                step = (
+                    "tool router: LLM proposed direct_answer but the question names "
+                    "something concrete → retrieving instead"
+                )
+        elif name == "plain_retrieval":
+            ambiguity = (args.get("ambiguity") or "").strip()
+            # Only honour the flag when there is genuinely nothing to retrieve
+            # against. Asking a user to clarify a question we could have answered
+            # is worse than giving a loosely-matched answer.
+            if ambiguity and not _has_anchor(query, topic):
+                new_state["needs_clarification"] = True
+                new_state["clarification_hint"] = ambiguity
+                step = f"tool router: question underspecified ({ambiguity}) → asking first"
     except Exception as e:  # noqa: BLE001
         step = f"tool router: LLM call failed ({type(e).__name__}) → defaulting to plain_retrieval"
 

@@ -286,15 +286,35 @@ def synthesize(state):
         SystemMessage(content=SYSTEM_PROMPT),
         HumanMessage(content=f"Context:\n{context}\n\nUser question: {state['query']}"),
     ]
+
+    # Second pass after the grounding node rejected the first draft. The
+    # correction goes in the human turn, not SYSTEM_PROMPT: the system prompt is
+    # the stable, cacheable part of this request and must not vary per attempt.
+    retry = state.get("grounding_retry_instruction")
+    if retry:
+        messages.append(
+            HumanMessage(
+                content=(
+                    f"Drafting feedback — your previous answer was rejected by the "
+                    f"citation check:\n{retry}\n\nRewrite the full answer now, keeping "
+                    "it self-contained."
+                )
+            )
+        )
+
+    attempts = state.get("synthesis_attempts", 0) + 1
     try:
         chunks = []
         for chunk in llm.stream(messages):
             chunks.append(chunk.content)
-        return {"final_answer": "".join(chunks)}
+        return {
+            "final_answer": "".join(chunks),
+            "synthesis_attempts": attempts,
+        }
     except Exception as e:
         # Deliberately no fallback answer. A canned string here looks like a
-        # successful grounded response but carries no citations, which reads as
-        # a broken product rather than a rate limit. Raising lets the caller
+        # successful grounded response but carries no citations, which reads as a
+        # broken product rather than a rate limit. Raising lets the caller
         # surface an honest, retryable error.
         print(f"[synthesis] Groq call failed: {e}")
         raise SynthesisUnavailable(str(e)) from e
