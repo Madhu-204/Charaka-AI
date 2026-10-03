@@ -1,10 +1,27 @@
-# CPU-only torch (no CUDA wheels) — matches Dockerfile.deploy cpu-index install
-torch==2.13.0
+# Runtime dependencies — what the serving process actually imports.
+#
+# torch and sentence-transformers are deliberately NOT here. They are named
+# directly in Dockerfile.deploy's `index` stage, which runs
+# scripts/build_vector_store.py to write the corpus vectors into chroma_db/.
+# The service reads those vectors and encodes only short queries, through ONNX
+# Runtime (see app/embedder.py).
+#
+# Do not add torch or transformers to this file. `langchain_core` does an
+# unconditional `try: from transformers import GPT2TokenizerFast` at import
+# time, so merely having transformers installed pulls all of torch into the
+# process: ~400 MB resident, which Render's 512 MB free tier cannot hold. The
+# container gets OOM-killed seconds after startup with no traceback, and it
+# looks like an app bug rather than a dependency-list bug.
 langgraph
 langchain-groq
 langchain-core
 chromadb
-sentence-transformers
+# Runtime query encoder for app/embedder.py. chromadb's ONNXMiniLM_L6_V2 imports
+# onnxruntime, tokenizers and tqdm lazily and only warns when they are missing,
+# so pinning them here is what keeps the fallback to torch unreachable.
+onnxruntime
+tokenizers
+tqdm
 fastapi
 uvicorn
 python-dotenv

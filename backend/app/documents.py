@@ -69,7 +69,7 @@ def upload(session_id: str, name: str, data: bytes) -> dict:
     if not chunks:
         raise ValueError("file is too short to extract guidance from")
 
-    from app.nodes.retriever import model
+    from app import embedder
 
     coll = _get_client().get_or_create_collection(
         _coll(session_id), metadata={"hnsw:space": "cosine"}
@@ -81,7 +81,7 @@ def upload(session_id: str, name: str, data: bytes) -> dict:
     coll.upsert(
         ids=ids,
         documents=chunks,
-        embeddings=model.encode(chunks).tolist(),
+        embeddings=embedder.encode(chunks),
         metadatas=[{"doc": name, "i": i} for i in range(len(chunks))],
     )
     return {"name": name, "chunks": len(chunks)}

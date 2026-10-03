@@ -1,9 +1,10 @@
 """Shared fixtures.
 
 The retrieval tests import ``app.nodes.retriever``, which loads the persisted
-Chroma store, the embedding model and a full-corpus BM25 index at import time.
-That is expensive, so the model and retriever are session-scoped: the whole
-suite pays for them once.
+Chroma store — documents, metadata, all 2,490 verse embeddings and a
+full-corpus BM25 index — at import time. That is expensive, so the retriever is
+session-scoped: the whole suite pays for it once. The query encoder itself is
+lazy (see app/embedder.py), so it loads once on the first query instead.
 
 Tests that only need pure functions (title parsing, filter construction, fusion
 math) must NOT import the retriever. See ``conftest``'s ``sys.path`` setup and
@@ -34,7 +35,7 @@ def corpus():
 
 @pytest.fixture(scope="session")
 def retriever():
-    """The imported retriever module (loads the model + index once)."""
+    """The imported retriever module (loads the corpus + index once)."""
     from app.nodes import retriever as module
 
     return module

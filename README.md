@@ -80,7 +80,7 @@ Each phase was regression-tested as it landed; the agent scores **~85%** on its 
 <details>
 <summary><b>🔬 Tech deep-dive</b> — click to expand</summary>
 
-**Backend** — Python · LangGraph agent · FastAPI · ChromaDB vector store · sentence-transformers · Groq (LLM inference) · MCP herb-safety tool.
+**Backend** — Python · LangGraph agent · FastAPI · ChromaDB vector store · ONNX Runtime (query encoder; the corpus index is built once with sentence-transformers and baked into the image) · Groq (LLM inference) · MCP herb-safety tool.
 
 **Frontend** — React · TypeScript · Vite · PWA (offline shell) · Web Speech voice input.
 
@@ -110,6 +110,16 @@ python -m venv .venv                     # once
 pip install -r requirements.txt          # once
 copy .env.example .env                   # add GROQ_API_KEY (free tier), never commit
 uvicorn app.main:app --reload
+```
+
+`requirements.txt` is the serving stack only — it has no torch, because torch
+resident in the process is what pushed the free-tier deploy over Render's
+512 MiB limit. To rebuild the vector index locally you also need the encoder:
+
+```bash
+pip install sentence-transformers        # plus torch (CPU): see Dockerfile.deploy
+python scripts/transform.py && python scripts/build_chapter_titles.py \
+  && python scripts/build_vector_store.py
 ```
 
 **Frontend** *(optional, browser dev mode)*

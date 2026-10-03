@@ -8,8 +8,19 @@ RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-# Stage 2 — backend + baked corpus + vector store + SPA statics
-FROM python:3.11-slim
+# Stage 2 — build the derived data with torch.
+#
+# torch + sentence-transformers are named here, NOT in backend/requirements.txt,
+# and must not reach stage 3. The runtime never embeds the corpus:
+# scripts/build_vector_store.py writes every vector into chroma_db/ below, and
+# the serving process only encodes short queries through app/embedder.py (ONNX
+# Runtime). This stage exists rather than just not importing torch in the
+# retriever because `langchain_core` does an unconditional
+# `try: from transformers import GPT2TokenizerFast` at import time, so merely
+# HAVING transformers installed makes that import succeed and pull all of torch
+# in with it. The fix is not "don't import torch in the retriever" — it is
+# "don't install torch where the app runs".
+FROM python:3.11-slim AS index
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
@@ -17,6 +28,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 COPY backend/requirements.txt backend/requirements.txt
 RUN pip install --no-cache-dir torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir sentence-transformers \
     && pip install --no-cache-dir -r backend/requirements.txt \
     && python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
@@ -37,13 +49,45 @@ RUN python backend/scripts/transform.py \
     && python backend/scripts/build_chapter_titles.py \
     && python backend/scripts/build_herb_terminology.py \
     && python backend/scripts/build_vector_store.py
+
+# Stage 3 — the service that actually runs. No torch, no transformers, no
+# sentence-transformers. Everything it needs to answer a question was baked in
+# stage 2; the only model it loads at runtime is the ONNX encoder.
+FROM python:3.11-slim
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    CHARAKA_ONNX_CACHE=/opt/charaka/onnx \
+    MALLOC_ARENA_MAX=2
+
+COPY backend/requirements.txt backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt \
+    && mkdir -p "$CHARAKA_ONNX_CACHE" \
+    && CHARAKA_ONNX_CACHE="$CHARAKA_ONNX_CACHE" python -c "from chromadb.utils import embedding_functions as ef; import os, pathlib; ef.ONNXMiniLM_L6_V2.DOWNLOAD_PATH = pathlib.Path(os.environ['CHARAKA_ONNX_CACHE']); ef.ONNXMiniLM_L6_V2(preferred_providers=['CPUExecutionProvider'])(['warm the cache'])"
+
+COPY backend/app backend/app
+COPY backend/scripts backend/scripts
+COPY backend/charaka_data backend/charaka_data
+# reference/ comes from the index stage because build_chapter_titles.py and
+# build_herb_terminology.py write generated JSON into it.
+COPY --from=index /app/backend/reference backend/reference
+COPY --from=index /app/backend/processed backend/processed
+COPY --from=index /app/backend/chroma_db backend/chroma_db
 COPY --from=fe /build/dist frontend/dist
+
+# Fail the build, not the deploy, if torch ever creeps back into the runtime
+# image. A torch install is ~200 MB of disk and, once transformers can import,
+# ~400 MB of resident memory the 512 MB free tier cannot hold — the container
+# was killed ~20 s after startup with "Out of memory (used over 512Mi)".
+RUN python -c "import importlib.util as u, sys; bad = [m for m in ('torch', 'transformers', 'sentence_transformers') if u.find_spec(m)]; sys.exit('RESTRICTED in runtime image: ' + str(bad)) if bad else print('runtime image is torch-free')"
 
 # Run from backend/ so the `app` package is importable and the SPA resolves at
 # ../frontend/dist (see FRONTEND_DIST in app/main.py).
 WORKDIR /app/backend
-# All models are baked into the image at build time; never dial out to the Hub
+# Every model is baked into the image at build time; never dial out to the Hub
 # at runtime (avoids DNS retry stalls on startup — important for cold starts).
+# Nothing here imports HF any more, so this is insurance rather than a
+# requirement: the ONNX weights were warmed in the pip step above.
 ENV HF_HUB_OFFLINE=1 \
     TRANSFORMERS_OFFLINE=1
 EXPOSE 7860

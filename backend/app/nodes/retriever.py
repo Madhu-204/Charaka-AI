@@ -7,16 +7,22 @@ from pathlib import Path
 
 import chromadb
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
-from app.chunking import EMBEDDING_MODEL, chapter_context, herb_key
+from app import embedder
+from app.chunking import chapter_context, herb_key
 from app.nodes.tool_router import _and_clauses
 
 BACKEND = Path(__file__).resolve().parents[2]
 
 client = chromadb.PersistentClient(path=str(BACKEND / "chroma_db"))
 collection = client.get_collection(name="charaka_ai_corpus")
-model = SentenceTransformer(EMBEDDING_MODEL)
+
+# There is deliberately no SentenceTransformer here. The corpus vectors are
+# already baked into chroma_db/, so the model was resident only to encode short
+# queries — through app.embedder (ONNX Runtime) instead. That swap plus keeping
+# torch out of the serving image altogether is what fits Render's 512 MB free
+# tier; see app/embedder.py for the numbers and for why removing the import
+# alone was not enough.
 
 _ALL = collection.get(include=["documents", "metadatas", "embeddings"])
 
@@ -122,6 +128,10 @@ _reranker = None
 #     only enters at rank 17, where it dilutes the fused score instead of
 #     leading it. The narrow pool is load-bearing, not a limitation.
 # Re-enable only with a reranker that beats hybrid-only on scripts/eval_run.py.
+#
+# It is also a torch model, so enabling it re-imports sentence-transformers on
+# the serving host and puts back the ~400 MB that killed the free-tier
+# container. Treat CHARAKA_RERANKER=1 as a local/large-host flag only.
 _rerank_enabled = os.getenv("CHARAKA_RERANKER", "0") == "1"
 
 
@@ -381,7 +391,7 @@ def _hybrid_pool(query, q_emb, where=None):
 
     for sub in _decompose_compound(query) or []:
         try:
-            sub_kwargs = {"query_embeddings": [model.encode([sub]).tolist()[0]], "n_results": 6}
+            sub_kwargs = {"query_embeddings": [embedder.encode_query(sub)], "n_results": 6}
             # Subqueries must honor the same filter as the main query, otherwise
             # a scoped request silently pulls unfiltered results into the pool
             # and the scope stops constraining anything.
@@ -453,7 +463,7 @@ def _hybrid_pool(query, q_emb, where=None):
 
 def search_verses(query, limit=8):
     """Expose ranked hybrid results as plain text (used by the corpus search page)."""
-    q_emb = model.encode([query]).tolist()[0]
+    q_emb = embedder.encode_query(query)
     pool, _rerank_status = _hybrid_pool(query, q_emb)
     pool.sort(key=lambda c: c["_fused"], reverse=True)
     out = []
@@ -476,7 +486,7 @@ def retrieve(state):
     query = state.get("expanded_query", state.get("query", ""))
     trace = state.get("trace", [])
 
-    q_emb = model.encode([query]).tolist()[0]
+    q_emb = embedder.encode_query(query)
 
     user_docs = []
     doc_session = state.get("doc_session")
