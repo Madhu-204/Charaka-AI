@@ -71,6 +71,7 @@ def grounding(state):
             "grounding_cited": [],
             "grounding_notes": ["No retrieved verses to ground the answer against."],
             "grounding_retry_instruction": None,
+            "grounding_ungrounded": True,
         }
 
     markers = _cited_markers(answer)
@@ -107,5 +108,12 @@ def grounding(state):
         "grounding_cited": sorted(set(valid)),
         "grounding_notes": notes,
         "grounding_retry_instruction": retry,
+        # True when the draft that ships carries no citation this check could
+        # accept. Not a verdict on the prose — it says the answer asserts
+        # Charaka's authority without pointing at a passage, which is the one
+        # failure a user cannot detect by reading. The retry may still fix it;
+        # this stays False on a rewrite that cites properly, so it describes the
+        # shipped answer rather than the first attempt.
+        "grounding_ungrounded": not valid,
         "trace": trace + [step],
     }

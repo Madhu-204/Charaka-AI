@@ -40,6 +40,10 @@ class AgentState(TypedDict, total=False):
     # actually states the claim. Empty when the check is off or found nothing to
     # verify. Distinct from grounding_cited, which only says a marker was valid.
     grounding_semantic: List[dict]
+    # True when the answer actually shipped cites no verse the citation check
+    # could accept. A rewrite that cites properly clears it, so it describes the
+    # answer the user receives rather than the first attempt.
+    grounding_ungrounded: bool
     # How many times synthesis has run for this request. Guards the retry edge so
     # a persistently ungroundable answer cannot loop.
     synthesis_attempts: int

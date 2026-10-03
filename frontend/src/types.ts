@@ -20,6 +20,7 @@ export interface GroundingInfo {
   score: number | null;
   cited: number[];
   notes: string[];
+  ungrounded?: boolean;
 }
 
 export interface AttributionSegment {
@@ -69,6 +70,7 @@ export interface AskResponse {
   dosha: string | null;
   latency_ms?: number | null;
   synthesis_attempts?: number;
+  is_ungrounded?: boolean;
   conversation_id?: string | null;
   conversation_title?: string | null;
   suggestions?: string[];

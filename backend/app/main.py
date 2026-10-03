@@ -342,6 +342,11 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     # means anything without a passage behind it.
     is_direct = bool(result.get("is_direct_answer"))
     no_context = is_emergency or is_out_of_scope or is_direct
+    # An answer that cites nothing checkable still reads as authoritative prose,
+    # which is the one grounding failure a user cannot catch by reading. It ships
+    # — the retrieved context was usually relevant and discarding it would help
+    # nobody — but it must not carry the confidence the drafting asked for.
+    ungrounded = bool(result.get("grounding_ungrounded")) and not no_context
     # Whether a draft was ever produced is a separate question from whether the
     # answer has context. Clarification sits apart from `no_context`: when it fires
     # after retrieval the chapter is real and worth showing, but `route_after_retrieve`
@@ -355,7 +360,7 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
         "is_direct_answer": is_direct,
         "scope_category": result.get("scope_category"),
         "is_clarification": bool(result.get("is_clarification")),
-        "confidence": result.get("confidence"),
+        "confidence": "low" if ungrounded else result.get("confidence"),
         "chapter": rc.get("meta", {}).get("chapter") if not no_context else None,
         "category_tag": rc.get("meta", {}).get("category_tag") if not no_context else None,
         "safety_flags": result.get("safety_flags", []),
@@ -366,6 +371,8 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
         # the first draft and it was rewritten. Surfaced because a retried answer
         # carries two synthesis calls, visible in both latency and token spend.
         "synthesis_attempts": 0 if no_synthesis else result.get("synthesis_attempts", 1),
+        # The UI keys its blocking banner off this rather than parsing notes.
+        "is_ungrounded": ungrounded,
         "used_documents": bool(result.get("used_documents")),
         "document_names": sorted(
             {d.get("doc", "uploaded document") for d in result.get("user_docs", [])}
@@ -387,12 +394,14 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
                 "score": result.get("grounding_score"),
                 "cited": result.get("grounding_cited", []),
                 "notes": result.get("grounding_notes", []),
+                "ungrounded": ungrounded,
             },
         }
         response["grounding"] = {
             "score": result.get("grounding_score"),
             "cited": result.get("grounding_cited", []),
             "notes": result.get("grounding_notes", []),
+            "ungrounded": ungrounded,
         }
     return response
 
