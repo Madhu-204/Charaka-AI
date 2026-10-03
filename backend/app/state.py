@@ -35,6 +35,11 @@ class AgentState(TypedDict, total=False):
     # ones). The synthesis node reads it as a correction instruction and the graph
     # uses it as the retry signal. Empty/absent means "ship this answer".
     grounding_retry_instruction: Optional[str]
+    # Per-claim support verdicts from the optional semantic verifier: one entry
+    # per citation-bearing claim, naming the verse cited and whether that verse
+    # actually states the claim. Empty when the check is off or found nothing to
+    # verify. Distinct from grounding_cited, which only says a marker was valid.
+    grounding_semantic: List[dict]
     # How many times synthesis has run for this request. Guards the retry edge so
     # a persistently ungroundable answer cannot loop.
     synthesis_attempts: int

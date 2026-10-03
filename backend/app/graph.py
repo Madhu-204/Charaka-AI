@@ -9,6 +9,7 @@ from app.nodes.retriever import retrieve
 from app.nodes.safety import check_safety
 from app.nodes.synthesis import synthesize
 from app.nodes.grounding import grounding
+from app.nodes.semantic_check import semantic_check
 from app.nodes.attribution import attribution
 from app.nodes.clarify import clarify
 from app.nodes.direct import direct_answer
@@ -83,6 +84,7 @@ graph.add_node("clarify", clarify)
 graph.add_node("check_safety", check_safety)
 graph.add_node("synthesize", synthesize)
 graph.add_node("grounding", grounding)
+graph.add_node("semantic_check", semantic_check)
 graph.add_node("attribution", attribution)
 
 graph.set_entry_point("check_emergency")
@@ -116,10 +118,15 @@ graph.add_conditional_edges(
 graph.add_edge("clarify", END)
 graph.add_edge("check_safety", "synthesize")
 graph.add_edge("synthesize", "grounding")
+# Semantic verification sits between the structural citation check and the retry
+# router, so an unsupported-but-well-cited claim can request a rewrite through the
+# same single retry edge rather than a second loop. It is a no-op (and costs no
+# tokens) unless CHARAKA_SEMANTIC_CHECK=1.
+graph.add_edge("grounding", "semantic_check")
 # Retry edge. Loops back to synthesize only when grounding asked for it and the
 # attempt budget is unspent; otherwise falls through to attribution as before.
 graph.add_conditional_edges(
-    "grounding",
+    "semantic_check",
     route_after_grounding,
     {"synthesize": "synthesize", "attribution": "attribution"},
 )
