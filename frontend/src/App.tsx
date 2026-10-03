@@ -26,9 +26,14 @@ export default function App() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authPhase, setAuthPhase] = useState<AuthPhase>("checking");
   const [needsRegistration, setNeedsRegistration] = useState(false);
+  const [authRequired, setAuthRequired] = useState(true);
 
   // Validate the stored token once on load. A stale or revoked token must land
   // on the sign-in screen rather than failing on the first question.
+  //
+  // When the server says accounts are off (CHARAKA_AUTH_REQUIRED=0), go straight
+  // to the dashboard: there is no session to validate, so the sign-in screen is
+  // skipped entirely and AuthView is never rendered.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -36,6 +41,7 @@ export default function App() {
         const config = await fetchAuthConfig();
         if (cancelled) return;
         setNeedsRegistration(config.needs_registration);
+        setAuthRequired(config.auth_required);
         if (!config.auth_required) {
           setAuthPhase("ready");
           return;
@@ -53,16 +59,22 @@ export default function App() {
     };
   }, []);
 
-  // A 401 from any request means the session is gone: drop it and show sign-in.
+  // A 401 normally means the session is gone: drop it and show sign-in. But a
+  // 401 does not imply that when accounts are off -- /eval/* and /traces are
+  // gated by their own admin key and answer 401 without it, and About renders
+  // the eval panel. Bouncing to sign-in for that would resurrect the login
+  // screen this build is meant to skip, so in that mode the token is dropped
+  // and the calling panel surfaces its own error instead.
   useEffect(() => {
     setUnauthorizedHandler(() => {
       setToken(null);
       setUser(null);
+      if (!authRequired) return;
       setConversationId(null);
       setReasoning(null);
       setAuthPhase("signedOut");
     });
-  }, []);
+  }, [authRequired]);
 
   const onAuthenticated = useCallback((next: AuthUser) => {
     setUser(next);

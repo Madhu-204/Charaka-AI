@@ -27,6 +27,13 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      # Sign-in is OFF: the SPA goes straight to the chat dashboard and never
+      # renders the login/register screen. Safe only because nothing private is
+      # per-user -- every visitor is the single "shared" owner, so conversations
+      # and uploaded documents are visible to (and deletable by) anyone who
+      # reaches the URL. Set this back to "1" as soon as accounts are finished.
+      - key: CHARAKA_AUTH_REQUIRED
+        value: "0"
       # Shared key for /ask, conversations, documents and feedback.
       - key: CHARAKA_API_KEY
         sync: false
