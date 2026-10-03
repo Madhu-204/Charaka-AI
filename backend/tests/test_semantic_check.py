@@ -237,6 +237,63 @@ def test_provider_failure_degrades_to_unverified(monkeypatch):
     assert any("unavailable" in step for step in out["trace"])
 
 
+def test_truncated_response_is_not_reported_as_partial(monkeypatch):
+    """gpt-oss can spend the whole completion budget on reasoning.
+
+    When it does, content comes back empty. `_parse` fills unparseable claims
+    with PARTIAL, so before this was handled an over-budget call returned three
+    confident-looking PARTIAL verdicts — reading as a judgement that each claim
+    was merely a little too broad, when in fact nothing had been assessed. That
+    is the worst possible failure for a verifier: an invented result that looks
+    like a real one.
+    """
+    monkeypatch.setattr(sc, "_enabled", lambda: True)
+
+    class _Truncated:
+        def __init__(self, **k):
+            pass
+
+        def invoke(self, messages):
+            return type(
+                "Reply",
+                (),
+                {
+                    "content": "",
+                    "response_metadata": {
+                        "finish_reason": "length",
+                        "token_usage": {
+                            "completion_tokens_details": {"reasoning_tokens": 300}
+                        },
+                    },
+                },
+            )()
+
+    monkeypatch.setattr(sc, "ChatGroq", _Truncated)
+    out = sc.semantic_check(_state())
+    assert out["grounding_semantic"] == [], "truncation must not produce verdicts"
+    assert "grounding_retry_instruction" not in out
+    assert any("truncated" in step for step in out["trace"])
+
+
+def test_empty_response_without_a_reason_is_also_skipped(monkeypatch):
+    """Defence in depth: a provider that returns blank without flagging `length`."""
+    monkeypatch.setattr(sc, "_enabled", lambda: True)
+
+    class _Blank:
+        def __init__(self, **k):
+            pass
+
+        def invoke(self, messages):
+            return type(
+                "Reply", (), {"content": "   ", "response_metadata": {"finish_reason": "stop"}}
+            )()
+
+    monkeypatch.setattr(sc, "ChatGroq", _Blank)
+    out = sc.semantic_check(_state())
+    assert out["grounding_semantic"] == []
+    assert any("truncated" in step for step in out["trace"])
+
+
 def test_prompt_asks_for_verbatim_verdict_lines(monkeypatch):
     """The parser is strict, so the prompt has to elicit exactly that shape."""
     monkeypatch.setattr(sc, "_enabled", lambda: True)

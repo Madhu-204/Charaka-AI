@@ -85,6 +85,11 @@ def test_parse_generation_returns_empty_on_garbage():
         "We shall now expound the chapter entitled 'The Quest for Longevity.'",
         "Thus declared the worshipful Atreya.",
         "End of the section on fever.",
+        # These pass as prose and are the ones that actually matter: a
+        # restatement of a chapter announcement is trivially SUPPORTED against
+        # its own verse, padding the easiest tier with free passes.
+        "This chapter will discuss the specific disorders of each humor.",
+        "Providing exhaustive information on fever's causes, symptoms and treatment.",
     ],
 )
 def test_section_announcements_are_rejected(sentence):
@@ -94,6 +99,53 @@ def test_section_announcements_are_rejected(sentence):
 def test_substantive_passages_are_kept():
     real = "Guduchi is indicated in fever and in the disorders of pitta, and is given with sugar."
     assert not vc._TITLE_RE.match(real)
+
+
+# --- the measures the label guard actually uses ----------------------------
+
+
+def test_jaccard_penalises_a_compressed_claim():
+    """Why Jaccard is not the guard.
+
+    It divides by the union, so a faithful short summary of a long passage scores
+    below a near-verbatim copy of it. This is the live example: the generated
+    claim "Administering sequential cleansing, enemata, and gender-specific diet"
+    scored 0.073 on Jaccard against its own verse and was being dropped, while
+    loose_coverage scored it 0.545 and it was plainly faithful.
+    """
+    verse = (
+        "The man and woman should first be administered the oleation and sudation "
+        "procedures, then cleansed by means of emetics and purgatives and thus "
+        "gradually brought to a state of humoral concord."
+    )
+    compressed = "Administering sequential cleansing, enemata, and gender-specific diet"
+    copied = (
+        "The man and woman should be administered oleation and sudation, then "
+        "cleansed by emetics and purgatives"
+    )
+    assert vc.overlap(compressed, verse) < vc.overlap(copied, verse)
+    # The prefix measure separates the same two samples the Jaccard guard could not.
+    assert vc.loose_coverage(compressed, verse) > vc.loose_coverage("The fifth tune of Jupiter", verse)
+
+
+def test_loose_coverage_matches_across_morphology():
+    """`administering` is not `administered` to an exact matcher, and a
+    restatement of a verse that says one will always use the other."""
+    verse = "The man should be administered oleation and then cleansed by emetics"
+    claim = "Administering oleation precedes the cleansing by emetics"
+    assert vc.coverage(claim, verse) < 0.45
+    assert vc.loose_coverage(claim, verse) >= vc.MIN_RESTATEMENT_COVERAGE
+
+
+def test_loose_coverage_still_rejects_an_unrelated_claim():
+    verse = "Guduchi is indicated in fever and in the disorders of pitta"
+    assert vc.loose_coverage("Castor oil cures migraine", verse) == 0.0
+
+
+def test_threshold_sits_inside_the_observed_gap():
+    """The live spread was 0.00 for the one bad sample and >=0.50 for every valid
+    one, so the guard must reject the former and accept the latter."""
+    assert 0.0 < vc.MIN_RESTATEMENT_COVERAGE < 0.50
 
 
 # --- selection --------------------------------------------------------------
@@ -270,8 +322,46 @@ def test_qualifier_dropped_is_emitted_only_when_a_qualifier_existed(monkeypatch,
     )
 
 
-def test_build_drops_samples_whose_restatement_is_too_loose(monkeypatch, tmp_path):
-    """A claim unrelated to its verse must never enter as a SUPPORTED label."""
+def test_pair_is_dropped_when_the_neighbour_restates_the_same_claim(monkeypatch, tmp_path):
+    """The wrong_verse tier asserts the neighbour does NOT state the claim.
+
+    If the corpus holds a duplicate or a paraphrase, the label is wrong, and it
+    is wrong on the one tier the entire measurement turns on — a verifier that
+    correctly flags it would be marked wrong for being right.
+    """
+    duplicate = "Musta is indicated in fever and in the disorders of pitta"
+    verses = [
+        _verse(0, 4, "fever", "Guduchi is indicated in fever and in the disorders of pitta"),
+        _verse(3, 4, "fever", duplicate),
+    ]
+    monkeypatch.setattr(vc, "_corpus", lambda: verses)
+    monkeypatch.setattr(vc, "_VERSE_COLLECTION", verses)
+    monkeypatch.setattr(vc, "REFERENCE_SET", tmp_path / "set.json")
+
+    def claims(_v, _p):
+        out = []
+        for v in verses:
+            if v["index"] == 0:
+                out.append({
+                    "verse": v,
+                    "claim": "Guduchi is used in fever and in pitta disorders",
+                    "qualifier": "",
+                    "unconditional": "",
+                })
+            else:
+                out.append({
+                    "verse": v,
+                    "claim": "Musta is used in fever and in pitta disorders",
+                    "qualifier": "",
+                    "unconditional": "",
+                })
+        return out
+
+    monkeypatch.setattr(vc, "generate_claims", claims)
+    assert vc.build(10) == []
+
+
+def test_pair_is_dropped_when_the_claim_does_not_restate_its_verse(monkeypatch, tmp_path):
     verses = [
         {"index": i, "text": "Guduchi is indicated in fever " * 20, "chapter": 4, "category": "f"}
         for i in range(4)
@@ -305,6 +395,136 @@ def test_pacer_waits_when_the_window_is_exhausted():
     pacer.wait(150)
     pacer.wait(150)  # crosses the budget; must wait out the window
     assert pacer.waited > 0.0
+
+
+# --- confidence bounds and the paired metric --------------------------------
+
+
+def test_wilson_bound_on_zero_is_much_worse_than_zero():
+    """`0/12` reads like a clean result and is not one.
+
+    The pilot's headline number was no false assurance in twelve trials; the
+    bound is the only honest way to report it, because zero out of twelve is
+    still consistent with a true rate around a quarter.
+    """
+    assert vc._wilson_upper(0, 12) > 0.15
+    assert vc._wilson_upper(0, 12) < vc._wilson_upper(0, 4)
+    assert vc._wilson_upper(0, 100) < 0.05
+    assert vc._wilson_upper(3, 12) > vc._wilson_upper(0, 12)
+
+
+def test_wilson_handles_an_empty_tier():
+    assert vc._wilson_upper(0, 0) == 1.0
+
+
+def test_paired_flips_count_a_drop_only_when_the_verdict_moves():
+    samples = [
+        {"tier": "supported", "claim": "a", "verdict": "SUPPORTED"},
+        {"tier": "wrong_verse", "claim": "a", "verdict": "UNSUPPORTED"},  # flipped
+        {"tier": "supported", "claim": "b", "verdict": "PARTIAL"},
+        {"tier": "wrong_verse", "claim": "b", "verdict": "PARTIAL"},  # unchanged
+        {"tier": "supported", "claim": "c", "verdict": "SUPPORTED"},
+        {"tier": "wrong_verse", "claim": "c", "verdict": "UNSUPPORTED"},  # flipped
+    ]
+    flipped, unchanged, unpaired = vc._paired_flips(samples)
+    assert (flipped, unchanged, unpaired) == (2, 1, 0)
+
+
+def test_paired_flips_reports_an_unpaired_negative():
+    """A wrong_verse sample with no matching supported partner cannot be scored."""
+    samples = [{"tier": "wrong_verse", "claim": "z", "verdict": "UNSUPPORTED"}]
+    assert vc._paired_flips(samples) == (0, 0, 1)
+
+
+def test_paired_flips_ignores_missing_verdicts():
+    samples = [
+        {"tier": "supported", "claim": "a", "verdict": "SUPPORTED"},
+        {"tier": "wrong_verse", "claim": "a"},
+    ]
+    assert vc._paired_flips(samples) == (0, 0, 1)
+
+
+# --- gating is asymmetric on purpose ----------------------------------------
+
+
+def _write_scored(tmp_path, samples):
+    (tmp_path / "set.json").write_text(json.dumps({"samples": samples}), encoding="utf-8")
+    return tmp_path / "set.json"
+
+
+def _neg(verdict):
+    return {
+        "tier": "wrong_verse", "label": "UNSUPPORTED", "claim": "c", "verse_text": "v",
+        "chapter": 1, "category": "x", "verse_index": 1, "verdict": verdict,
+    }
+
+
+def _pos(verdict):
+    return {
+        "tier": "supported", "label": "SUPPORTED", "claim": "c", "verse_text": "v",
+        "chapter": 1, "category": "x", "verse_index": 0, "verdict": verdict,
+    }
+
+
+def test_a_lone_false_support_is_enough_to_keep_it_off(tmp_path, monkeypatch, capsys):
+    """One confidently wrong endorsement outweighs any number of correct flags."""
+    monkeypatch.setattr(vc, "REFERENCE_SET", _write_scored(tmp_path, [_neg("SUPPORTED")]))
+    vc.score()
+    assert "KEEP OFF" in capsys.readouterr().out
+
+
+def test_underpowered_is_reported_as_underpowered_not_as_failure(tmp_path, monkeypatch, capsys):
+    """A clean small sample must not be reported as a pass.
+
+    Zero false assurances in a handful of trials is encouraging and still
+    insufficient; saying so is the difference between measuring and guessing.
+    """
+    monkeypatch.setattr(vc, "REFERENCE_SET", _write_scored(tmp_path, [_neg("UNSUPPORTED")]))
+    vc.score()
+    out = capsys.readouterr().out
+    assert "PROMISING BUT UNDERPOWERED" in out
+    assert "KEEP OFF" not in out
+
+
+def test_a_high_flag_rate_alone_does_not_keep_it_off(tmp_path, monkeypatch, capsys):
+    """A flag rate over the old symmetric threshold must not veto a safety win.
+
+    12.5% of correct citations flagged is worse than the 10% this used to gate on,
+    but every one of those flags is a PARTIAL, which triggers no rewrite and
+    costs no extra call. Treating it as equivalent to a false endorsement let a
+    cosmetic defect block the one property that matters.
+    """
+    samples = [_neg("UNSUPPORTED")] * 24 + [_pos("PARTIAL")] * 5 + [_pos("SUPPORTED")] * 35
+    monkeypatch.setattr(vc, "REFERENCE_SET", _write_scored(tmp_path, samples))
+    metrics = vc.score()
+    out = capsys.readouterr().out
+    assert metrics["false_flag_rate"] == 0.125
+    assert "ENABLE" in out
+
+
+def test_a_very_high_flag_rate_is_reported_as_marginal(tmp_path, monkeypatch, capsys):
+    """Above the flag threshold it stops being cosmetic."""
+    samples = [_neg("UNSUPPORTED")] * 24 + [_pos("PARTIAL")] * 20 + [_pos("SUPPORTED")] * 4
+    monkeypatch.setattr(vc, "REFERENCE_SET", _write_scored(tmp_path, samples))
+    vc.score()
+    assert "MARGINAL" in capsys.readouterr().out
+
+
+def test_build_refuses_to_discard_scored_samples(tmp_path, monkeypatch):
+    """A rebuild costs tokens and must not silently drop verdicts that cost more."""
+    path = _write_scored(tmp_path, [{**_pos("SUPPORTED"), "verdict": "SUPPORTED"}])
+    monkeypatch.setattr(vc, "REFERENCE_SET", path)
+    with pytest.raises(SystemExit) as excinfo:
+        vc.build(1)
+    assert "scored sample" in str(excinfo.value)
+
+
+def test_build_may_overwrite_when_forced(tmp_path, monkeypatch):
+    path = _write_scored(tmp_path, [{**_pos("SUPPORTED"), "verdict": "SUPPORTED"}])
+    monkeypatch.setattr(vc, "REFERENCE_SET", path)
+    monkeypatch.setattr(vc, "select_groups", lambda *a, **k: [])
+    monkeypatch.setattr(vc, "generate_claims", lambda *a, **k: [])
+    assert vc.build(1, force=True) == []
 
 
 # --- scoring ----------------------------------------------------------------

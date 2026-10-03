@@ -1,0 +1,274 @@
+{
+  "samples": [
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "The described regimen of oleation, sudation, emetics, purgatives, enemata, and gender‑specific ghee/milk or oil/black‑gram restores humoral balance in the couple.",
+      "verse_index": 1335,
+      "verse_text": "The man and woman should first be administered the oleation and sudation procedures, then cleansed by means of emetics and purgatives and thus gradually brought to a state of humoral concord. Purified thus, the couple should further be given the corrective and unctuous enemata. This should be followed, in the case of the man, by the administration of ghee and milk which have been prepared with the drugs of the sweet group and in the case of the woman, with the administration of oil and black-gram",
+      "chapter": 8,
+      "category": "constitution_prakriti",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "The described regimen of oleation, sudation, emetics, purgatives, enemata, and gender‑specific ghee/milk or oil/black‑gram restores humoral balance in the couple.",
+      "verse_index": 1340,
+      "verse_text": "If the woman lying sideways. happens to be on her right side, the the phlegm being displaced, obstructs the entrance to the womb; if on her left side, then the Pitta in her being constrained, will burn up both her own ovum and the semen received from the man. Therefore the woman should receive the seed, while lying on her back. For in that posture the humors retain their respective positions. After the consummation, the woman should take a douche with cold water.",
+      "chapter": 8,
+      "category": "constitution_prakriti",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "Food nourishes the body's elements, complexion, and vitality only when the gastric fire properly digests it.",
+      "verse_index": 1912,
+      "verse_text": "The food which is considered the nourishing factor of the body-element, vital essence, vitality, complexion and other things, that very food too, is dependent for its nutrient action on the gastric fire, as from the undigested food the body-elements cannot be formed.",
+      "chapter": 15,
+      "category": "digestive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "Food nourishes the body's elements, complexion, and vitality only when the gastric fire properly digests it.",
+      "verse_index": 1919,
+      "verse_text": "Then the five kinds of latent heat innate in each of the protoelements of the body—earth, water, fire, wind and ether, digest each its own corresponding component proto-element in the ingested food which is a compound of the proto-elements.",
+      "chapter": 15,
+      "category": "digestive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "Specific measures can alleviate fever that returns after it has subsided.",
+      "verse_index": 1450,
+      "verse_text": "‘Fever has been described earlier by your worship as the inflamer of body, senses and the mind, the first-born of all diseases, the most puissant, and the chief of diseases. Concerning this enemy of life, which makes its inevitable appearance at both birth and death, deign to tell us for the sake of the world’s weal, the following: causes, its nature, rise, effect and causes; its premonitory symptoms, habitat, periodicity and pathognomic Symptom; its various classifications in extenso and the symptoms of each of them separately; the symptoms of the stages of imperfect and perfect digestion of the intestinal contents during fever together with their remedies and procedures of treatment; the distinguishing marks severally of the stages of defervescence and subsidence; the period during which the convalescent has to be specially protected and from what particular influences; the causes whereby the subsided fever relapses again; and finally, the measures that allay the fever [jvara] that has re-appeared’.",
+      "chapter": 3,
+      "category": "fever_acute",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "Specific measures can alleviate fever that returns after it has subsided.",
+      "verse_index": 1457,
+      "verse_text": "Now Daksa, the patriarch, who was aware of the mischief that these demons intended to do, chose to affect indifference. Further, the patriarch Daksha, though admonished by the gods, refrained from offering to the sovereign Shiva his inalienable share in the oblations and conducted the sacrifice by systematically omitting all praise-hymns and invocations which refer to Shiva, the lord of creatures, and which ensure the success of a sacrifice.",
+      "chapter": 3,
+      "category": "fever_acute",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "The complete Science of Life originated with Brahma, passed to the Ashwin Twins, then to Shakra, and was sought by Bharadvaja.",
+      "verse_index": 3,
+      "verse_text": "Daksa Prajapati, the progenitor, first obtained the Science of Life in its entirety as promulgated by Brahma the Great one i.e., the Creator and from him, in turn, the Ashwin Twins obtained it. From the Ashwin Twins the god Shakra (Indra) acquired it. Therefore Bharadvaja bidden by the sages approached Shakra.",
+      "chapter": 1,
+      "category": "foundational_dosha",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "The complete Science of Life originated with Brahma, passed to the Ashwin Twins, then to Shakra, and was sought by Bharadvaja.",
+      "verse_index": 6,
+      "verse_text": "“Health is the supreme foundation of virtue, wealth,enjoyment and salvation. Now, diseases are the destroyers of health, of the good of life, and even of life itself. Thus has arisen the great impediment to the progress of humanity. What shall be the means of remedying it?” Having observed thus, they sat in meditation.",
+      "chapter": 1,
+      "category": "foundational_dosha",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "When the five Vata types are normal and situated correctly, they function properly and sustain good health.",
+      "verse_index": 2305,
+      "verse_text": "The seats of the Apana-Vata are the two testes, the bladder, the phallus, the umbilicus, thighs, groins, rectum and the lower part of the intestines. Its function is the elimination of the semen, urine, menstrual blood and fetus. If five kinds of Vata are normal and situated in their normal habitats, they perform their functions properly aud sustain the body in good health.",
+      "chapter": 28,
+      "category": "joint_vata_sleep",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "When the five Vata types are normal and situated correctly, they function properly and sustain good health.",
+      "verse_index": 2309,
+      "verse_text": "By a diet that is dry, cold, scanty and light, by sexual excess, excessive waking and wrongful treatment, by the excessive loss of waste-matter or blood, by excessive starvation, swimming, way-faring, exercise and other excessive activity, by the loss of body-elements, by excessive emaciation due to worry, grief and disease, by habitual use of uncomfortable beds and seats, by auger, day-sleep, fear, suppression of the natural urges, chyme-disorder, trauma and abstention from food, by injury to vital parts, by riding on or falling off an elephant, camel, horse or other swift-running animal or conveyance—by these factors the Vata getting aggravated fills up the vacuities in the body-passages and produces various kinds of disorders which affect the whole body or which get localised in a single region.",
+      "chapter": 28,
+      "category": "joint_vata_sleep",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "tier": "qualifier_dropped",
+      "label": "PARTIAL",
+      "claim": "The five Vata types function properly and sustain good health.",
+      "verse_index": 2305,
+      "verse_text": "The seats of the Apana-Vata are the two testes, the bladder, the phallus, the umbilicus, thighs, groins, rectum and the lower part of the intestines. Its function is the elimination of the semen, urine, menstrual blood and fetus. If five kinds of Vata are normal and situated in their normal habitats, they perform their functions properly aud sustain the body in good health.",
+      "chapter": 28,
+      "category": "joint_vata_sleep",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "Punarvasu taught Agnivesha the causes, symptoms, and treatments for urinary disorders.",
+      "verse_index": 1733,
+      "verse_text": "Punarvasu who was free from delusion, pride, anger and desire and whose mind had grown large with wisdom and meditation, instructed Agnivesha, in due course, regarding urinary disorders [prameha], along with their causes, symptoms and therapeutics.",
+      "chapter": 6,
+      "category": "metabolic",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "Punarvasu taught Agnivesha the causes, symptoms, and treatments for urinary disorders.",
+      "verse_index": 1736,
+      "verse_text": "On the diminution of the other two humors, the morbid Vata draws into the genito-urinary system the essential body-elements, and gives rise to the third class of urinary anomalies. In every case the morbid humor, having reached the genitourinary system, vitiates the urine and generates urinary anomalies [prameha] corresponding to its specific nature",
+      "chapter": 6,
+      "category": "metabolic",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "Holding back the need to urinate leads to bladder pain, genital discomfort, dysuria, headache, body flexure, and urinary retention.",
+      "verse_index": 296,
+      "verse_text": "Pain in the region of the bladder and the genitals, dysuria, headache, flexure of the body and retention of urine causing distension of the lower abdomen, are the symptoms produced by suppression of the urge for micturition.",
+      "chapter": 7,
+      "category": "preventive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "Holding back the need to urinate leads to bladder pain, genital discomfort, dysuria, headache, body flexure, and urinary retention.",
+      "verse_index": 332,
+      "verse_text": "Having regard to the rules of healthful living in the case of those who are characterised by the predominance of one humor, the use of things antagonistic in quality to that particular humor is beneficial; while in the case of persons with equibalanced humors, the balanced use of the articles of all tastes is recommended as being homologatory to them.",
+      "chapter": 7,
+      "category": "preventive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "Diseases divided into general and specific types, caused by humors and etiological factors, are hard to cure.",
+      "verse_index": 2072,
+      "verse_text": "Which of the diseases, classified into two categories (general and specific or mild and acute) and resulting from the morbidity of any or all of the three humors and caused by the three kinds of etiological factors and manifesting various kinds of symptoms, are difficult of cure?",
+      "chapter": 17,
+      "category": "respiratory",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "Diseases divided into general and specific types, caused by humors and etiological factors, are hard to cure.",
+      "verse_index": 2079,
+      "verse_text": "The Vata, having entered the respiratory channels, becomes irritated and rouses up the Kapha lying in the chest and produces hiccup [hikka] and dyspnea [shvasa], each of which is of five varieties, dreadful and often fatal to life.",
+      "chapter": 17,
+      "category": "respiratory",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "During liberation the water element predominates, while during absorption the fire element predominates.",
+      "verse_index": 248,
+      "verse_text": "(1) During the period of liberation, the prevailing winds are not marked by excessive dryness; it is otherwise with the period of absorption. During the former, the moon with unabated vigor aggrandizes the earth by surcharging it with her cool radiations and nourishes it constantly; therefore, the period of liberation is characterised by the predominance of the water element. On the other hand, the period of absorption is characterised by the predominance of the fire element.",
+      "chapter": 6,
+      "category": "routine_seasonal",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "During liberation the water element predominates, while during absorption the fire element predominates.",
+      "verse_index": 251,
+      "verse_text": "From the season of the rains to the autumn and the winter, however, the sun who has set his face to the south, being shorn of his glory by the cumulative influence of the period, orbit, clouds, winds and rains, the moon remaining undiminished in power, and the summer heat having been quenched with the descent of rain, the tastes sour, salt and sweet, increase in the given order. During this period, the strength of man waxes.",
+      "chapter": 6,
+      "category": "routine_seasonal",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "The passage outlines treatment methods for dermatosis, especially when the skin is destroyed.",
+      "verse_index": 1784,
+      "verse_text": "O, Agnivesha! listen attentively to an exposition of the causes, the susceptible body-elements, the symptoms, predominant morbid humors, the resorts and treatment of dermatosis with special reference to conditions where the skin is destroyed.",
+      "chapter": 7,
+      "category": "skin",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "The passage outlines treatment methods for dermatosis, especially when the skin is destroyed.",
+      "verse_index": 1787,
+      "verse_text": "Hereafter, I shall describe the signs and symptoms of the eighteen kinds of dermatosis [kushtha], namely, Kapala [kapāla], Udumbara, Mandala [maṇḍala], Rishyajihva [ṛṣyajihva], Pundarika [puṇḍarīka], Sidhma, Kakanaka [kākaṇaka], Ekakushtha [ekakuṣṭha], Carma, Kitima [kiṭima], Vipadika [vipādikā], Alasaka, Dadru, Carmadala, Pama [pāmā], Visphotaka [visphoṭaka], Shataru [śatāru] and Vicarcika [vicarcikā].",
+      "chapter": 7,
+      "category": "skin",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "tier": "qualifier_dropped",
+      "label": "PARTIAL",
+      "claim": "The passage outlines treatment methods for dermatosis.",
+      "verse_index": 1784,
+      "verse_text": "O, Agnivesha! listen attentively to an exposition of the causes, the susceptible body-elements, the symptoms, predominant morbid humors, the resorts and treatment of dermatosis with special reference to conditions where the skin is destroyed.",
+      "chapter": 7,
+      "category": "skin",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "One should select a medical treatise that is popular, authoritative, comprehensive, clear for all student levels, and well‑structured.",
+      "verse_index": 1042,
+      "verse_text": "Many treatises of medicine are current in the world. From among these he should choose that treatise which has obtained great popularity and is approved by wise men, which is comprehensive in scope, held in esteem by those who are worthy of credence, suitable alike for the understanding of the three grades of students (highly intelligent, moderate and low), free from the faults of repetition, revealed by a seer, arranged in well-made aphorisms, commentary and summary, well authenticated, free from vulgar usages and difficult words, rich in synonyms, possessing words of traditionally accepted sense, concerned mainly with determining the true nature of things, relevant to the theme, orderly in its arrangement of topics, rapidly elucidating and enriched with definitions and illustrations, Such a treatise is to be chosen.",
+      "chapter": 8,
+      "category": "diagnosis_method",
+      "verdict": "SUPPORTED"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "One should select a medical treatise that is popular, authoritative, comprehensive, clear for all student levels, and well‑structured.",
+      "verse_index": 1050,
+      "verse_text": "Now the method of study is this:—The student who is healthy and has consecrated all his time for study should rise at dawn or while yet a portion of the night is left, and having performed the necessary ablutions and having saluted the gods, the seers, the cows, the Brahmanas, the guardians, the elders, the adepts and the teachers, and seating himself at ease on even and clean ground, should, concentrating his mind, go over the aphorisms in order, repeating them over and over again, all the while understanding their import fully, in order to correct his own faults of reading as also to recognise the measure of faults in the reading of others. In this manner, at noon, in the aftt moon and in the night, ever vigilant, the student should apply himself to study. This is the method of study.",
+      "chapter": 8,
+      "category": "diagnosis_method",
+      "verdict": "UNSUPPORTED"
+    },
+    {
+      "tier": "supported",
+      "label": "SUPPORTED",
+      "claim": "When food is consumed in the right amount and timing, proper digestion by Prana and Samana Vata enhances life.",
+      "verse_index": 1913,
+      "verse_text": "The Prana Vata, whose function is to ingest food, draws it into the stomach. There the food, getting mixed with the digestive fluid is broken up and on being mixed with unctuous substance, becomes softened. Then the gastric fire, being agitated and carried by the Samana Vata, digests the food eaten in proper dose and at the proper time, and leads to the increase of life.",
+      "chapter": 15,
+      "category": "digestive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "wrong_verse",
+      "label": "UNSUPPORTED",
+      "claim": "When food is consumed in the right amount and timing, proper digestion by Prana and Samana Vata enhances life.",
+      "verse_index": 1920,
+      "verse_text": "Just as a quality in the substances nourishes individually its corresponding quality in the body, as for example, the proto-element of earth in the body is nourished by the proto-element of earth in the article ingested, similarly the other proto-elements nourish their corresponding qualities, thus making for complete nourishment.",
+      "chapter": 15,
+      "category": "digestive",
+      "verdict": "PARTIAL"
+    },
+    {
+      "tier": "qualifier_dropped",
+      "label": "PARTIAL",
+      "claim": "Proper digestion by Prana and Samana Vata enhances life.",
+      "verse_index": 1913,
+      "verse_text": "The Prana Vata, whose function is to ingest food, draws it into the stomach. There the food, getting mixed with the digestive fluid is broken up and on being mixed with unctuous substance, becomes softened. Then the gastric fire, being agitated and carried by the Samana Vata, digests the food eaten in proper dose and at the proper time, and leads to the increase of life.",
+      "chapter": 15,
+      "category": "digestive",
+      "verdict": "PARTIAL"
+    }
+  ]
+}

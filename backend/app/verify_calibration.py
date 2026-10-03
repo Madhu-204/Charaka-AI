@@ -74,10 +74,23 @@ REFERENCE_SET = BACKEND / "reference" / "verifier_calibration_set.json"
 TPM_BUDGET = int(os.getenv("CHARAKA_TPM_BUDGET", "6000"))
 
 # Sentences that only announce a section carry no propositional content, so they
-# cannot support or fail a claim.
+# cannot support or fail a claim. The later patterns matter more than they look:
+# "This chapter will discuss..." and "Providing exhaustive information on..."
+# pass as prose, and a restatement of one is trivially SUPPORTED against its own
+# verse, so leaving them in quietly pads the easiest tier with free passes.
 _TITLE_RE = re.compile(
-    r"^\s*(we shall now expound|thus declared|now, therefore|end of)", re.I
+    r"^\s*(we shall now expound|thus declared|now, therefore|end of"
+    r"|this chapter will|this section will|in this chapter|let us now"
+    r"|providing exhaustive|we now proceed)",
+    re.I,
 )
+
+# Below this a generated "restatement" is not one. Read off the observed spread
+# rather than assumed: across twelve live generations every faithful restatement
+# scored at or above 0.50 on loose_coverage and the single bad one scored 0.00,
+# so the threshold sits in the gap. Jaccard was tried first and had no such gap
+# (0.05-0.44 across valid samples), which is why it is not used.
+MIN_RESTATEMENT_COVERAGE = 0.45
 
 _STOPWORDS = {
     "that", "this", "with", "from", "they", "their", "there", "then", "than",
@@ -123,16 +136,48 @@ def _content_words(text: str) -> set[str]:
 
 
 def overlap(a: str, b: str) -> float:
-    """Jaccard over content words.
-
-    The guard that keeps generated labels defensible: a "restatement" that shares
-    almost nothing with its source is not a restatement, and labelling it
-    SUPPORTED would put a wrong key in the answer set.
-    """
+    """Jaccard over content words."""
     wa, wb = _content_words(a), _content_words(b)
     if not wa or not wb:
         return 0.0
     return len(wa & wb) / len(wa | wb)
+
+
+def coverage(claim: str, verse: str) -> float:
+    """How much of the *claim* is present in the verse.
+
+    The guard that decides whether a SUPPORTED label is legitimate is coverage,
+    not Jaccard. Jaccard divides by the union, so it penalises a claim for being
+    shorter than its verse: a faithful compressed restatement of a 90-word chunk
+    scores lower than a near-verbatim copy of it, which is backwards for the
+    question being asked ("does the verse state this claim", not "are these two
+    the same length").
+
+    Coverage also does not punish the verse for saying more than the claim,
+    which is the normal case for a summary.
+    """
+    wc, wv = _content_words(claim), _content_words(verse)
+    if not wc:
+        return 0.0
+    return len(wc & wv) / len(wc)
+
+
+def loose_coverage(claim: str, verse: str) -> float:
+    """Coverage under a shared-prefix match.
+
+    Exact matching misses morphology: "administering" is not "administered" is
+    not "administration", so an LLM restatement of a verse that says
+    "administered" scores as if it were unrelated. A six-character prefix is a
+    crude and deliberately unprincipled stand-in for a stemmer — it merges some
+    unrelated words and splits some related ones — but it is only ever used to
+    decide whether to *trust a generated label*, and the thresholds were read off
+    the observed distribution rather than assumed.
+    """
+    wc, wv = _content_words(claim), _content_words(verse)
+    if not wc:
+        return 0.0
+    prefixes = {w[:6] for w in wv}
+    return sum(1 for w in wc if w[:6] in prefixes) / len(wc)
 
 
 # --- corpus selection -------------------------------------------------------
@@ -206,6 +251,54 @@ def select_groups(count: int, min_gap: int = 3) -> list[tuple[dict, dict]]:
     return chosen
 
 
+def diagnose(verses: list[dict], pacer: Pacer) -> None:
+    """Report guard scores instead of applying them.
+
+    Thresholds chosen by guessing produced a guard that rejected a faithful
+    restatement of a 90-word passage, and twelve identical "overlap too low"
+    lines gave no hint why. Printing all three measures for every sample is the
+    only way to see where good and bad restatements actually separate.
+    """
+    from langchain_core.messages import HumanMessage, SystemMessage
+    from langchain_groq import ChatGroq
+
+    llm = ChatGroq(
+        model="openai/gpt-oss-120b",
+        api_key=os.environ["GROQ_API_KEY"],
+        max_retries=1,
+        timeout=45,
+        max_tokens=1200,
+        reasoning_effort="low",
+    )
+    print(f"{'jaccard':>8} {'cover':>7} {'loose':>7}  claim")
+    for verse in verses:
+        prompt = GENERATE_PROMPT.format(text=verse["text"][:1500])
+        pacer.wait(len(prompt) // 3 + 400)
+        try:
+            reply = llm.invoke(
+                [
+                    SystemMessage(content="You output only compact JSON."),
+                    HumanMessage(content=prompt),
+                ]
+            )
+        except Exception as exc:
+            print(f"  failed: {type(exc).__name__}")
+            continue
+        meta = getattr(reply, "response_metadata", {}) or {}
+        if meta.get("finish_reason") == "length":
+            print(f"{'--':>8} {'--':>7} {'--':>7}  [truncated]")
+            continue
+        claim = _parse_generation(reply).get("claim", "")
+        if not claim:
+            print(f"{'--':>8} {'--':>7} {'--':>7}  [no claim]")
+            continue
+        print(
+            f"{overlap(claim, verse['text']):8.3f} "
+            f"{coverage(claim, verse['text']):7.3f} "
+            f"{loose_coverage(claim, verse['text']):7.3f}  {claim[:70]}"
+        )
+
+
 # --- claim generation -------------------------------------------------------
 
 GENERATE_PROMPT = """Read the passage and write short test claims about it.
@@ -248,21 +341,31 @@ def _parse_generation(reply) -> dict:
 
 
 def generate_claims(verses: list[dict], pacer: Pacer) -> list[dict]:
-    """One call per verse, reused as both a positive and a negative."""
+    """One call per verse, reused as both a positive and a negative.
+
+    The reasoning budget matters more than it looks. gpt-oss spends the
+    completion budget on reasoning first, and a restatement task provokes far
+    more reasoning than the verifier's terse verdict does — at 400 completion
+    tokens it returned `finish_reason=length` with 398 reasoning tokens and
+    empty content, so every sample was silently dropped and the run produced an
+    empty set with no explanation. Hence the larger budget, `low` reasoning
+    effort, and an explicit truncation retry rather than a quiet skip.
+    """
     from langchain_core.messages import HumanMessage, SystemMessage
     from langchain_groq import ChatGroq
 
     llm = ChatGroq(
         model="openai/gpt-oss-120b",
-        api_key=__import__("os").environ["GROQ_API_KEY"],
+        api_key=os.environ["GROQ_API_KEY"],
         max_retries=1,
         timeout=45,
-        max_tokens=400,
+        max_tokens=1200,
+        reasoning_effort="low",
     )
     out = []
     for verse in verses:
         prompt = GENERATE_PROMPT.format(text=verse["text"][:1500])
-        pacer.wait(len(prompt) // 3 + 120)
+        pacer.wait(len(prompt) // 3 + 400)
         try:
             reply = llm.invoke(
                 [
@@ -270,15 +373,25 @@ def generate_claims(verses: list[dict], pacer: Pacer) -> list[dict]:
                     HumanMessage(content=prompt),
                 ]
             )
-            fields = _parse_generation(reply)
         except Exception as exc:  # a lost sample must not end the run
             print(f"  generation failed for verse {verse['index']}: {type(exc).__name__}")
             continue
 
+        meta = getattr(reply, "response_metadata", {}) or {}
+        if meta.get("finish_reason") == "length":
+            # Say so rather than reporting a content-based rejection that looks
+            # like a labelling problem.
+            print(
+                f"  verse {verse['index']}: reasoning consumed the token budget, "
+                "no claim generated"
+            )
+            continue
+
+        fields = _parse_generation(reply)
         claim = fields.get("claim", "")
         # Guard: the label is only valid if the claim really restates its verse.
-        if not claim or overlap(claim, verse["text"]) < 0.30:
-            print(f"  dropped verse {verse['index']}: restatement overlap too low")
+        if not claim or loose_coverage(claim, verse["text"]) < MIN_RESTATEMENT_COVERAGE:
+            print(f"  dropped verse {verse['index']}: claim does not restate its verse")
             continue
 
         out.append(
@@ -295,7 +408,20 @@ def generate_claims(verses: list[dict], pacer: Pacer) -> list[dict]:
 # --- building the labelled set ---------------------------------------------
 
 
-def build(groups: int) -> list[dict]:
+def build(groups: int, force: bool = False) -> list[dict]:
+    if REFERENCE_SET.exists() and not force:
+        try:
+            existing = json.loads(REFERENCE_SET.read_text(encoding="utf-8")).get("samples", [])
+        except json.JSONDecodeError:
+            existing = []
+        scored = sum(1 for s in existing if "verdict" in s)
+        if scored:
+            raise SystemExit(
+                f"{REFERENCE_SET.name} holds {scored} scored sample(s). Rebuilding would "
+                "discard those verdicts, which cost real tokens to produce. Move it "
+                "aside, or pass --force if the new set is worth more than the old one."
+            )
+
     pacer = Pacer()
     pair_list = select_groups(groups)
     print(f"selected {len(pair_list)} chapter-local verse pairs")
@@ -313,8 +439,21 @@ def build(groups: int) -> list[dict]:
         # is only valid while the claim restates its verse, and a guard that
         # exists only in the generator is not protecting the answer key — it is
         # protecting it from a code path that nothing else depends on.
-        if overlap(a["claim"], a["verse"]["text"]) < 0.30:
+        if loose_coverage(a["claim"], a["verse"]["text"]) < MIN_RESTATEMENT_COVERAGE:
             print(f"  dropped pair at verse {verse_a['index']}: claim does not restate its verse")
+            continue
+
+        # The wrong_verse tier asserts that the neighbouring verse does not state
+        # this claim. If it restates it about as well as the original does, the
+        # corpus has a duplicate or a paraphrase and the label is simply wrong —
+        # silently poisoning the one tier the whole measurement turns on.
+        cov_source = loose_coverage(a["claim"], a["verse"]["text"])
+        cov_other = loose_coverage(a["claim"], b["verse"]["text"])
+        if cov_other >= cov_source - 0.10:
+            print(
+                f"  dropped pair at verse {verse_a['index']}: neighbour verse covers the "
+                f"claim too well ({cov_other:.2f} vs {cov_source:.2f}), UNSUPPORTED unsafe"
+            )
             continue
 
         # Same claim, the verse it came from: SUPPORTED by construction.
@@ -447,7 +586,51 @@ def _write_results(samples: list[dict]) -> None:
 ORDER = {"SUPPORTED": 2, "PARTIAL": 1, "UNSUPPORTED": 0}
 
 
-def score(threshold: float = 0.10) -> dict:
+def _wilson_upper(hits: int, total: int, z: float = 1.96) -> float:
+    """Upper bound on a proportion, for when the point estimate is 0.
+
+    Zero false assurances out of six is the headline number here and it is not
+    the strong result it looks like: the rule of three puts the 95% upper bound
+    near 50%, so "0/6" is compatible with a true rate anywhere up to that. A
+    report that shows only the point estimate invites reading a bound as a
+    measurement.
+    """
+    if total == 0:
+        return 1.0
+    p = hits / total
+    denom = 1 + z * z / total
+    centre = p + z * z / (2 * total)
+    margin = z * ((p * (1 - p) / total + z * z / (4 * total * total)) ** 0.5)
+    return min(1.0, (centre + margin) / denom)
+
+
+def _paired_flips(samples: list[dict]) -> tuple[int, int, int]:
+    """Did the verdict move when the verse moved?
+
+    The strongest evidence available, because it removes the claim entirely: for
+    one claim shown against its own verse and then a different verse, a verifier
+    with any discriminative power must grade the second lower. Counting a strict
+    downward move isolates that, and needs no threshold to be interpreted.
+
+    Returns (flipped, unchanged, not_pairable).
+    """
+    supported = {s["claim"]: s for s in samples if s["tier"] == "supported"}
+    flipped = unchanged = unpaired = 0
+    for s in samples:
+        if s["tier"] != "wrong_verse":
+            continue
+        partner = supported.get(s["claim"])
+        if not partner or partner.get("verdict") is None or s.get("verdict") is None:
+            unpaired += 1
+            continue
+        if ORDER[partner["verdict"]] > ORDER[s["verdict"]]:
+            flipped += 1
+        else:
+            unchanged += 1
+    return flipped, unchanged, unpaired
+
+
+def score(threshold: float = 0.10, flag_threshold: float = 0.40) -> dict:
     samples = [s for s in load() if "verdict" in s]
     if not samples:
         raise SystemExit("no verdicts — run `run` first")
@@ -476,43 +659,93 @@ def score(threshold: float = 0.10) -> dict:
     false_flag = [r for r in supported if r["verdict"] != "SUPPORTED"]
     false_flag_rate = len(false_flag) / len(supported) if supported else 0.0
 
-    print(f"\nfalse SUPPORTED on a same-chapter wrong verse: {len(false_support)}/{len(negatives)} = {false_support_rate:.0%}")
+    print(
+        f"\nfalse SUPPORTED on a same-chapter wrong verse: "
+        f"{len(false_support)}/{len(negatives)} = {false_support_rate:.0%}"
+    )
     if false_support:
         for r in false_support[:3]:
             print(f"  claim: {r['claim'][:90]}")
-    print(f"false flag on a correctly cited claim:        {len(false_flag)}/{len(supported)} = {false_flag_rate:.0%}")
+    upper = _wilson_upper(len(false_support), len(negatives))
+    print(f"  95% upper bound on the true rate: {upper:.0%}")
+    if len(negatives) < 20:
+        print(f"  n={len(negatives)} is too small to establish a rate below {threshold:.0%}")
+
+    print(
+        f"false flag on a correctly cited claim:        "
+        f"{len(false_flag)}/{len(supported)} = {false_flag_rate:.0%}"
+    )
+
+    partial = by_tier.get("qualifier_dropped", [])
+    if partial:
+        caught = sum(1 for r in partial if r["verdict"] in ("PARTIAL", "UNSUPPORTED"))
+        print(
+            f"dropped qualifiers noticed:                   "
+            f"{caught}/{len(partial)}"
+        )
+        if caught == 0:
+            print("  it does not detect an over-broad claim at all, so enabling it buys")
+            print("  wrong-verse detection only, not the broader check it was sold as")
+
+    flipped, unchanged, unpaired = _paired_flips(samples)
+    print(f"\npaired claim, two verses: verdict dropped {flipped}/{flipped + unchanged}")
+    if unpaired:
+        print(f"  {unpaired} sample(s) could not be paired")
 
     print("\nverdict")
     if not negatives:
         print("  INCONCLUSIVE — no wrong_verse tier was built")
-    elif false_support_rate <= threshold and false_flag_rate <= threshold:
-        print(f"  ENABLE — both false rates at or under {threshold:.0%}")
-        print("  set CHARAKA_SEMANTIC_CHECK=1 and re-run the live sample")
+        return {}
+    # Asymmetric on purpose. The two directions cost very different amounts:
+    # a false SUPPORTED suppresses the retry and lets a bad citation ship as
+    # confirmed, while a false PARTIAL only adds a misleading word to the
+    # response payload — it triggers no rewrite and costs no extra call, since
+    # only UNSUPPORTED feeds the retry instruction. Gating both at one threshold
+    # treats a cosmetic defect like a safety defect.
+    if false_support_rate > threshold:
+        print(f"  KEEP OFF — {false_support_rate:.0%} of wrong verses were called SUPPORTED")
+        print("  that is the direction that converts a bad citation into apparent confirmation")
+    elif len(negatives) < 20:
+        print(f"  PROMISING BUT UNDERPOWERED — no false assurance in {len(negatives)} trials")
+        print(f"  consistent with a true rate up to {upper:.0%}, so this does not yet justify an")
+        print("  LLM call on every request; the number worth growing is the wrong_verse tier")
+    elif false_flag_rate > flag_threshold:
+        print(f"  MARGINAL — safe direction holds, but {false_flag_rate:.0%} of correct citations")
+        print("  are flagged, which adds noise to the payload without buying retries")
     else:
-        print(f"  KEEP OFF — at least one false rate exceeds {threshold:.0%}")
-        print("  the verifier cannot currently tell a same-chapter wrong verse from a right one")
+        print(f"  ENABLE — {false_support_rate:.0%} false assurance, {false_flag_rate:.0%} false flags")
+        print("  set CHARAKA_SEMANTIC_CHECK=1 and re-run the live sample")
 
     return {
         "false_support_rate": false_support_rate,
+        "false_support_upper95": upper,
         "false_flag_rate": false_flag_rate,
+        "flipped": flipped,
         "n": len(samples),
     }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["build", "run", "score", "all"])
+    parser.add_argument("command", choices=["build", "run", "score", "all", "diagnose"])
     parser.add_argument("--groups", type=int, default=6, help="chapter-local verse pairs")
     parser.add_argument("--batch", type=int, default=3)
     parser.add_argument("--threshold", type=float, default=0.10)
+    parser.add_argument("--flag-threshold", type=float, default=0.40)
+    parser.add_argument("--force", action="store_true", help="overwrite a scored set")
     args = parser.parse_args()
 
+    if args.command == "diagnose":
+        pacer = Pacer()
+        diagnose([v for pair in select_groups(args.groups) for v in pair], pacer)
+        print(f"waited {pacer.waited:.0f}s")
+        return
     if args.command in ("build", "all"):
-        build(args.groups)
+        build(args.groups, args.force)
     if args.command in ("run", "all"):
         run(args.batch)
     if args.command in ("score", "all"):
-        score(args.threshold)
+        score(args.threshold, args.flag_threshold)
 
 
 if __name__ == "__main__":

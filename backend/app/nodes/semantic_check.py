@@ -168,7 +168,17 @@ def semantic_check(state):
         reply = llm.invoke(
             [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=_build_prompt(pairs))]
         )
-        verdicts = _parse(getattr(reply, "content", "") or "", len(pairs))
+        meta = getattr(reply, "response_metadata", {}) or {}
+        raw = getattr(reply, "content", "") or ""
+        # gpt-oss spends the completion budget on reasoning before it writes an
+        # answer, and a three-claim judgement can overrun a 300-token budget. When
+        # that happens content comes back empty and _parse would fill in every
+        # claim as PARTIAL — which reads to the caller as a real assessment that
+        # found each claim merely narrow. It found nothing at all. Report the
+        # truncation instead of dressing it up as a verdict.
+        if meta.get("finish_reason") == "length" or not raw.strip():
+            return skipped("verifier response truncated (reasoning used the token budget)")
+        verdicts = _parse(raw, len(pairs))
     except Exception as exc:  # provider down, rate-limited, unparseable
         return skipped(f"verifier unavailable ({type(exc).__name__})")
 
