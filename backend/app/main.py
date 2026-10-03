@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 from app.graph import charaka_agent
 from app import auth, cache, conversations, ratelimit, stats, trace
 from app.nodes.summarize import build_hindi_summary, build_summary
-from app.nodes.synthesis import SynthesisUnavailable
+from app.nodes.synthesis import MAX_HISTORY_TURNS, SynthesisUnavailable
 # Confidence bands live in the retriever because that is where they are derived
 # from the cosine score. They were duplicated here as bare literals, which meant
 # retuning one silently left the API reporting a different band than the agent
@@ -467,11 +467,16 @@ def _history_fingerprint(history: Optional[List[dict]]) -> str:
     questions, so the history has to be part of the cache key. Hashing the last
     few turns (the same window the synthesis prompt actually includes) keeps
     the key short while staying correct.
+
+    That window is `MAX_HISTORY_TURNS`, not a literal. It has to be the same
+    value `_format_history` uses: if the prompt carried ten turns while this
+    hashed six, a change confined to turn seven would leave the key unchanged
+    and a stale answer could be served.
     """
     if not history:
         return "none"
     parts = []
-    for m in history[-6:]:
+    for m in history[-MAX_HISTORY_TURNS:]:
         role = m.get("role", "user")
         content = " ".join((m.get("content") or "").strip().split())
         parts.append(f"{role}:{content[:1200]}")
@@ -877,21 +882,30 @@ async def _event_stream(
 @app.post("/ask", dependencies=[Depends(guard_ask)])
 def ask(req: AskRequest, request: Request):
     owner = _owner(request)
-    state = {"query": req.query, "history": req.history or []}
-    if req.dosha_profile:
-        state["dosha_profile"] = req.dosha_profile
+    # Resolve the stored thread the same way the streaming path does. This
+    # endpoint used `req.history or []` directly, so a caller that sent only a
+    # conversation_id got first-turn behaviour while the browser got real
+    # multi-turn — the two disagreed about the same feature.
+    history, dosha_profile = _resolve_history(
+        req.history, req.conversation_id, owner, req.dosha_profile
+    )
+    state = {"query": req.query, "history": history or []}
+    if dosha_profile:
+        state["dosha_profile"] = dosha_profile
     if req.doc_session:
         state["doc_session"] = _doc_scope(owner, req.doc_session)
 
     # Same key composition as the streaming path: query + dosha + owner +
     # history fingerprint. See _event_stream for why history belongs in the key.
+    # It is keyed on the *resolved* history, so a thread turn cannot be answered
+    # from a cache entry built for a different point in the conversation.
     cache_key = (
         cache.LRUCache.key_for(
             req.query,
-            req.dosha_profile,
+            dosha_profile,
             scope=(
-                f"{_cache_scope(req.dosha_profile)}|u={owner}"
-                f"|h={_history_fingerprint(req.history)}|c={_CORPUS_VERSION}"
+                f"{_cache_scope(dosha_profile)}|u={owner}"
+                f"|h={_history_fingerprint(history)}|c={_CORPUS_VERSION}"
             ),
         )
         if not req.doc_session

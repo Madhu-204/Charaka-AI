@@ -134,7 +134,7 @@ def _format_history(history):
     if not history:
         return None
     lines = []
-    for m in history[-6:]:
+    for m in history[-MAX_HISTORY_TURNS:]:
         role = m.get("role", "user")
         content = (m.get("content") or "").strip()
         if content:
