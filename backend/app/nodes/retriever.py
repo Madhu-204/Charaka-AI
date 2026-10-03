@@ -207,6 +207,14 @@ def _chapter_key(candidate):
 # the very top ranks so a single #1 hit cannot outvote a broad consensus.
 RRF_K = 60
 
+# Vector candidates fetched before RRF fusion. Measured against the 148-item
+# recall probe: the expected verse was absent from a 12-wide pool for roughly
+# 87% of needles, so fusion never had anything to promote. Sweeping the width
+# showed top-3 accuracy climbing steeply to 30 (15.0% -> 20.0%) and then only
+# ~1pp per step out to 60, while the curated quality set lost a chapter
+# resolution. 30 is the knee: most of the gain, none of the precision cost.
+POOL_WIDTH = 30
+
 
 def _chapter_scores(pool, k=RRF_K):
     """Reciprocal-rank-fusion vote over chapters present in ``pool``.
@@ -372,7 +380,7 @@ def _hybrid_pool(query, q_emb, where=None):
     Returns ``(pool, rerank_status)``; see ``_apply_reranker`` for the status
     values.
     """
-    query_kwargs = {"query_embeddings": [q_emb], "n_results": 12}
+    query_kwargs = {"query_embeddings": [q_emb], "n_results": POOL_WIDTH}
     if where:
         query_kwargs["where"] = where
 
