@@ -59,6 +59,8 @@ export interface AnswerSummary {
 export interface AskResponse {
   answer: string;
   is_emergency: boolean;
+  is_out_of_scope?: boolean;
+  is_direct_answer?: boolean;
   is_clarification?: boolean;
   confidence: Confidence | null;
   chapter: string | number | null;
@@ -66,6 +68,7 @@ export interface AskResponse {
   safety_flags: string[];
   dosha: string | null;
   latency_ms?: number | null;
+  synthesis_attempts?: number;
   conversation_id?: string | null;
   conversation_title?: string | null;
   suggestions?: string[];

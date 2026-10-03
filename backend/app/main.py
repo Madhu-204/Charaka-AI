@@ -342,6 +342,12 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
     # means anything without a passage behind it.
     is_direct = bool(result.get("is_direct_answer"))
     no_context = is_emergency or is_out_of_scope or is_direct
+    # Whether a draft was ever produced is a separate question from whether the
+    # answer has context. Clarification sits apart from `no_context`: when it fires
+    # after retrieval the chapter is real and worth showing, but `route_after_retrieve`
+    # branches to `clarify` ahead of check_safety and synthesize, so it skipped the
+    # draft either way and must not be counted as one attempt.
+    no_synthesis = no_context or bool(result.get("is_clarification"))
     response = {
         "answer": result["final_answer"],
         "is_emergency": is_emergency,
@@ -355,10 +361,11 @@ def build_response(result: dict, latency_ms: Optional[int] = None) -> dict:
         "safety_flags": result.get("safety_flags", []),
         "dosha": result.get("dosha") if not no_context else None,
         "latency_ms": latency_ms,
-        # 1 = drafted once, 2 = the citation check rejected the first draft and it
-        # was rewritten. Surfaced because a retried answer carries two synthesis
-        # calls, which is visible in both latency and token spend.
-        "synthesis_attempts": result.get("synthesis_attempts", 1),
+        # 0 = nothing was ever drafted (emergency, refusal, direct reply or a
+        # clarifying question), 1 = drafted once, 2 = the citation check rejected
+        # the first draft and it was rewritten. Surfaced because a retried answer
+        # carries two synthesis calls, visible in both latency and token spend.
+        "synthesis_attempts": 0 if no_synthesis else result.get("synthesis_attempts", 1),
         "used_documents": bool(result.get("used_documents")),
         "document_names": sorted(
             {d.get("doc", "uploaded document") for d in result.get("user_docs", [])}
