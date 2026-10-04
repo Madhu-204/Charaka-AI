@@ -18,7 +18,7 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 from app.graph import charaka_agent
-from app import auth, cache, conversations, ratelimit, stats, trace
+from app import auth, cache, conversations, guardrails, ratelimit, stats, trace
 from app.nodes.summarize import build_hindi_summary, build_summary
 from app.nodes.synthesis import MAX_HISTORY_TURNS, SynthesisUnavailable
 # Confidence bands live in the retriever because that is where they are derived
@@ -1256,6 +1256,12 @@ def feedback(req: FeedbackRequest):
         "answer": req.answer,
         "trace": req.trace,
     }
+    # `answer` carries classical verse text, so redaction is high-precision by
+    # design: a pattern loose enough to catch every identifier would also eat
+    # legitimate quantities out of the corpus, which is the thing the product
+    # exists to convey. See guardrails.redact_pii.
+    guardrails.redact_record(record)
+    guardrails.rotate_jsonl(FEEDBACK_LOG)
     with FEEDBACK_LOG.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     return {"ok": True}

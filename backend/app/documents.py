@@ -10,10 +10,16 @@ labelled "USER-SUPPLIED DOCUMENT CONTEXT" block in synthesis.
 
 import hashlib
 import io
+import json
+import os
 import re
+import threading
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import chromadb
+
+from app import guardrails
 
 BACKEND = Path(__file__).resolve().parents[1]
 USER_DB = BACKEND / "user_chroma_db"
@@ -24,6 +30,113 @@ MIN_CHUNK = 40
 SUPPORTED = (".txt", ".md", ".markdown", ".pdf")
 
 _client = None
+_scope_lock = threading.Lock()
+
+# Scope activity is tracked in a sidecar rather than in Chroma collection
+# metadata, because Chroma gives no dependable last-modified timestamp across
+# the versions this app might run against. The sidecar is a few hundred bytes
+# per scope and is pruned on every reap.
+SCOPES_FILE = USER_DB / "scopes.json"
+
+
+def _ttl_days():
+    """Days of inactivity before a scope's vectors are reaped. None = disabled.
+
+    Default is disabled on purpose. Deleting a user's uploaded documents is a
+    data-loss action, and it is the operator's call when to take it - not
+    something that should start happening because a new release shipped. Set
+    CHARAKA_DOC_TTL_DAYS=30 (or any positive integer) to enable.
+    """
+    raw = (os.getenv("CHARAKA_DOC_TTL_DAYS") or "").strip()
+    if not raw:
+        return None
+    try:
+        days = int(raw)
+    except ValueError:
+        return None
+    return days if days > 0 else None
+
+
+def _now():
+    return datetime.now(timezone.utc)
+
+
+def _load_scopes():
+    if not SCOPES_FILE.exists():
+        return {}
+    try:
+        data = json.loads(SCOPES_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _save_scopes(scopes):
+    try:
+        SCOPES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        tmp = SCOPES_FILE.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(scopes, indent=0, sort_keys=True), encoding="utf-8")
+        tmp.replace(SCOPES_FILE)
+    except OSError:
+        # Activity tracking is an optimisation for the reaper, never a
+        # correctness requirement for ingest or retrieval. Losing it must not
+        # fail an upload.
+        pass
+
+
+def _touch(collection: str):
+    """Record activity for a scope so the reaper can judge inactivity."""
+    if _ttl_days() is None:
+        return
+    with _scope_lock:
+        scopes = _load_scopes()
+        scopes[collection] = _now().isoformat(timespec="seconds")
+        _save_scopes(scopes)
+
+
+def reap_expired(ttl_days=None):
+    """Delete document collections idle for longer than the TTL.
+
+    Returns the collection names actually deleted. This is a no-op while the
+    TTL is unset, which is the shipped default.
+    """
+    days = _ttl_days() if ttl_days is None else ttl_days
+    if not days or days <= 0:
+        return []
+    cutoff = _now() - timedelta(days=days)
+    deleted = []
+    with _scope_lock:
+        scopes = _load_scopes()
+        live = set()
+        try:
+            live = {
+                c.name for c in _get_client().list_collections()
+            }
+        except Exception as e:  # noqa: BLE001
+            print(f"[documents] cannot list collections for reap: {e}")
+            return []
+        for collection in sorted(scopes):
+            if collection not in live:
+                # Tracked but already gone; just forget it.
+                scopes.pop(collection, None)
+                continue
+            stamp = scopes.get(collection)
+            try:
+                last = datetime.fromisoformat(stamp) if stamp else None
+            except (TypeError, ValueError):
+                last = None
+            # An unparseable or missing stamp is treated as expired: the scope
+            # predates this tracker, so we have no evidence it is still in use.
+            if last is not None and last > cutoff:
+                continue
+            try:
+                _get_client().delete_collection(collection)
+                scopes.pop(collection, None)
+                deleted.append(collection)
+            except Exception as e:  # noqa: BLE001
+                print(f"[documents] failed to reap {collection}: {e}")
+        _save_scopes(scopes)
+    return deleted
 
 
 def _get_client():
@@ -69,6 +182,17 @@ def upload(session_id: str, name: str, data: bytes) -> dict:
     if not chunks:
         raise ValueError("file is too short to extract guidance from")
 
+    # Sanitize at ingest as well as at synthesis time. Storing the raw chunk means
+    # the injection payload also sits in the vector store, where it can be
+    # retrieved by any later query in this session, not just the one that
+    # uploaded it. Synthesis sanitizes again on the way into the prompt; this is
+    # the earlier half of the same defence.
+    safe_name = guardrails.safe_label(name)
+    chunks = [guardrails.sanitize_untrusted(c) for c in chunks]
+    chunks = [c for c in chunks if len(c) >= MIN_CHUNK]
+    if not chunks:
+        raise ValueError("no usable text after removing non-content")
+
     from app import embedder
 
     coll = _get_client().get_or_create_collection(
@@ -82,9 +206,10 @@ def upload(session_id: str, name: str, data: bytes) -> dict:
         ids=ids,
         documents=chunks,
         embeddings=embedder.encode(chunks),
-        metadatas=[{"doc": name, "i": i} for i in range(len(chunks))],
+        metadatas=[{"doc": safe_name, "i": i} for i in range(len(chunks))],
     )
-    return {"name": name, "chunks": len(chunks)}
+    _touch(_coll(session_id))
+    return {"name": safe_name, "chunks": len(chunks)}
 
 
 def list_uploads(session_id: str) -> list:
@@ -92,6 +217,7 @@ def list_uploads(session_id: str) -> list:
         coll = _get_client().get_collection(_coll(session_id))
     except Exception:
         return []
+    _touch(_coll(session_id))
     data = coll.get(include=["metadatas"]) or {}
     counts = {}
     for meta in data.get("metadatas") or []:
@@ -104,11 +230,21 @@ def list_uploads(session_id: str) -> list:
 
 
 def remove(session_id: str) -> bool:
+    name = _coll(session_id)
+    ok = False
     try:
-        _get_client().delete_collection(_coll(session_id))
-        return True
+        _get_client().delete_collection(name)
+        ok = True
     except Exception:
-        return False
+        pass
+    # Forget the scope either way: if the collection is already gone there is
+    # nothing left for the reaper to act on, and leaving the entry behind would
+    # make it churn on every pass.
+    with _scope_lock:
+        scopes = _load_scopes()
+        if scopes.pop(name, None) is not None:
+            _save_scopes(scopes)
+    return ok
 
 
 def search(session_id: str, q_emb, top: int = 2) -> list:

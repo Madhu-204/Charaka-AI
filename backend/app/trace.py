@@ -4,6 +4,8 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
+from app import guardrails
+
 _path_lock = threading.Lock()
 
 
@@ -35,10 +37,15 @@ def write_trace(
     prompt_tokens: int = 0,
 ) -> str:
     run_id = uuid.uuid4().hex[:12]
+    # Redact before the record is built, not after: the query is the only free-text
+    # field here, and it is the one a user is most likely to paste an identifier
+    # into ("my phone is 9876543210, what does Charaka say about..."). The audit
+    # trail keeps its operational value - run_id, timings, node list, chapter - and
+    # loses the identifier.
     record = {
         "run_id": run_id,
         "started_at": datetime.now(timezone.utc).isoformat(),
-        "query": query[:300],
+        "query": guardrails.redact_pii(query)[:300],
         "nodes": [
             {"node": node, "ms": ms, "tokens": tokens}
             for node, ms, tokens in node_times
@@ -55,8 +62,12 @@ def write_trace(
         "resolved_chapter": resolved_chapter,
     }
     run_dir.mkdir(parents=True, exist_ok=True)
+    path = run_dir / "traces.jsonl"
+    # Bounded growth. Health questions accumulate here forever otherwise, and a
+    # retention policy nobody applies is not a retention policy.
+    guardrails.rotate_jsonl(path)
     with _path_lock:
-        with (run_dir / "traces.jsonl").open("a", encoding="utf-8") as f:
+        with path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
     return run_id
 

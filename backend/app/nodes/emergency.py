@@ -71,9 +71,21 @@ RED_FLAGS = [
     "can't feel my leg",
     # --- suicidal ---
     "suicidal",
+    "suicidal thoughts",
     "want to die",
     "kill myself",
     "end my life",
+    # Roman-script transliterations. These were missing while the Devanagari
+    # forms below were present, so a user typing Hinglish self-harm - the most
+    # likely way a Hindi speaker types it into a chat box - reached verse
+    # retrieval. This is the highest-severity path in the app, so the gap is not
+    # acceptable. Kept as separate entries rather than transliterating
+    # programmatically so the list stays hand-auditable like the rest.
+    "aatmahatya",
+    "atmahatya",
+    "jeevan ant",
+    "marna chahta",
+    "marna chahti",
     # --- acute abdomen / critical ---
     "sudden severe headache",
     "worst headache of my life",
@@ -209,6 +221,46 @@ EMERGENCY_MESSAGE = (
     "a wellness assistant."
 )
 
+
+# --- localized escalation ----------------------------------------------------
+#
+# EMERGENCY_MESSAGE above is the fallback, kept as a module constant because it is
+# the contract callers and tests import. The reply a user actually receives is
+# built by app.escalation, which adds the emergency number for their region,
+# routes self-harm to a crisis line instead of an ambulance, and answers in Hindi
+# when the query was in Devanagari.
+#
+# "Contact emergency services" names no number, so it only helps someone who
+# already knows the number. For self-harm it is the wrong destination entirely.
+
+
+def _escalation(original, raw, emergency_reason=None):
+    """Return ``(message, trace_step)`` for a fired red flag.
+
+    Falls back to EMERGENCY_MESSAGE if the escalation module cannot be built, so
+    a config or import problem degrades to a less helpful message rather than to
+    an unhandled error inside the gate. The gate must never raise: it runs first
+    in the graph and protects every downstream node.
+    """
+    try:
+        from app import escalation
+
+        message = escalation.build_message(emergency_reason or original, raw)
+        category, region, lang = escalation.describe(
+            emergency_reason or original, raw
+        )
+        step = (
+            f"emergency gate: RED_FLAG '{original}' hit - escalated as "
+            f"{category} in {region} ({lang})"
+        )
+        return message, step
+    except Exception as e:  # noqa: BLE001
+        print(f"[emergency] escalation unavailable, using base message: {e}")
+        return EMERGENCY_MESSAGE, (
+            f"emergency gate: RED_FLAG '{original}' hit - redirected to doctor "
+            "(escalation unavailable)"
+        )
+
 # --- normalization ---------------------------------------------------------
 # One function applied to BOTH the query and every red flag, so the two sides
 # always agree. Kept deliberately simple and fast: lowercase, fold smart
@@ -293,14 +345,12 @@ def check_emergency(state):
     for original in SYMPTOM_ONLY_FLAGS:
         n = _norm(original)
         if n and _matches(n, q) and _reports_symptom(q):
+            message, step = _escalation(original, raw, emergency_reason=original)
             return {
                 "is_emergency": True,
                 "emergency_reason": original,
-                "final_answer": EMERGENCY_MESSAGE,
-                "trace": trace
-                + [
-                    f"emergency gate: reported symptom '{original}' - redirected to doctor"
-                ],
+                "final_answer": message,
+                "trace": trace + [step],
             }
 
     for original, norm in NORMALIZED_FLAGS:
@@ -318,12 +368,12 @@ def check_emergency(state):
                         "as an informational/study question - not redirected"
                     ],
                 }
+            message, step = _escalation(original, raw, emergency_reason=original)
             return {
                 "is_emergency": True,
                 "emergency_reason": original,
-                "final_answer": EMERGENCY_MESSAGE,
-                "trace": trace
-                + [f"emergency gate: RED_FLAG '{original}' hit - redirected to doctor"],
+                "final_answer": message,
+                "trace": trace + [step],
             }
 
     return {

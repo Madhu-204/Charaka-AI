@@ -8,6 +8,7 @@ deliberate informational exemption so the fix cannot become over-eager.
 Every probe here was an observed miss, not a hypothetical.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -17,7 +18,7 @@ BACKEND = Path(__file__).resolve().parent.parent
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
-from app.nodes.emergency import EMERGENCY_MESSAGE, check_emergency  # noqa: E402
+from app.nodes.emergency import EMERGENCY_MESSAGE, check_emergency  # noqa: E402,F401
 
 
 def gate(q):
@@ -58,7 +59,7 @@ class TestMustRedirect:
     def test_red_flag_redirects(self, query, label):
         out = gate(query)
         assert out["is_emergency"] is True, f"failed to redirect: {label} ({query!r})"
-        assert out["final_answer"] == EMERGENCY_MESSAGE
+        assert out["final_answer"]
         assert out["emergency_reason"]
 
     def test_every_flag_has_a_reason(self):
@@ -68,6 +69,118 @@ class TestMustRedirect:
     def test_trace_records_the_flag(self):
         out = gate("मुझे दिल का दर्द हो रहा है")
         assert any("RED_FLAG" in s for s in out["trace"])
+
+    def test_no_answer_ever_tells_the_user_the_bot_can_help(self):
+        """A redirect must not read as an offer of help with the emergency."""
+        # Checked per-language: the Hindi reply carries the equivalent sentence
+        # ("यह ... मेरी सहायता की बात नहीं है"), not the English one.
+        refusals = (
+            "can't help",
+            "cannot help",
+            "isn't something i can help",  # the emergency phrasing is a negated
+            "मेरी सहायता की बात नहीं",      # offer rather than a bare refusal
+            "मदद नहीं",
+        )
+        for query, _ in MUST_REDIRECT:
+            answer = gate(query)["final_answer"].lower()
+            assert any(r in answer for r in refusals), (query, answer)
+
+    def test_hindi_reply_contains_no_english_prose(self):
+        """The contacts file is English; pasting it into a Hindi reply is sloppy."""
+        out = gate("मुझे दिल का दर्द हो रहा है")
+        answer = out["final_answer"]
+        assert "में" in answer and "कॉल करें" in answer
+        assert "is the national emergency number" not in answer
+
+
+class TestEscalationIsLocalized:
+    """A redirect has to be actionable, not just a refusal.
+
+    The original single-sentence reply told the user to "contact emergency
+    services" - which names no number, so it only helps someone who already
+    knows the number. These lock in the region/category routing.
+    """
+
+    def test_emergency_message_names_a_number(self):
+        """A cardiac red flag must yield a callable number, not a shrug."""
+        out = gate("I have chest pain")
+        assert re.search(r"\b\d{3,}\b", out["final_answer"]), out["final_answer"]
+
+    def test_self_harm_routes_to_a_crisis_line_not_an_ambulance(self):
+        """The two need different destinations.
+
+        Self-harm previously got the identical cardiac message, which sends
+        someone to an ambulance rather than to a person who will pick up.
+        """
+        out = gate("I want to die")
+        answer = out["final_answer"]
+        assert "911" not in answer
+        assert re.search(r"24x7|free|helpline|helplines", answer, re.IGNORECASE), answer
+
+    def test_self_harm_never_offers_assistance(self):
+        out = gate("I want to die")
+        assert "i can't help" in out["final_answer"].lower()
+
+    @pytest.mark.parametrize(
+        "query",
+        ["mujhe aatmahatya ka vichar ho raha hai", "मुझे आत्महत्या का विचार हो रहा है"],
+    )
+    def test_roman_and_devanagari_self_harm_both_escalate(self, query):
+        """Roman-script self-harm was missing entirely.
+
+        The gate listed the Devanagari forms and not the transliterations, so a
+        Hindi speaker typing Hinglish - the likeliest way to type it into a chat
+        box - reached verse retrieval on the highest-severity path in the app.
+        """
+        out = gate(query)
+        assert out["is_emergency"] is True, query
+        assert out["emergency_reason"]
+
+    def test_hindi_query_gets_a_hindi_reply(self):
+        out = gate("मुझे आत्महत्या का विचार हो रहा है")
+        assert re.search(r"[\u0900-\u097F]", out["final_answer"])
+
+    def test_trace_names_the_escalation_category_and_region(self):
+        """The audit trail must say why the user got this message."""
+        out = gate("I have chest pain")
+        step = " ".join(out["trace"])
+        assert "cardiac_respiratory" in step
+        assert " IN " in step
+
+    def test_unknown_region_falls_back_to_the_directory(self):
+        """Guessing a country's number is worse than giving none."""
+        from app import escalation
+
+        message = escalation.build_message("suicidal", "I feel suicidal", region="ZZ")
+        assert "findahelpline.com" in message
+        assert re.search(r"\b\d{3,}\b", message) is None or "14416" not in message
+
+
+class TestEscalationDegradesSafely:
+    def test_config_broken_falls_back_to_the_base_message(self, monkeypatch):
+        """The gate runs first in the graph; it must never raise.
+
+        A bad contacts file is an operational possibility (truncated deploy
+        artifact, bad edit), and an exception here would take down every query
+        rather than just the emergency path.
+        """
+        import app as app_pkg
+        from app.nodes import emergency
+
+        class _Broken:
+            @staticmethod
+            def build_message(*a, **k):
+                raise RuntimeError("contacts file unreadable")
+
+            @staticmethod
+            def describe(*a, **k):
+                raise RuntimeError("contacts file unreadable")
+
+        monkeypatch.setattr(app_pkg, "escalation", _Broken)
+        out = emergency.check_emergency({"query": "I have chest pain", "trace": []})
+        assert out["is_emergency"] is True
+        assert out["final_answer"] == emergency.EMERGENCY_MESSAGE
+        assert any("escalation unavailable" in s for s in out["trace"])
 
 
 class TestInformationalExemption:

@@ -1,0 +1,112 @@
+{
+  "_README": [
+    "Localized escalation contacts. Edit this file to change numbers or add a",
+    "region - no code change required. Read at import by app/escalation.py.",
+    "",
+    "`verified: true` means every number under that region was checked against",
+    "the issuing authority (linked in `source`) on the `verified_on` date. Set it",
+    "back to false after editing a region, and escalation.py will log a startup",
+    "warning and refuse to show unverified crisis lines without the directory",
+    "fallback. Re-verify periodically: these numbers change.",
+    "",
+    "Keys under a region:",
+    "  emergency      - the single number to call for any acute emergency",
+    "  crisis         - mental-health / self-harm lines, surfaced for the",
+    "                    self_harm category ONLY",
+    "  source         - the authority whose page was checked",
+    "  directory_url  - a maintained finder that covers countries not listed here"
+  ],
+  "default_region": "IN",
+  "directory_url": "https://findahelpline.com",
+  "regions": {
+    "IN": {
+      "label": "India",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": "112",
+      "emergency_note": "112 is the single national emergency number for police, fire, ambulance and health emergencies across India.",
+      "source": "https://112.gov.in/",
+      "crisis": [
+        {
+          "name": "Tele-MANAS (Ministry of Health & Family Welfare)",
+          "number": "14416",
+          "hours": "24x7, free, 20+ languages"
+        }
+      ]
+    },
+    "US": {
+      "label": "United States",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": "911",
+      "source": "https://www.samhsa.gov/988",
+      "crisis": [
+        {
+          "name": "988 Suicide & Crisis Lifeline",
+          "number": "988",
+          "hours": "24x7, free, call or text"
+        }
+      ]
+    },
+    "GB": {
+      "label": "United Kingdom",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": "999",
+      "source": "https://www.samaritans.org/contact-us",
+      "crisis": [
+        {
+          "name": "Samaritans",
+          "number": "116 123",
+          "hours": "24x7, free"
+        },
+        {
+          "name": "NHS 111 (choose the mental health option)",
+          "number": "111",
+          "hours": "24x7, free"
+        },
+        {
+          "name": "SHOUT (text a trained supporter)",
+          "number": "85258",
+          "hours": "24x7, free text"
+        }
+      ]
+    },
+    "AU": {
+      "label": "Australia",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": "000",
+      "source": "https://www.lifeline.org.au/",
+      "crisis": [
+        {
+          "name": "Lifeline",
+          "number": "13 11 14",
+          "hours": "24x7, free"
+        }
+      ]
+    },
+    "CA": {
+      "label": "Canada",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": "911",
+      "source": "https://988.ca/",
+      "crisis": [
+        {
+          "name": "9-8-8 Suicide Crisis Helpline",
+          "number": "988",
+          "hours": "24x7, free, call or text, English and French"
+        }
+      ]
+    },
+    "GLOBAL": {
+      "label": "Outside the listed countries",
+      "verified": true,
+      "verified_on": "2026-10-04",
+      "emergency": null,
+      "source": "https://findahelpline.com",
+      "crisis": []
+    }
+  }
+}
